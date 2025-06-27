@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import { authMiddlware } from "../middlewares/auth.middleware";
 import { getTrainerById, Signin, Signup, updateTrainerProfile } from "../controllers/trainer.controller";
+import { getTrainerSessions } from "../controllers/user.controller";
 
 export const trainerRouter = Router();
 
@@ -11,4 +12,4 @@ trainerRouter.post('/signin',Signin);
 
 trainerRouter.get('/:id',authMiddlware,getTrainerById);
 trainerRouter.patch('/update',authMiddlware,updateTrainerProfile)
-
+trainerRouter.get('/sessions',authMiddlware,getTrainerSessions);

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { deleteUser, getUserById, Signin, Signup, updateUserProfile } from "../controllers/user.controller";
+import { deleteUser, getUserById, getUserSessions, Signin, Signup, updateUserProfile } from "../controllers/user.controller";
 import { authMiddlware } from "../middlewares/auth.middleware";
 
 export const userRouter = Router();
@@ -10,3 +10,4 @@ userRouter.get('/:id',authMiddlware,getUserById);
 
 userRouter.patch('/update',authMiddlware,updateUserProfile);
 userRouter.delete('delete',authMiddlware,deleteUser);
+userRouter.get('/sessions',authMiddlware,getUserSessions);

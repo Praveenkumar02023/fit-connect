@@ -5,6 +5,8 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { parse } from 'path';
 import { hash } from 'crypto';
+import { sessionModel } from '../models/training_session.model';
+
 
 
 const signupValidator = z.object({
@@ -176,5 +178,42 @@ export const deleteUser = async(req : Request , res : Response) => {
   } catch (error) {
     res.status(500).json({message : (error as Error).message});
   } 
+
+}
+
+export const getTrainerSessions = async(req : Request,res : Response) =>{
+
+  const trainerId = (req as any).userId as string;
+
+  try {
+    
+    const allSessions = await sessionModel.find({trainerId : trainerId });
+
+    res.status(200).json({message : 'All session fetched!',allSessions});
+
+  } catch (error) {
+    
+    res.status(500).json({message :  (error as Error).message || "Something went wrong"});
+
+  }
+
+}
+
+
+export const getUserSessions = async(req : Request,res : Response) =>{
+
+  const userId = (req as any).userId as string;
+
+  try {
+    
+    const allSessions = await sessionModel.find({clientId : userId });
+
+    res.status(200).json({message : 'All session fetched!',allSessions});
+
+  } catch (error) {
+    
+    res.status(500).json({message :  (error as Error).message || "Something went wrong"});
+
+  }
 
 }
