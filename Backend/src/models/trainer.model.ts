@@ -3,17 +3,34 @@ import { userModel } from "./user.model";
 
 
 interface TrainerTypes extends Document{
-
+    firstName : string,
+    lastName : string,
+    email : string,
+    password : string,
     speciality? : string[], 
     experience? : string,
     pricing_perSession : number,
     pricing_perMonth : number,
     rating? : number,
-    userId : Types.ObjectId
-
 }
 
 const trainerSchema = new Schema<TrainerTypes>({
+    firstName : {
+        type : String,
+        required : true
+    },
+    lastName : {
+        type : String,
+        required : true,
+    },
+    email : {
+        type : String,
+        required : true
+    },
+    password : {
+        type : String,
+        required : true
+    },
     speciality : {
         type : [String],
     },
@@ -31,12 +48,6 @@ const trainerSchema = new Schema<TrainerTypes>({
     },
     rating : {
         type : Number,
-    },
-    userId : {
-        type : Schema.Types.ObjectId,
-        ref : "User",
-        required : true,
-        unique : true
     }
 },{timestamps : true});
 
