@@ -1,29 +1,49 @@
-import mongoose, { Document, model, Schema, Types } from "mongoose";
+import mongoose, { Document, Schema, model, Types } from "mongoose";
 
-interface paymentTypes extends Document{
-
-    amount : number,
-    purpose : string,
-    method : string,
-    status : boolean,
-    transactionId : string,
-    userId : Types.ObjectId
-
+export interface PaymentDocument extends Document {
+  amount: number;
+  purpose: "session" | "event" | "subscription";
+  method: "upi" | "card" | "netbanking" | "wallet" | string;
+  status: "success" | "pending" | "failed";
+  transactionId: string;
+  userId: Types.ObjectId;
+  referenceId: Types.ObjectId;
 }
 
-const paymentSchema = new Schema<paymentTypes>({
+const paymentSchema = new Schema<PaymentDocument>(
+  {
+    amount: { type: Number, required: true },
 
-    amount : {type : Number , required : true},
-    purpose : {type : String , required : true},
-    method : {type : String , required : true},
-    status : {type : Boolean , required : true},
-    transactionId : {type : String , required : true},
-    userId : {
-        type : Schema.Types.ObjectId,
-        required : true,
-        ref : "User"
-    }
+    purpose: {
+      type: String,
+      enum: ["Session", "Event", "Subscription"],
+      required: true,
+    },
 
-},{timestamps : true});
+    method: { type: String, required: true },
 
-export const paymentModel = model("Payment",paymentSchema);
+    status: {
+      type: String,
+      enum: ["success", "pending", "failed"],
+      default: "pending",
+      required: true,
+    },
+
+    transactionId: { type: String, required: true },
+
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
+    referenceId: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      refPath: "purpose", // dynamic reference
+    },
+  },
+  { timestamps: true }
+);
+
+export const paymentModel = model<PaymentDocument>("Payment", paymentSchema);
