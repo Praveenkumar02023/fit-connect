@@ -4,13 +4,11 @@ interface subscriptionTypes extends Document{
 
     trainerId : Types.ObjectId,
     userId : Types.ObjectId,
-    plan : string,
     amount : number,
     paymentId : string,
     startDate : Date,
     endDate : Date,
-    isActive : boolean,
-
+    isActive : boolean
 }
 
 const subscriptionSchema = new Schema<subscriptionTypes>({
@@ -24,10 +22,6 @@ const subscriptionSchema = new Schema<subscriptionTypes>({
         type : Schema.Types.ObjectId,
         required : true,
         ref : "User"
-    },
-    plan : {
-        type : String,
-        required : true,
     },
     amount : {required : true , type : Number},
     paymentId : {required : true , type : String},
