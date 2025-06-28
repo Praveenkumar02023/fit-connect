@@ -18,7 +18,7 @@ const particpantSchema = new Schema<participantTypes>({
 
     },
     eventId : {
-         type : Schema.Types.ObjectId,
+        type : Schema.Types.ObjectId,
         required : true,
         ref : "Event"
     },

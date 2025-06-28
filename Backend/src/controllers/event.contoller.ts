@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import {z} from 'zod';
 import { eventModel } from "../models/event.model";
+import { participantModel } from "../models/event_participant.model";
 
 
 const createEventValidator = z.object({
@@ -190,4 +191,121 @@ export const deleteEvent = async(req : Request , res : Response) : Promise<any> 
       message: (error as Error).message || "Internal Server Error"
     });
   }
+}
+
+const registerEventValidator = z.object({
+
+    eventId : z.string()
+
+});
+
+export const registerEvent = async(req : Request , res : Response) : Promise<any> => {
+
+  const parsed = registerEventValidator.safeParse(req.body);
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      message: "Invalid update data"
+    });
+  }
+
+  const eventId = parsed.data.eventId;
+  const userId = (req as any).userId as string;
+
+  try {
+
+    const event = await eventModel.findById(eventId);
+    if (!event) return res.status(404).json({ message: "Event not found" });
+
+    const existing = await participantModel.findOne({ eventId, userId });
+    if (existing) return res.status(400).json({ message: "Already registered" });
+
+    const participant = await participantModel.create({
+      eventId,
+      userId,
+      registeredAt: new Date(),
+    });
+
+    res.status(201).json({ message: "Registered successfully", participant });
+
+
+  } catch (error) {
+     console.error(error);
+    res.status(500).json({
+      message: (error as Error).message || "Internal Server Error"
+    });
+  }
+
+}
+
+
+const deleteRegistrationValidator = z.object({
+
+    eventId : z.string()
+
+});
+
+export const deleteRegistration = async(req : Request , res : Response) : Promise<any> => {
+
+  const parsed = deleteRegistrationValidator.safeParse(req.body);
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      message: "Invalid update data"
+    });
+  }
+
+  const eventId = parsed.data.eventId;
+  const userId = (req as any).userId as string;
+
+  try {
+
+    const event = await eventModel.findById(eventId);
+    if (!event) return res.status(404).json({ message: "Event not found" });
+
+    const participant = await participantModel.deleteOne({userId , eventId});
+
+    res.status(201).json({ message: "Registered successfully", participant });
+
+
+  } catch (error) {
+     console.error(error);
+    res.status(500).json({
+      message: (error as Error).message || "Internal Server Error"
+    });
+  }
+
+}
+
+const getAllParticipantValidator = z.object({
+
+    eventId : z.string()
+
+});
+
+export const getAllParticipants = async(req : Request , res : Response) : Promise<any> => {
+
+  const parsed = getAllParticipantValidator.safeParse(req.body);
+
+  if (!parsed.success) {
+    return res.status(400).json({
+      message: "Invalid update data"
+    });
+  }
+
+  const eventId = parsed.data.eventId;  
+
+  try {
+    
+    const allParticipants = await participantModel.find({_id : eventId});
+
+    res.status(200).json({message : "all participants fetched" , allParticipants});
+
+  } catch (error) {
+      console.error(error);
+    res.status(500).json({
+      message: (error as Error).message || "Internal Server Error"
+    });
+  }
+
 }
