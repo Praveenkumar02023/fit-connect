@@ -97,3 +97,25 @@ export const cancelSession = async(req : Request,res:Response) : Promise<any> =>
     }
 
 }
+
+export const getSessionById = async(req : Request,res : Response)=>{
+
+  const sessionId = req.params.id;
+ 
+  console.log(sessionId);
+  
+  try {
+    
+    const session = await sessionModel.findOne({_id : sessionId});
+
+    if(!session){
+      throw new Error("Session not found");
+    }
+
+    res.status(200).json({message : "session found",session});
+
+  } catch (error) {
+      res.status(500).json({message : (error as Error).message || "Something went Wrong"});
+  }
+
+}

@@ -11,7 +11,7 @@ interface EventTypes extends Document{
     status : string,
     registrationFee? : number,
     date : Date 
-    
+
 }
 
 const eventSchema = new Schema<EventTypes>({
@@ -21,6 +21,7 @@ const eventSchema = new Schema<EventTypes>({
         required : true,
         ref : "User"
     },
+
     title : {type : String , required : true},
     description : {type : String },
     type : {type : String },
