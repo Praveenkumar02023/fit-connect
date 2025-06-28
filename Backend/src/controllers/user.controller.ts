@@ -50,7 +50,7 @@ export const Signup = async (req: Request, res: Response): Promise<any> => {
 
     });
 
-    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET!, { expiresIn: "7d" });
+    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET!, { expiresIn: "1d" });
 
     res.status(201).json({
       message: "Sign Up successful",
@@ -84,7 +84,7 @@ export const Signin = async (req: Request, res: Response): Promise<any> => {
       return res.status(401).json({ message: "Incorrect password" });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, { expiresIn: "7d" });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, { expiresIn: "1d" });
 
     res.status(200).json({
       message: "Signin successful.",
