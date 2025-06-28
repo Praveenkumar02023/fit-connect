@@ -7,5 +7,5 @@ export const subscriptionRouter = Router();
 
 subscriptionRouter.post('/subscribe',authMiddlware,createSubscription);
 subscriptionRouter.post('/cancel',authMiddlware,cancelSubscription);
-subscriptionRouter.get('/view/:id',authMiddlware,viewSubscription);
+subscriptionRouter.get('/:id',authMiddlware,viewSubscription);
 subscriptionRouter.get('/all',authMiddlware,getAllSubscription);

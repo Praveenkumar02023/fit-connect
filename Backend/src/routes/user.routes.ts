@@ -6,8 +6,9 @@ export const userRouter = Router();
 
 userRouter.post('/signup',Signup);
 userRouter.post('/signin',Signin);
-userRouter.get('/:id',authMiddlware,getUserById);
-
 userRouter.patch('/update',authMiddlware,updateUserProfile);
-userRouter.delete('delete',authMiddlware,deleteUser);
+userRouter.delete('/delete',authMiddlware,deleteUser);
+
+//sessions
 userRouter.get('/sessions',authMiddlware,getUserSessions);
+userRouter.get('/:id',authMiddlware,getUserById);

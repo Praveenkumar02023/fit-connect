@@ -5,6 +5,9 @@ import { connectToDB } from "./utils/db";
 import { userRouter } from "./routes/user.routes";
 import { trainerRouter } from "./routes/trainer.routes";
 import { sessionRouter } from "./routes/session.routes";
+import { eventRouter } from "./routes/event.routes";
+import { paymentRouter } from "./routes/payment.routes";
+import { subscriptionRouter } from "./routes/subscription.routes";
 
 
 dotenv.config()
@@ -12,10 +15,15 @@ dotenv.config()
 const app = express();
 const PORT  = process.env.PORT;
 
+app.use(express.json());
+
 //routes
-app.use('api/v1/user',userRouter);
+app.use('/api/v1/user',userRouter);
 app.use('/api/v1/trainer',trainerRouter);
 app.use('/api/v1/session',sessionRouter);
+app.use('/api/v1/event',eventRouter);
+app.use('/api/v1/payment',paymentRouter);
+app.use('/api/v1/subscription',subscriptionRouter);
 
 app.listen(PORT,()=>{
     log("server is running on ", PORT);

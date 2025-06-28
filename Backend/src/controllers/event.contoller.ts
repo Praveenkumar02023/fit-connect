@@ -83,7 +83,7 @@ export const getAllEvents = async(req : Request ,res : Response) : Promise<any> 
 
 }
 
-export const getEventById = async(req : Request , res : Response) => {
+export const getEventById = async(req : Request , res : Response) : Promise<any> => {
 
     const eventId = req.params.id;
 
@@ -91,6 +91,9 @@ export const getEventById = async(req : Request , res : Response) => {
         
         const event = await eventModel.findOne({_id : eventId});
 
+        if(!event){
+          return res.status(400).json({message : "event not found"})
+        }
 
         res.status(200).json({message : "event fetched",event});
 
@@ -175,9 +178,11 @@ export const deleteEvent = async(req : Request , res : Response) : Promise<any> 
     });
   }
 
+  const userId = (req as any).userId as string;
+
   try {
 
-    const deletedEvent = await eventModel.deleteOne({_id : parsed.data.eventId});
+    const deletedEvent = await eventModel.deleteOne({_id : parsed.data.eventId , organizerId : userId});
 
     if(!deletedEvent){
         return res.status(400).json({message : "event not found"});
@@ -265,7 +270,7 @@ export const deleteRegistration = async(req : Request , res : Response) : Promis
 
     const participant = await participantModel.deleteOne({userId , eventId});
 
-    res.status(201).json({ message: "Registered successfully", participant });
+    res.status(201).json({ message: "cancelled successfully", participant });
 
 
   } catch (error) {
@@ -297,7 +302,7 @@ export const getAllParticipants = async(req : Request , res : Response) : Promis
 
   try {
     
-    const allParticipants = await participantModel.find({_id : eventId});
+    const allParticipants = await participantModel.find({eventId : eventId});
 
     res.status(200).json({message : "all participants fetched" , allParticipants});
 

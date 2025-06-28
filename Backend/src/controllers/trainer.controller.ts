@@ -3,6 +3,7 @@ import { Request , Response } from 'express';
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { Trainer } from '../models/trainer.model';
+import { log } from 'console';
 
 
 const signupValidator = z.object({
@@ -10,7 +11,9 @@ const signupValidator = z.object({
     firstName : z.string(),
     lastName : z.string(),
     email : z.string().email(),
-    password : z.string()
+    password : z.string(),
+    pricing_perSession : z.number(),
+    pricing_perMonth: z.number()
 
 });
 
@@ -21,13 +24,18 @@ const signinValidator = z.object({
 
 
 export const Signup = async (req: Request, res: Response): Promise<any> => {
-  const parsed = signupValidator.safeParse(req.body);
 
+  const parsed = signupValidator.safeParse(req.body);
+  console.log(req.body);
+  
   if (!parsed.success) {
-    return res.status(400).json({ message: "Invalid inputs :(" });
+    return res.status(400).json({ 
+      message: "Invalid inputs :(",
+      errors: parsed.error.errors // <-- 
+    });
   }
 
-  const { firstName, lastName, email, password } = parsed.data;
+  const { firstName, lastName, email, password  ,pricing_perMonth , pricing_perSession } = parsed.data;
 
   try {
     const existingTrainer = await Trainer.findOne({ email });
@@ -35,14 +43,18 @@ export const Signup = async (req: Request, res: Response): Promise<any> => {
     if (existingTrainer) {
       return res.status(409).json({ message: "Trainer already exists" });
     }
-
+    console.log(password);
+    
     const hashedPassword = await bcrypt.hash(password, 10);
-
+    console.log(hashedPassword);
+    
     const newTrainer = await Trainer.create({
       firstName,
       lastName,
       email,
       password: hashedPassword,
+      pricing_perMonth,
+      pricing_perSession
     });
 
     const token = jwt.sign({ userId: newTrainer._id }, process.env.JWT_SECRET!, { expiresIn: "7d" });
@@ -60,7 +72,7 @@ export const Signup = async (req: Request, res: Response): Promise<any> => {
 
 export const Signin = async (req: Request, res: Response): Promise<any> => {
   const parsed = signinValidator.safeParse(req.body);
-
+  log(req.body);
   if (!parsed.success) {
     return res.status(400).json({ message: "Invalid inputs :(" });
   }
@@ -75,7 +87,8 @@ export const Signin = async (req: Request, res: Response): Promise<any> => {
     }
 
     const isVerified = await bcrypt.compare(password, trainer.password);
-
+    console.log(trainer.password);
+    
     if (!isVerified) {
       return res.status(401).json({ message: "Incorrect password" });
     }

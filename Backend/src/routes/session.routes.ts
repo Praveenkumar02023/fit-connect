@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { authMiddlware } from "../middlewares/auth.middleware";
-import { bookSession, cancelSession, getSessionById } from "../controllers/session.controller";
+import { bookSession, cancelSession, getAllSession, getSessionById } from "../controllers/session.controller";
 
 export const sessionRouter = Router();
 
 sessionRouter.post('/book',authMiddlware,bookSession);
-sessionRouter.get('/cancel',authMiddlware,cancelSession);
-
+sessionRouter.post('/cancel',authMiddlware,cancelSession);
+sessionRouter.get('/all',authMiddlware,getAllSession);
 sessionRouter.get('/:id',authMiddlware,getSessionById);

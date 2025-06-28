@@ -36,7 +36,6 @@ const trainerSchema = new Schema<TrainerTypes>({
     },
     experience : {
         type : String,
-        required : true,
     },
     pricing_perSession : {
         type : Number,

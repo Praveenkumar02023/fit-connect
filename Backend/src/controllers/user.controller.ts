@@ -11,10 +11,10 @@ import { sessionModel } from '../models/training_session.model';
 
 const signupValidator = z.object({
 
-    firstName : z.string(),
-    lastName : z.string(),
-    email : z.string().email(),
-    password : z.string()
+    name : z.string(),
+    email : z.string().email("invalid email"),
+    password : z.string(),
+    gender : z.string()
 
 });
 
@@ -26,12 +26,12 @@ const signinValidator = z.object({
 
 export const Signup = async (req: Request, res: Response): Promise<any> => {
   const parsed = signupValidator.safeParse(req.body);
-
+  console.log(req.body)
   if (!parsed.success) {
-    return res.status(400).json({ message: "Invalid inputs :(" });
+    return res.status(400).json({ message: "Invalid inputs :("});
   }
 
-  const { firstName, lastName, email, password } = parsed.data;
+  const { name , gender , email, password } = parsed.data;
 
   try {
     const existingUser = await userModel.findOne({ email });
@@ -43,10 +43,11 @@ export const Signup = async (req: Request, res: Response): Promise<any> => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await userModel.create({
-      firstName,
-      lastName,
+      name,
+      gender,
       email,
       password: hashedPassword,
+
     });
 
     const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET!, { expiresIn: "7d" });
@@ -87,11 +88,11 @@ export const Signin = async (req: Request, res: Response): Promise<any> => {
 
     res.status(200).json({
       message: "Signin successful.",
-      token,
+      token,user
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" , });
   }
 };
 
@@ -117,8 +118,7 @@ export const getUserById = async (req: Request, res: Response) : Promise<any> =>
 };
 
 const updateProfileValidator = z.object({
-  firstName : z.string().optional(),
-  lastName : z.string().optional(),
+  name : z.string(),
   password : z.string().optional()
 });
 

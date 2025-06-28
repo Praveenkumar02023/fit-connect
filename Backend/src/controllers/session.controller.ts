@@ -119,3 +119,23 @@ export const getSessionById = async(req : Request,res : Response)=>{
   }
 
 }
+
+export const getAllSession = async(req : Request,res : Response)=>{
+
+  const userId = (req as any).userId as string;
+
+  try {
+    
+    const Allsession = await sessionModel.find({ clientId : userId });
+
+    if(!Allsession){
+      throw new Error("Session not found");
+    }
+
+    res.status(200).json({message : "session found",Allsession});
+
+  } catch (error) {
+      res.status(500).json({message : (error as Error).message || "Something went Wrong"});
+  }
+
+}

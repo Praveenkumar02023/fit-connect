@@ -10,6 +10,7 @@ trainerRouter.post('/signup',Signup);
 trainerRouter.post('/signin',Signin);
 
 
-trainerRouter.get('/:id',authMiddlware,getTrainerById);
 trainerRouter.patch('/update',authMiddlware,updateTrainerProfile)
 trainerRouter.get('/sessions',authMiddlware,getTrainerSessions);
+
+trainerRouter.get('/:id',authMiddlware,getTrainerById);
