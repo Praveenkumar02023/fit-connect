@@ -12,12 +12,12 @@ const Signup = () => {
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
     console.log('Signup Info:', { name, email, password });
-    // Add signup logic here
+
   };
 
   return (
     <div className="relative h-screen w-screen flex items-center justify-center bg-gradient-to-br from-cyan-100 via-blue-50 to-violet-100">
-      {/* Background blobs */}
+      
       <div className="h-full w-full absolute inset-0">
         <div className="absolute bottom-40 right-20 h-24 w-24 rounded-full bg-pink-300 blur-2xl animate-pulse"></div>
         <div className="absolute bottom-40 left-40 h-48 w-48 rounded-full bg-green-200 blur-2xl animate-pulse"></div>
@@ -25,13 +25,13 @@ const Signup = () => {
         <div className="absolute top-40 left-20 h-24 w-24 rounded-full bg-amber-300 blur-2xl animate-pulse"></div>
       </div>
 
-      {/* Signup card */}
-      <div className="relative bg-white shadow-lg rounded-2xl h-[55%] w-[25%] flex flex-col items-center justify-start py-6 px-4 z-10">
+      
+      <div className="relative bg-white shadow-lg rounded-2xl h-55vh w-[25%] flex flex-col items-center justify-start py-6 px-4 z-10">
         <h1 className="text-2xl font-semibold text-center w-full mb-4">
           Create your account
         </h1>
 
-        {/* Name */}
+        
         <div className="w-[80%] mb-4">
           <label className="text-sm flex items-center gap-1 mb-1">
             <User className="size-4" /> Name
@@ -44,7 +44,7 @@ const Signup = () => {
           />
         </div>
 
-        {/* Email */}
+       
         <div className="w-[80%] mb-4">
           <label className="text-sm flex items-center gap-1 mb-1">
             <Mail className="size-4" /> Email
@@ -57,7 +57,7 @@ const Signup = () => {
           />
         </div>
 
-        {/* Password */}
+       
         <div className="w-[80%] mb-4">
           <label className="text-sm flex items-center gap-1 mb-1">
             <KeyRoundIcon className="size-4" /> Password

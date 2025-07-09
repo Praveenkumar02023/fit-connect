@@ -25,7 +25,7 @@ const Signin = () => {
       </div>
 
       
-      <div className="relative bg-white shadow-lg rounded-2xl h-[45%] w-[25%] flex flex-col items-center justify-start py-6 px-4 z-10">
+      <div className="relative bg-white shadow-lg rounded-2xl h-60vh w-[25%] flex flex-col items-center justify-start py-6 px-4 z-10">
         <h1 className="text-2xl font-semibold text-center w-full mb-4">
           Sign In to your account
         </h1>
