@@ -3,11 +3,12 @@ import {Plus, Shell} from "lucide-react"
 import NavbarLink from './Navbar/textComponent'
 import Button from "./ui/Button"
 import FeatureCard from "./Navbar/featureCard"
-
+import WhoCard from "./Navbar/WhoCard"
+import LogoSlider from "./Navbar/LogoSlider"
 
 const Home = () => {
   return (
-    <div className='h-screen w-screen flex flex-col '>
+    <div className='min-h-screen w-full flex flex-col overflow-x-hidden gap-y-4 '>
 
       <div className='px-14 items-center h-16 w-full  border-b border-gray-200 flex justify-between ' >
         <div className='flex justify-center items-center text-black font-bold text-2xl ' >
@@ -37,7 +38,7 @@ const Home = () => {
         
         </div>
        
-        <div className=" border w-[50%] border-gray-300 p-12  h-full justify-center  items-center grid grid-cols-2 gap-y-4 " >
+        <div className="  w-[50%]  p-12  h-full justify-center  items-center grid grid-cols-2 gap-y-4 " >
                       
             <FeatureCard title={"Trainers"} subtitle={"Training From Top Trainers."} bgColor={"bg-violet-300/80"} image={"../../public/trainer.png"} />
             
@@ -50,6 +51,20 @@ const Home = () => {
 
         </div>
       </div>
+
+      <div className="px-14 w-full ">
+        <h1 className="text-lg font-semibold " >Who's using FitConnect? </h1>
+        <div className="flex gap-x-2 w-full pt-4 " >
+          <WhoCard title={"Fitness Trainers"} description={"Grow your brand, manage clients, and host training sessions effortlessly."} image={"/whoTrainer.png"} />
+          <WhoCard title={"All Age Groups"} description={"From teens to elders — FitMan empowers every generation to stay fit, healthy, and engaged."} image={"/elder.png"} />
+          <WhoCard  title={"Athletes"} description={"Participate in intense competitions, track performance, and win exciting rewards."} image={"/athelte.png"} />
+        </div>
+
+       
+      </div>
+
+      <LogoSlider  />
+
     </div>
   )
 }
