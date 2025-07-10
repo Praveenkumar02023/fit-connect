@@ -1,13 +1,12 @@
 
 import {Plus, Shell} from "lucide-react"
-import NavbarLink from './TextComponent'
-import Button from "./ui/Button"
-import FeatureCard from "./featureCard"
-import WhoCard from "./WhoCard"
-import LogoSlider from "./LogoSlider"
-import ReviewCard from "./ReviewCard"
-import Reviews from "./Reviews"
-import TopMentor from "./TopMentor.jsx"
+import NavbarLink from './LandingPage/TextComponent.jsx'
+import Button from "./ui/Button.jsx"
+import FeatureCard from "./LandingPage/featureCard.jsx"
+import WhoCard from "./LandingPage/WhoCard.jsx"
+import LogoSlider from "./LandingPage/LogoSlider.jsx"
+import Reviews from "./LandingPage/Reviews.jsx"
+import TopMentor from "./LandingPage/TopMentor.jsx"
 
 const Home = () => {
   return (
@@ -36,7 +35,7 @@ const Home = () => {
         
         <div className="w-[45%] flex flex-col h-full items-center justify-center" >
         
-          <h1 className=" text-6xl flex font-bold" ><h3 className="mr-2 text-sky-900" > Unlock </h3>  Your Fitness</h1>
+          <h1 className=" text-6xl flex font-bold" ><h3 className="mr-2 text-blue-700" > Unlock </h3>  Your Fitness</h1>
           
           <p className="text-center pt-2 text-gray-500 text-lg flex flex-wrap w-[70%]" >Train. Transform. Compete. FitConnect connects top trainers, goal-driven clients, and world-class fitness events.</p>
         
