@@ -7,6 +7,7 @@ import WhoCard from "./WhoCard"
 import LogoSlider from "./LogoSlider"
 import ReviewCard from "./ReviewCard"
 import Reviews from "./Reviews"
+import TopMentor from "./TopMentor.jsx"
 
 const Home = () => {
   return (
@@ -71,6 +72,9 @@ const Home = () => {
 
       {/* Review component */}
       <Reviews/>
+
+      <TopMentor/>
+
     </div>
   )
 }

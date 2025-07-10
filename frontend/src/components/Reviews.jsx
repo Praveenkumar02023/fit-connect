@@ -63,7 +63,7 @@ const Reviews = () => {
 
 
   return (
-    <div className="px-14 py-24 w-full flex flex-col  items-center h-[100vh] gap-y-12 " >
+    <div className="px-14 py-24 w-full flex flex-col  items-center h-[110vh] gap-y-12 " >
 
         <div className="flex flex-col items-center gap-y-4 w-[60%] text-center" >
           <h1 className="text-black font-bold text-5xl" >Loved by the community</h1>
