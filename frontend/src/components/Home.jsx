@@ -1,10 +1,12 @@
 
 import {Plus, Shell} from "lucide-react"
-import NavbarLink from './Navbar/textComponent'
+import NavbarLink from './TextComponent'
 import Button from "./ui/Button"
-import FeatureCard from "./Navbar/featureCard"
-import WhoCard from "./Navbar/WhoCard"
-import LogoSlider from "./Navbar/LogoSlider"
+import FeatureCard from "./featureCard"
+import WhoCard from "./WhoCard"
+import LogoSlider from "./LogoSlider"
+import ReviewCard from "./ReviewCard"
+import Reviews from "./Reviews"
 
 const Home = () => {
   return (
@@ -28,6 +30,7 @@ const Home = () => {
         </div>
       </div>
       
+      {/* hero section */}
       <div className="py-24 flex h-[60vh] w-full px-[10%] justify-between">
         
         <div className="w-[45%] flex flex-col h-full items-center justify-center" >
@@ -62,11 +65,15 @@ const Home = () => {
 
        
       </div>
-
+      
+      {/* logoslider */}
       <LogoSlider  />
 
+      {/* Review component */}
+      <Reviews/>
     </div>
   )
 }
+
 
 export default Home
