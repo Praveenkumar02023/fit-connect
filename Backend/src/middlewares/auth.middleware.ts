@@ -31,6 +31,6 @@ export const authMiddlware : RequestHandler  =( async (req : AuthRequest,res : R
         next();
 
     } catch (error) {
-        return res.status(400).json({message : "internal server error"});
+        return res.status(400).json({message : "auth failed! internal server error"});
     }
 }) as RequestHandler
