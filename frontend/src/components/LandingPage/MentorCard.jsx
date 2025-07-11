@@ -1,6 +1,6 @@
 const MentorCard = ({ name, role, image, rating }) => (
 
-  <div className=" hover:border hover:border-black min-w-[260px] max-w-[280px] bg-white shadow rounded-xl overflow-hidden border">
+  <div className="transition-transform hover:scale-105 hover:border hover:border-black min-w-[260px] max-w-[280px] bg-white shadow rounded-xl overflow-hidden border">
     {/* Top Banner */}
     <div className="bg-violet-100 p-3 relative flex justify-between items-start">
       <span className="bg-blue-900 text-white text-xs px-2 py-1 rounded-full">Available</span>

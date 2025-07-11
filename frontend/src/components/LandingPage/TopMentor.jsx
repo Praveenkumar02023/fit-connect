@@ -91,7 +91,7 @@ const TopMentor = () => {
         {/* Cards Scroll */}
         <div
           ref={scrollRef}
-          className="flex overflow-x-auto scroll-smooth gap-4 no-scrollbar"
+          className="flex py-4 overflow-x-auto scroll-smooth gap-4 no-scrollbar"
         >
           {mentors.map((mentor, i) => (
             <MentorCard key={i} {...mentor} />

@@ -67,7 +67,13 @@ const TopCompetition = () => {
   };
 
   return (
-    <div className="pt-18 px-14 py-10 w-full">
+    <div className="relative pt-18 px-14 py-10 w-full">
+
+      <div className="inset-0 absolute" >
+         <div className=" absolute top-30 blur-3xl left-25 h-96 w-96 bg-green-100  rounded-full animate-pulse"></div>
+          <div className=" absolute  blur-3xl right-25 h-96 w-96 bg-violet-200  rounded-full animate-pulse"></div>
+      </div>
+
       {/* Header */}
       <div className="flex justify-between items-center mb-6 w-full ">
         <div className="flex flex-col items-center w-full">
@@ -81,19 +87,19 @@ const TopCompetition = () => {
       </div>
 
       {/* Arrow + Scroll Section */}
-      <div className="flex justify-center items-center">
+      <div className="relative flex justify-center items-center">
         {/* Left Arrow */}
         <div className="px-12">
           <ArrowLeft
             onClick={() => scroll("left")}
-            className="border rounded-full cursor-pointer hover:border-gray-200 hover:bg-gray-100"
+            className="relative border rounded-full cursor-pointer hover:border-gray-400 hover:bg-gray-100"
           />
         </div>
 
         {/* Scrollable Cards */}
         <div
           ref={scrollRef}
-          className="flex overflow-x-auto scroll-smooth gap-4 no-scrollbar"
+          className="py-4 relative flex overflow-x-auto scroll-smooth gap-4 no-scrollbar"
         >
           {competitions.map((comp, i) => (
             <CompetitionCard key={i} {...comp} />
@@ -104,7 +110,7 @@ const TopCompetition = () => {
         <div className="px-12">
           <ArrowRight
             onClick={() => scroll("right")}
-            className="border rounded-full cursor-pointer hover:border-gray-200 hover:bg-gray-100"
+            className="relative border rounded-full cursor-pointer hover:border-gray-200 hover:bg-gray-100"
           />
         </div>
       </div>

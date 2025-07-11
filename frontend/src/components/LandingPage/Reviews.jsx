@@ -63,15 +63,20 @@ const Reviews = () => {
 
 
   return (
-    <div className="px-14 py-24 w-full flex flex-col  items-center h-[110vh] gap-y-12 " >
+    <div className="relative px-14 py-24 w-full flex flex-col  items-center h-[110vh] gap-y-12 " >
 
-        <div className="flex flex-col items-center gap-y-4 w-[60%] text-center" >
+        <div className="inset-0 absolute" >
+         <div className=" absolute top-30 blur-3xl left-25 h-96 w-96 bg-pink-100  rounded-full animate-pulse"></div>
+          <div className=" absolute  blur-3xl bottom-5 right-25 h-96 w-96 bg-yellow-100  rounded-full animate-pulse"></div>
+      </div>
+
+        <div className="relative flex flex-col items-center gap-y-4 w-[60%] text-center" >
           <h1 className="text-black font-bold text-5xl" >Loved by the community</h1>
           <p className="text-gray-500 w-[50%] text-lg " >
             Don't take our word for it - listen to what Vite community members have to say. 
           </p>
         </div>
-        <div className="flex gap-x-6" >
+        <div className="relative flex gap-x-6" >
 
           <div  className="flex flex-col gap-y-4 pt-">
             

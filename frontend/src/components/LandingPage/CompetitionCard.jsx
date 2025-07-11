@@ -3,7 +3,7 @@ import { Eye, Users } from "lucide-react";
 
 const CompetitionCard = ({ title, organizer, tags, views, applied, image }) => {
   return (
-    <div className="min-w-[290px] max-w-[290px] h-[225px] rounded-xl bg-white border shadow-sm flex flex-col overflow-hidden relative">
+    <div className="hover:border-black hover:scale-105 transition-transform min-w-[290px] max-w-[290px] h-[225px] rounded-xl bg-white border border-gray-400 shadow-sm flex flex-col overflow-hidden relative">
       {/* Top half: image and tags */}
       <div
         className="h-[35%] relative bg-gradient-to-br from-purple-100 via-blue-100 to-blue-100"
