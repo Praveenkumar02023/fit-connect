@@ -1,42 +1,90 @@
-import React, { useRef } from 'react';
-import { KeyRoundIcon, Mail, User } from 'lucide-react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useRef } from "react";
+import { KeyRoundIcon, Mail, User } from "lucide-react";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const Signup = () => {
   const nameRef = useRef(null);
+  const firstNameRef = useRef(null);
+  const lastNameRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const genderRef = useRef(null);
   const sessionPriceRef = useRef(null);
   const monthPriceRef = useRef(null);
 
-  const { role } = useParams(); // reads role from URL like "user" or "trainer"
+  const { role } = useParams();
+
   const navigate = useNavigate();
 
-  const currentRole = role === 'trainer' ? 'Trainer' : 'User'; // fallback to User
+  const currentRole = role === "trainer" ? "Trainer" : "User"; // fallback to User
 
-  const handleSignup = () => {
-    const name = nameRef.current.value;
-    const email = emailRef.current.value;
-    const password = passwordRef.current.value;
+  const handleSignup = async () => {
+   
+    const email = emailRef.current?.value;
+    const password = passwordRef.current?.value;
+    
 
-    const data = {
-      name,
-      email,
-      password,
-      role,
-    };
+    if (currentRole === "User") {
+      const name = nameRef.current?.value;
+      const gender = genderRef.current?.value;
 
-    if (currentRole === 'User') {
-      data.gender = genderRef.current.value;
+      try {
+        const res = await axios.post(
+          "http://localhost:8001/api/v1/user/signup",
+          {
+            name: name,
+            email: email,
+            password: password,
+            gender: gender,
+          }
+        );
+
+        if (res.status != 201) {
+          toast.error("Signup failed :(");
+          return;
+        }
+
+        navigate("/Feed");
+        toast.success("Sign up successfull :)");
+      } catch (error) {
+        console.log(error);
+      }
     }
 
-    if (currentRole === 'Trainer') {
-      data.pricingPerSession = sessionPriceRef.current.value;
-      data.pricingPerMonth = monthPriceRef.current.value;
-    }
+    if (currentRole === "Trainer") {
+      const firstName = firstNameRef.current?.value;
+      const lastName = lastNameRef.current?.value;
+      const pricing_perSession = Number(sessionPriceRef.current?.value);
+      const pricing_perMonth = Number(monthPriceRef.current?.value);
 
-    console.log('Signup Info:', data);
+      try {
+        const res = await axios.post(
+          "http://localhost:8001/api/v1/trainer/signup",
+          {
+            firstName,
+            lastName ,
+            email,
+            password,
+           pricing_perSession,
+           pricing_perMonth,
+          }
+        );
+
+        console.log(res);
+
+        if (res.status != 201) {
+          toast.error("Signup failed :(");
+          return;
+        }
+
+        navigate("/Feed");
+        toast.success("Sign up successfull :)");
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   return (
@@ -54,17 +102,21 @@ const Signup = () => {
         {/* Role Toggle */}
         <div className="flex justify-center mb-4 gap-4">
           <button
-            onClick={() => navigate('/signup/user')}
+            onClick={() => navigate("/signup/user")}
             className={`px-4 py-1 rounded-full border ${
-              currentRole === 'User' ? 'bg-violet-600 text-white' : 'bg-gray-200 text-black'
+              currentRole === "User"
+                ? "bg-violet-600 text-white"
+                : "bg-gray-200 text-black"
             }`}
           >
             User
           </button>
           <button
-            onClick={() => navigate('/signup/trainer')}
+            onClick={() => navigate("/signup/trainer")}
             className={`px-4 py-1 rounded-full border ${
-              currentRole === 'Trainer' ? 'bg-violet-600 text-white' : 'bg-gray-200 text-black'
+              currentRole === "Trainer"
+                ? "bg-violet-600 text-white"
+                : "bg-gray-200 text-black"
             }`}
           >
             Trainer
@@ -76,17 +128,41 @@ const Signup = () => {
         </h1>
 
         {/* Name Input */}
-        <div className="w-[80%] mb-4">
-          <label className="text-sm flex items-center gap-1 mb-1">
-            <User className="size-4" /> Name
-          </label>
-          <input
-            ref={nameRef}
-            type="text"
-            placeholder="Name"
-            className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-500"
-          />
-        </div>
+        {currentRole === "User" && (
+          <div className="w-[80%] mb-4">
+            <label className="text-sm flex items-center gap-1 mb-1">
+              <User className="size-4" /> Name
+            </label>
+            <input
+              ref={nameRef}
+              type="text"
+              placeholder="Name"
+              className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-500"
+            />
+          </div>
+        )}
+        {currentRole === "Trainer" && (
+          <div className="w-[80%] mb-4 ">
+            <label className="text-sm flex items-center gap-1 mb-1">
+              <User className="size-4" /> FirstName
+            </label>
+            <input
+              ref={firstNameRef}
+              type="text"
+              placeholder="Name"
+              className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-500"
+            />
+            <label className="mt-3 text-sm flex items-center gap-1 mb-1">
+              <User className="size-4" /> LastName
+            </label>
+            <input
+              ref={lastNameRef}
+              type="text"
+              placeholder="Name"
+              className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-500"
+            />
+          </div>
+        )}
 
         {/* Email Input */}
         <div className="w-[80%] mb-4">
@@ -102,7 +178,7 @@ const Signup = () => {
         </div>
 
         {/* Gender for User only */}
-        {currentRole === 'User' && (
+        {currentRole === "User" && (
           <div className="w-[80%] mb-4">
             <label className="text-sm mb-1 block">Gender</label>
             <select
@@ -131,10 +207,12 @@ const Signup = () => {
         </div>
 
         {/* Extra Fields for Trainer */}
-        {currentRole === 'Trainer' && (
+        {currentRole === "Trainer" && (
           <>
             <div className="w-[80%] mb-4">
-              <label className="text-sm mb-1 block">Pricing Per Session (₹)</label>
+              <label className="text-sm mb-1 block">
+                Pricing Per Session ($)
+              </label>
               <input
                 ref={sessionPriceRef}
                 type="number"
@@ -144,7 +222,9 @@ const Signup = () => {
             </div>
 
             <div className="w-[80%] mb-4">
-              <label className="text-sm mb-1 block">Pricing Per Month (₹)</label>
+              <label className="text-sm mb-1 block">
+                Pricing Per Month ($)
+              </label>
               <input
                 ref={monthPriceRef}
                 type="number"
@@ -165,7 +245,7 @@ const Signup = () => {
 
         {/* Redirect Link */}
         <p className="text-sm mt-4">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <Link to="/signin/user" className="text-violet-600 hover:underline">
             Sign In
           </Link>

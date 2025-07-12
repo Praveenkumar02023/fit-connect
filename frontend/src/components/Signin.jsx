@@ -1,6 +1,8 @@
 import React, { useRef } from 'react';
 import { Mail, KeyRoundIcon } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import axios from "axios"
+import toast from "react-hot-toast"
 
 const Signin = () => {
   const emailRef = useRef(null);
@@ -11,13 +13,48 @@ const Signin = () => {
 
   const currentRole = role === 'trainer' ? 'Trainer' : 'User'; // default to User
 
-  const handleSignin = () => {
+  const handleSignin = async() => {
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
-    console.log(`Role: ${currentRole}`);
-    console.log('Email:', email);
-    console.log('Password:', password);
-  };
+   
+   
+
+      try {
+
+        let res ;
+
+        if(currentRole === "Trainer"){
+
+          res = await axios.post('http://localhost:8001/api/v1/trainer/signin',{
+          email :  email,
+          password : password
+        });
+      
+        }else{
+
+          res = await axios.post('http://localhost:8001/api/v1/user/signin',{
+          email :  email,
+          password : password
+        });
+        }
+        
+        if(res.status != 200){
+
+          toast.error(res.message || "something went wrong");
+          return;
+
+        }
+
+        toast.success(res.message || "signin successfull");
+
+        navigate("/Feed");
+
+      } catch (error) {
+          toast.error(error.message);
+          console.log(error);
+      } 
+
+  }
 
   return (
     <div className="relative h-screen w-screen flex items-center justify-center bg-gradient-to-br from-violet-100 via-cyan-50 to-blue-50">
