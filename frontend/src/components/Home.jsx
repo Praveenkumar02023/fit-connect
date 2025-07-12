@@ -55,13 +55,13 @@ const Home = () => {
        
         <div className="relative w-[50%]  p-12  h-full justify-center  items-center grid grid-cols-2 gap-y-4 gap-x-18 " >
                       
-            <FeatureCard title={"Trainers"} subtitle={"Training From Top Trainers."} bgColor={"bg-violet-300/80"} image={"../../public/trainer.png"} />
+            <FeatureCard title={"Trainers"} subtitle={"Training From Top Trainers."} bgColor={"bg-violet-300/80"} image={"/trainer.png"} />
             
-            <FeatureCard title={"Competitions"} subtitle={"Compete With Athletes."} bgColor={"bg-green-300/80"} image={"../../public/compete.png"} />
+            <FeatureCard title={"Competitions"} subtitle={"Compete With Athletes."} bgColor={"bg-green-300/80"} image={"compete.png"} />
             
-            <FeatureCard title={"Prizes"} subtitle={"Win By Competing."} bgColor={"bg-yellow-300/80"} image={"../../public/trophy.png"} />
+            <FeatureCard title={"Prizes"} subtitle={"Win By Competing."} bgColor={"bg-yellow-300/80"} image={"/trophy.png"} />
             
-            <FeatureCard title={"Nutrition "} subtitle={"Diets From Certified Experts."} bgColor={"bg-blue-300/80"} image={"../../public/diet.png"} />
+            <FeatureCard title={"Nutrition "} subtitle={"Diets From Certified Experts."} bgColor={"bg-blue-300/80"} image={"/diet.png"} />
 
 
         </div>

@@ -12,8 +12,8 @@ const signupValidator = z.object({
     lastName : z.string(),
     email : z.string().email(),
     password : z.string(),
-    pricing_perSession : z.number(),
-    pricing_perMonth: z.number()
+    pricing_perSession : z.coerce.number(),
+    pricing_perMonth: z.coerce.number()
 
 });
 
@@ -35,7 +35,7 @@ export const Signup = async (req: Request, res: Response): Promise<any> => {
     });
   }
 
-  const { firstName, lastName, email, password  ,pricing_perMonth , pricing_perSession } = parsed.data;
+  const { firstName, lastName, email, password  , pricing_perMonth , pricing_perSession } = parsed.data;
 
   try {
     const existingTrainer = await Trainer.findOne({ email });
