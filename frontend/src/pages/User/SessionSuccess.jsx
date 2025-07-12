@@ -25,18 +25,40 @@ const SessionSuccess = () => {
         fee: Number(searchParams.get("fee")),
       };
 
-       try {
+      try {
       const res = await axios.post(`${url}/api/v1/session/book`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (res.data.message === "session created") {
+        const sessionId = res.data.session._id;
+        const paymentPayload ={
+         amount : payload.fee,
+         purpose : "Session",
+         referenceId : sessionId,
+         method : "card",
+         transactionId : sessionId
+        }
+       await axios.post(`${url}/api/v1/payment/make-payment`, paymentPayload, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+      console.log(sessionId);
+  await axios.put(`${url}/api/v1/session/update-status/${sessionId}`, {
+      status: "confirmed",
+      paymentStatus: "success",
+    },
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+
         toast.success("Session Booked Successfully 🎉");
         setTimeout(() => {
           navigate("/user");
         }, 3500); 
       } else {
         alert("Something went wrong during booking");
+         console.error("Book session response unexpected:", res.data);
       }
     } catch (err) {
       console.error(err);

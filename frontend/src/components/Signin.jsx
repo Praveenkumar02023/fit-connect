@@ -1,18 +1,37 @@
-import React, { useRef } from 'react';
+import React, { useContext, useRef } from 'react';
 import { Mail, KeyRoundIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { StoreContext } from '../Context/StoreContext';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Signin = () => {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
+  const {url ,setToken} = useContext(StoreContext);
+  const navigate = useNavigate();
 
-  const handleSignin = () => {
+  const handleSignin = async () => {
     const email = emailRef.current.value;
     const password = passwordRef.current.value;
     console.log('Email:', email);
     console.log('Password:', password);
+    try{
+      const res = await axios.post(url + "/api/v1/user/signin" , {
+        email,
+        password
+      });
+      setToken(res.data.token);
+      localStorage.setItem('token', res.data.token);
+      alert("Signin successful!");
+      navigate('/user');
     
-  };
+    }catch (error) {
+      console.error("Signin error:", error);
+      
+    }
+  }
+  
 
   return (
     <div className="relative h-screen w-screen flex items-center justify-center bg-gradient-to-br from-violet-100 via-cyan-50 to-blue-50">

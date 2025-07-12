@@ -20,6 +20,10 @@ const bookSessionValidator = z.object({
   trainerId: z.string(),
   fee: z.number().min(0, "Fee must be a positive number"),
 });
+const updateSessionStatusValidator = z.object({
+  status: z.enum(["pending", "confirmed", "cancelled"]),
+  paymentStatus: z.enum(["pending", "success", "failed"]),
+});
 
 export const bookSession = async (
   req: Request,
@@ -184,5 +188,40 @@ export const createStripeSession = async (
   } catch (err) {
     console.error("Stripe error", err);
     res.status(500).json({ success: false, message: "Stripe session error" });
+  }
+};
+export const updateSessionStatus = async (req: Request, res: Response) : Promise<void>=> {
+  const sessionId = req.params.id;
+  const userId = (req as any).userId as string;
+
+
+  const parsed = updateSessionStatusValidator.safeParse(req.body);
+
+  if (!parsed.success) {
+    res.status(400).json({
+      message: "Invalid status values",
+      errors: parsed.error.flatten(),
+    });
+    return;
+  }
+
+  const { status, paymentStatus } = parsed.data;
+
+  try {
+    const updated = await sessionModel.updateOne(
+      { _id: sessionId, clientId: userId },
+      { status, paymentStatus }
+    );
+
+    if (!updated.matchedCount) {
+      throw new Error("Session not found");
+    }
+
+    res.status(200).json({ message: "Session status updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: (error as Error).message || "Something went wrong",
+    });
   }
 };

@@ -314,3 +314,21 @@ export const getAllParticipants = async(req : Request , res : Response) : Promis
   }
 
 }
+export const getUserRegisteredEvents = async (req: Request, res: Response): Promise<any> => {
+  const userId = (req as any).userId as string;
+  try{
+    const participations = await participantModel.find({userId});
+     if (!participations.length) {
+      return res.status(200).json({ message: "No registered events found", events: [] });
+    }
+    const eventIds = participations.map(p=>p.eventId);
+    const events = await eventModel.find({ _id: { $in: eventIds } });
+    res.status(200).json({ message: "Registered events fetched", events });
+
+  }catch(error){
+    console.log(error);
+     res.status(500).json({
+      message: (error as Error).message || "Internal server error"
+    });
+  }
+}

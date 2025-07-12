@@ -14,6 +14,8 @@ import UserLayout from './pages/User/UserLayout';
 import ViewSubscriptions from './pages/User/ViewSubscriptions';
 import UpdateProfile from './pages/User/UserProfile';
 import SessionSuccess from './pages/User/SessionSuccess';
+import Payment from './pages/User/Payment';
+import MyEvents from './pages/User/MyEvents';
 
 function App() {
   return (
@@ -30,6 +32,8 @@ function App() {
           <Route path="bookSessions" element={<BookSessions />} />
           <Route path="subscriptions" element={<ViewSubscriptions />} />
           <Route path="profile" element={<UpdateProfile />} />
+          <Route path="payments" element={<Payment/>} />
+          <Route path = "events" element ={<MyEvents />} />
         </Route>
          <Route path="/session-success" element={<SessionSuccess />} />
       </Routes>
