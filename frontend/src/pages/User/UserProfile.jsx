@@ -26,16 +26,13 @@ const UpdateProfile = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-6">
-      {/* Top Bar */}
-      <div className="flex items-center mb-6">
-        <button onClick={() => navigate("/user")} className="text-lg mr-2">
-          ←
-        </button>
-        <h2 className="text-xl font-semibold">Update Profile</h2>
+       <div className="flex items-center mb-6">
       </div>
 
+      
+
       {/* Form Card */}
-      <div className="max-w-xl mx-auto bg-white shadow-lg rounded-2xl p-8">
+      <div className="max-w-xl mx-auto bg-white shadow-lg rounded-2xl p-8 ">
         <div className="flex flex-col items-center mb-6">
           <div className="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center text-white text-2xl">
             <FaUser />

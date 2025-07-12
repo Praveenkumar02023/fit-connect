@@ -8,6 +8,7 @@ import { sessionRouter } from "./routes/session.routes";
 import { eventRouter } from "./routes/event.routes";
 import { paymentRouter } from "./routes/payment.routes";
 import { subscriptionRouter } from "./routes/subscription.routes";
+import cors from "cors";
 
 
 dotenv.config()
@@ -16,6 +17,8 @@ const app = express();
 const PORT  = process.env.PORT;
 
 app.use(express.json());
+app.use(cors());
+
 
 //routes
 app.use('/api/v1/user',userRouter);
