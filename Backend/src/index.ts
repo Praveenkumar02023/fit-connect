@@ -8,7 +8,8 @@ import { sessionRouter } from "./routes/session.routes";
 import { eventRouter } from "./routes/event.routes";
 import { paymentRouter } from "./routes/payment.routes";
 import { subscriptionRouter } from "./routes/subscription.routes";
-import cors from "cors";
+
+import cors from "cors"
 
 
 dotenv.config()
