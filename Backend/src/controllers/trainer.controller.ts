@@ -15,8 +15,6 @@ const signupValidator = z.object({
 
     pricing_perSession : z.coerce.number(),
     pricing_perMonth: z.coerce.number()
-
-
 });
 
 const signinValidator = z.object({
@@ -60,7 +58,6 @@ export const Signup = async (req: Request, res: Response): Promise<any> => {
       password: hashedPassword,
       pricing_perMonth,
       pricing_perSession,
-      speciality
     });
 
     const token = jwt.sign({ userId: newTrainer._id }, process.env.JWT_SECRET!, { expiresIn: "1d" });
