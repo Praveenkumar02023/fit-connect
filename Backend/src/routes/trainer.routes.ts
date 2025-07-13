@@ -14,5 +14,5 @@ trainerRouter.post('/signin',Signin);
 trainerRouter.patch('/update',authMiddlware,updateTrainerProfile)
 trainerRouter.get('/sessions',authMiddlware,getTrainerSessions);
 
-trainerRouter.get('/:id',authMiddlware,getTrainerById);
+trainerRouter.get('/:id' ,getTrainerById);
 trainerRouter.get("/", getAllTrainers);

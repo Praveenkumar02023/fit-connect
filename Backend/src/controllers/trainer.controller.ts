@@ -109,7 +109,7 @@ export const Signin = async (req: Request, res: Response): Promise<any> => {
 };
 
 export const getTrainerById = async (req: Request, res: Response) : Promise<any> => {
-  const trainerId = (req as any).userId as string;
+  const trainerId = req.params.id;
 
   if (!trainerId) {
     return res.status(400).json({ message: "User ID not provided" });
