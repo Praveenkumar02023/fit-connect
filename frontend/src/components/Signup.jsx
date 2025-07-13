@@ -13,10 +13,9 @@ const Signup = () => {
   const emailRef = useRef(null);
   const genderRef = useRef(null);
   const passwordRef = useRef(null);
-
-  const genderRef = useRef(null);
   const sessionPriceRef = useRef(null);
   const monthPriceRef = useRef(null);
+
 
   const { role } = useParams();
 

@@ -1,19 +1,15 @@
-import React, { useContext, useRef } from 'react';
+;
 import { Mail, KeyRoundIcon } from 'lucide-react';
 
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from "axios"
 import toast from "react-hot-toast"
-
+import { useRef } from 'react';
 
 const Signin = () => {
-  const emailRef = useRef(null);
-  const passwordRef = useRef(null);
-  const {url ,setToken} = useContext(StoreContext);
-  const navigate = useNavigate();
-
-
-  const { role } = useParams(); // Get 'user' or 'trainer' from URL
+  const emailRef = useRef(null)
+  const passwordRef = useRef(null)
+  const { role } = useParams(); 
   const navigate = useNavigate();
 
   const currentRole = role === 'trainer' ? 'Trainer' : 'User'; // default to User
@@ -52,7 +48,7 @@ const Signin = () => {
 
         toast.success(res.message || "signin successfull");
 
-        navigate("/Feed");
+        navigate("/user/Feed");
 
       } catch (error) {
           toast.error(error.message);
