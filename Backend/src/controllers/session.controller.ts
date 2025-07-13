@@ -2,14 +2,27 @@ import { Request, Response } from "express";
 import { z } from "zod";
 import { Trainer } from "../models/trainer.model";
 import { sessionModel } from "../models/training_session.model";
+import mongoose from "mongoose";
+import Stripe from "stripe";
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+if (!stripeSecretKey) {
+  throw new Error("STRIPE_SECRET_KEY environment variable is not set.");
+}
+const stripe = new Stripe(stripeSecretKey);
+const frontend_url = "http://localhost:5173";
 
 const bookSessionValidator = z.object({
-  type: z.enum(["online", "offline"]),
+  type: z.string(),
   scheduledAt: z.string().refine((val) => !isNaN(Date.parse(val)), {
     message: "Invalid date format",
   }),
   duration: z.number().min(15).max(180), // duration in minutes
   trainerId: z.string(),
+  fee: z.number().min(0, "Fee must be a positive number"),
+});
+const updateSessionStatusValidator = z.object({
+  status: z.enum(["pending", "confirmed", "cancelled"]),
+  paymentStatus: z.enum(["pending", "success", "failed"]),
 });
 
 export const bookSession = async (
@@ -27,7 +40,7 @@ export const bookSession = async (
     });
   }
 
-  const { type, scheduledAt, duration, trainerId } = parsed.data;
+  const { type, scheduledAt, duration, trainerId, fee } = parsed.data;
 
   try {
     const trainer = await Trainer.findOne({ _id: trainerId });
@@ -36,7 +49,6 @@ export const bookSession = async (
       throw new Error("Trainer not found");
     }
 
-    const fee = trainer.pricing_perSession;
 
     const session = await sessionModel.create({
       type,
@@ -48,6 +60,7 @@ export const bookSession = async (
       paymentStatus: "pending",
       status: "pending",
     });
+
 
     if (!session) {
       throw new Error("Error creating session");
@@ -139,3 +152,76 @@ export const getAllSession = async(req : Request,res : Response)=>{
   }
 
 }
+export const createStripeSession = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { type, scheduledAt, duration, trainerId, fee } = req.body;
+    const userId = (req as any).userId;
+
+    if (!type || !scheduledAt || !duration || !trainerId || !fee) {
+      res.status(400).json({ success: false, message: "Missing fields" });
+      return;
+    }
+
+    const stripeSession = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: "inr",
+            product_data: {
+              name: `${type} Session with Trainer`,
+            },
+            unit_amount: Math.round(fee * 100), // in paise
+          },
+          quantity: 1,
+        },
+      ],
+      mode: "payment",
+      success_url: `${frontend_url}/session-success?success=true&type=${type}&scheduledAt=${scheduledAt}&duration=${duration}&trainerId=${trainerId}&fee=${fee}`,
+      cancel_url: `${frontend_url}/session-success?success=false`,
+    });
+
+    res.json({ success: true, sessionurl: stripeSession.url });
+  } catch (err) {
+    console.error("Stripe error", err);
+    res.status(500).json({ success: false, message: "Stripe session error" });
+  }
+};
+export const updateSessionStatus = async (req: Request, res: Response) : Promise<void>=> {
+  const sessionId = req.params.id;
+  const userId = (req as any).userId as string;
+
+
+  const parsed = updateSessionStatusValidator.safeParse(req.body);
+
+  if (!parsed.success) {
+    res.status(400).json({
+      message: "Invalid status values",
+      errors: parsed.error.flatten(),
+    });
+    return;
+  }
+
+  const { status, paymentStatus } = parsed.data;
+
+  try {
+    const updated = await sessionModel.updateOne(
+      { _id: sessionId, clientId: userId },
+      { status, paymentStatus }
+    );
+
+    if (!updated.matchedCount) {
+      throw new Error("Session not found");
+    }
+
+    res.status(200).json({ message: "Session status updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: (error as Error).message || "Something went wrong",
+    });
+  }
+};

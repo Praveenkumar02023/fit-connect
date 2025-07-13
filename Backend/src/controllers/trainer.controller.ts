@@ -12,8 +12,10 @@ const signupValidator = z.object({
     lastName : z.string(),
     email : z.string().email(),
     password : z.string(),
+
     pricing_perSession : z.coerce.number(),
     pricing_perMonth: z.coerce.number()
+
 
 });
 
@@ -35,7 +37,10 @@ export const Signup = async (req: Request, res: Response): Promise<any> => {
     });
   }
 
+
+
   const { firstName, lastName, email, password  , pricing_perMonth , pricing_perSession } = parsed.data;
+
 
   try {
     const existingTrainer = await Trainer.findOne({ email });
@@ -54,7 +59,8 @@ export const Signup = async (req: Request, res: Response): Promise<any> => {
       email,
       password: hashedPassword,
       pricing_perMonth,
-      pricing_perSession
+      pricing_perSession,
+      speciality
     });
 
     const token = jwt.sign({ userId: newTrainer._id }, process.env.JWT_SECRET!, { expiresIn: "1d" });
@@ -107,7 +113,7 @@ export const Signin = async (req: Request, res: Response): Promise<any> => {
 };
 
 export const getTrainerById = async (req: Request, res: Response) : Promise<any> => {
-  const trainerId = (req as any).userId as string;
+  const trainerId = req.params.id;
 
   if (!trainerId) {
     return res.status(400).json({ message: "User ID not provided" });
@@ -175,4 +181,14 @@ export const updateTrainerProfile = async(req : Request,res : Response) : Promis
 
   }
 
+
 }
+export const getAllTrainers = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const trainers = await Trainer.find().select("-password"); 
+    res.status(200).json({ trainers });
+  } catch (error) {
+    console.error("Error fetching trainers:", error);
+    res.status(500).json({ message: "Failed to fetch trainers" });
+  }
+};

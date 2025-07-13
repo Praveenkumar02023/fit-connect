@@ -1,12 +1,17 @@
-import React, { useRef } from 'react';
+import React, { useContext, useRef } from 'react';
 import { Mail, KeyRoundIcon } from 'lucide-react';
+
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from "axios"
 import toast from "react-hot-toast"
 
+
 const Signin = () => {
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
+  const {url ,setToken} = useContext(StoreContext);
+  const navigate = useNavigate();
+
 
   const { role } = useParams(); // Get 'user' or 'trainer' from URL
   const navigate = useNavigate();
@@ -55,6 +60,7 @@ const Signin = () => {
       } 
 
   }
+
 
   return (
     <div className="relative h-screen w-screen flex items-center justify-center bg-gradient-to-br from-violet-100 via-cyan-50 to-blue-50">

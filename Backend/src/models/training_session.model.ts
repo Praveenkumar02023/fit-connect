@@ -16,7 +16,7 @@ interface sessionTypes extends Document{
 
 const sessionSchema = new Schema<sessionTypes>({
 
-    type : {required : true, type : String , enum : ['online' , 'offline']},
+    type : {required : true, type : String },
     scheduledAt : {type : Date , required : true},
     duration : {type : Number},
     status : {type : String , enum : ['pending','confirmed','cancelled']},
