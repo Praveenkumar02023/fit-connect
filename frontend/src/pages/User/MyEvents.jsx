@@ -38,7 +38,9 @@ const MyEvents = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-       toast.success("Your session has been cancelled successfully. Refund will be processed soon.");
+      toast.success(
+        "Your session has been cancelled successfully. Refund will be processed soon."
+      );
       fetchRegisteredEvents();
     } catch (err) {
       console.error("Failed to cancel", err);
@@ -57,31 +59,36 @@ const MyEvents = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#f9fafb] px-6 py-12">
-        <ToastContainer position="top-right" autoClose={3000} />
+    <div className="min-h-screen bg-gradient-to-b from-blue-100 via-white to-blue-50 px-6 py-12">
+      <ToastContainer position="top-right" autoClose={3000} />
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold mb-2">My Events</h1>
-        <p className="text-gray-500 mb-6">
-          View and manage your registered fitness events
-        </p>
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-400 text-white rounded-xl shadow-lg p-8 mb-10">
+          <h1 className="text-4xl font-bold mb-2">🏋‍♂ My Events</h1>
+          <p className="text-blue-100 text-lg">
+            View and manage your registered fitness events
+          </p>
+        </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        {/* Filters */}
+        <div className="flex flex-col sm:flex-row gap-4 mb-8">
           <input
             type="text"
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
             placeholder="Search by type (e.g., Boxing)"
-            className="border px-4 py-2 rounded-lg w-full"
+            className="border border-blue-300 focus:ring-2 focus:ring-blue-500 focus:outline-none px-4 py-2 rounded-lg w-full shadow-sm transition-all duration-200"
           />
           <input
             type="text"
             value={locationFilter}
             onChange={(e) => setLocationFilter(e.target.value)}
             placeholder="Search by location (e.g., Mumbai)"
-            className="border px-4 py-2 rounded-lg w-full"
+            className="border border-blue-300 focus:ring-2 focus:ring-blue-500 focus:outline-none px-4 py-2 rounded-lg w-full shadow-sm transition-all duration-200"
           />
         </div>
 
+        {/* Event Cards */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredEvents.length === 0 ? (
             <p className="col-span-full text-center text-gray-500">

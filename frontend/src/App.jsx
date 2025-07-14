@@ -18,6 +18,7 @@ import Payment from './pages/User/Payment';
 import MyEvents from './pages/User/MyEvents';
 import { Toaster } from 'react-hot-toast';
 import Feed from "./components/Feed"
+import BuySubscription from './pages/User/BuySubscription';
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
         {/* Redirects to default 'user' role */}
         <Route path="/signup" element={<Navigate to="/signup/user" />} />
         <Route path="/signin" element={<Navigate to="/signin/user" />} />
+        <Route path = "/user/buySubscription" element = {<BuySubscription />} />
 
       </Routes>
     </Router>

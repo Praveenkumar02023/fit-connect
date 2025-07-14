@@ -4,13 +4,15 @@ import { Mail, KeyRoundIcon } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from "axios"
 import toast from "react-hot-toast"
-import { useRef } from 'react';
+import { useRef, useContext  } from 'react';
+import {StoreContext} from '../Context/StoreContext';
 
 const Signin = () => {
   const emailRef = useRef(null)
   const passwordRef = useRef(null)
   const { role } = useParams(); 
   const navigate = useNavigate();
+  const {url , setToken} = useContext(StoreContext);
 
   const currentRole = role === 'trainer' ? 'Trainer' : 'User'; // default to User
 
@@ -26,14 +28,14 @@ const Signin = () => {
 
         if(currentRole === "Trainer"){
 
-          res = await axios.post('http://localhost:8001/api/v1/trainer/signin',{
+          res = await axios.post(`${url}/api/v1/trainer/signin`,{
           email :  email,
           password : password
         });
       
         }else{
 
-          res = await axios.post('http://localhost:8001/api/v1/user/signin',{
+          res = await axios.post(`${url}/api/v1/user/signin`,{
           email :  email,
           password : password
         });
@@ -45,7 +47,7 @@ const Signin = () => {
           return;
 
         }
-
+        setToken(res.data.token);
         toast.success(res.message || "signin successfull");
 
         navigate("/user/Feed");
