@@ -108,7 +108,7 @@ const Dashboard = () => {
           </button>
           <button
             className="w-full bg-white border border-blue-600 text-blue-600 text-lg font-semibold py-3 px-4 rounded-lg hover:bg-blue-50 transition"
-            onClick={() => navigate("/subscription")}
+            onClick={() => navigate("/user/buySubscription")}
           >
             Buy Subscription
           </button>

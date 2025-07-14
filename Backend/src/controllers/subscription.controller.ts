@@ -2,15 +2,25 @@ import { Request, Response } from 'express';
 import {z} from 'zod'
 import { Trainer } from '../models/trainer.model';
 import { subscriptionModel } from '../models/subscription.model';
+import Stripe from 'stripe';
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+if (!stripeSecretKey) {
+  throw new Error("STRIPE_SECRET_KEY environment variable is not set.");
+}
+const stripe = new Stripe(stripeSecretKey);
+const frontend_url = "http://localhost:5173";
+
 
 const subscriptionValdidator = z.object({
     trainerId : z.string(),
-    paymentId : z.string(),
 });
 
+
 export const createSubscription = async(req : Request , res : Response) : Promise<any> =>{
+   
 
     const parsed = subscriptionValdidator.safeParse(req.body);
+    console.log(parsed.data);
 
     if(!parsed.success){
 
@@ -19,7 +29,6 @@ export const createSubscription = async(req : Request , res : Response) : Promis
     }
 
     const trainerId = parsed.data.trainerId;
-    const paymentId = parsed.data.paymentId;
     const userId = (req as any).userId as string;
     try {
         
@@ -40,7 +49,7 @@ export const createSubscription = async(req : Request , res : Response) : Promis
             trainerId : trainerId,
             userId,
             amount,
-            paymentId,
+            paymentId : userId ,
             startDate,
             endDate,
             isActive : true
@@ -140,3 +149,50 @@ export const getAllSubscription = async(req : Request , res : Response) : Promis
     }
 
 }
+export const createStripeSession = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = (req as any).userId;
+    const { trainerId } = req.body;
+
+    if (!trainerId) {
+      res.status(400).json({ success: false, message: "Trainer ID is required" });
+      return;
+    }
+
+    const trainer = await Trainer.findById(trainerId);
+    if (!trainer) {
+      res.status(404).json({ success: false, message: "Trainer not found" });
+      return;
+    }
+
+    const amount = trainer.pricing_perMonth;
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "inr",
+            product_data: {
+              name: `1-Month Subscription with ${trainer.firstName}`,
+              description: `Specialty: ${trainer.speciality}`,
+            },
+            unit_amount: amount * 100, // Convert to paise
+          },
+          quantity: 1,
+        },
+      ],
+      mode: "payment",
+      success_url: `${frontend_url}/subscription-success?success=true&trainerId=${trainerId}&userId=${userId}&purpose=subscription&amount=${amount}`,
+
+      cancel_url: `${frontend_url}/subscription-success?success=false`
+    });
+
+    res.status(200).json({ success: true, sessionurl: session.url });
+  } catch (err) {
+    console.error("Stripe error", err);
+    res.status(500).json({ success: false, message: "Stripe session error" });
+  }
+};

@@ -217,3 +217,23 @@ export const getUserSessions = async(req : Request,res : Response) =>{
   }
 
 }
+export const getUsersById = async (req: Request, res: Response) : Promise<any> => {
+  const userId = (req as any).userId as string;
+
+  if (!userId) {
+    return res.status(400).json({ message: "User ID not provided" });
+  }
+
+  try {
+    const user = await userModel.findById(userId).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
