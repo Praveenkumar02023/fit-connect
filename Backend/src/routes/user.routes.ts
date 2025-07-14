@@ -11,4 +11,4 @@ userRouter.delete('/delete',authMiddlware,deleteUser);
 
 //sessions
 userRouter.get('/sessions',authMiddlware,getUserSessions);
-userRouter.get('/:id',authMiddlware,getUserById);
+userRouter.get('/profile',authMiddlware,getUserById);
