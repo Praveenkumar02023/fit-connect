@@ -154,7 +154,11 @@ export const updateTrainerProfile = async(req : Request,res : Response) : Promis
 
   const {password} = parsed.data;
 
-  
+  if(req.file?.path){
+
+    (parsed.data as any).avatar = req.file.path;
+
+  }
 
   try {
 

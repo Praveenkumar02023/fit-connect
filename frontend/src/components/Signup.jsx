@@ -1,9 +1,10 @@
-
-import { useRef } from "react";
+import { useRef , useContext} from "react";
 import { KeyRoundIcon, Mail, User } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { StoreContext } from "../Context/StoreContext";
+
 
 
 const Signup = () => {
@@ -21,6 +22,7 @@ const Signup = () => {
 
 
   const navigate = useNavigate();
+  const {url , setToken} = useContext(StoreContext);
 
   const currentRole = role === "trainer" ? "Trainer" : "User"; // fallback to User
 
@@ -36,7 +38,7 @@ const Signup = () => {
 
       try {
         const res = await axios.post(
-          "http://localhost:8001/api/v1/user/signup",
+          `${url}/api/v1/user/signup`,
           {
             name: name,
             email: email,
@@ -65,7 +67,7 @@ const Signup = () => {
 
       try {
         const res = await axios.post(
-          "http://localhost:8001/api/v1/trainer/signup",
+         `${url}/api/v1/trainer/signup`,
           {
             firstName,
             lastName ,
@@ -84,6 +86,7 @@ const Signup = () => {
         }
 
         navigate("/Feed");
+        setToken(res.data.token);
         toast.success("Sign up successfull :)");
       } catch (error) {
         console.log(error);

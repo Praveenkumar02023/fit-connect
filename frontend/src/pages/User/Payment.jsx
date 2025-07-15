@@ -25,7 +25,6 @@ const Payment = () => {
         const enriched = await Promise.all(
           basePayments.map(async (p) => {
             try {
-              // SESSION PAYMENT ENRICHMENT
               if (p.purpose === "Session") {
                 const sessionRes = await axios.get(`${url}/api/v1/session/${p.referenceId}`, {
                   headers: { Authorization: `Bearer ${token}` },
@@ -53,7 +52,6 @@ const Payment = () => {
                 };
               }
 
-              // SUBSCRIPTION PAYMENT ENRICHMENT
               if (p.purpose === "Subscription") {
                 const subRes = await axios.get(`${url}/api/v1/subscription/${p.referenceId}`, {
                   headers: { Authorization: `Bearer ${token}` },
@@ -71,7 +69,6 @@ const Payment = () => {
                 };
               }
 
-              // EVENT PAYMENT ENRICHMENT
               if (p.purpose === "Event") {
                 const eventRes = await axios.get(`${url}/api/v1/event/${p.referenceId}`, {
                   headers: { Authorization: `Bearer ${token}` },
@@ -120,113 +117,118 @@ const Payment = () => {
   );
 
   return (
-    <div className="px-6 py-10 min-h-screen bg-gray-50">
-      <h1 className="text-3xl font-bold mb-2">Payment History</h1>
-      <p className="text-gray-500 mb-8">Track all your session, event, and subscription payments</p>
+    <div className="min-h-screen px-6 py-10 bg-gray-50">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="mb-10">
+          <h1 className="text-3xl font-bold text-black mb-2">Payment History</h1>
+          <p className="text-gray-600">Track all your session, event, and subscription payments</p>
+        </div>
 
-      {/* Summary Cards */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-        <div className="bg-white p-6 rounded-xl shadow flex items-center gap-3">
-          <CreditCard className="text-green-600" />
-          <div>
-            <p className="text-sm text-gray-500 mb-1">Total Spent</p>
-            <h2 className="text-2xl font-bold text-green-600">₹{totalSpent}</h2>
+        {/* Summary Cards */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          <div className="bg-[#e6f4ea] p-6 rounded-xl shadow-md flex items-center gap-4">
+            <CreditCard className="text-green-700" />
+            <div>
+              <p className="text-sm text-gray-600">Total Spent</p>
+              <h2 className="text-2xl font-bold text-green-800">₹{totalSpent}</h2>
+            </div>
+          </div>
+          <div className="bg-[#e7f0ff] p-6 rounded-xl shadow-md flex items-center gap-4">
+            <User className="text-blue-700" />
+            <div>
+              <p className="text-sm text-gray-600">Sessions</p>
+              <h2 className="text-xl font-semibold text-blue-800">
+                {sessionPayments.length} | ₹{sessionPayments.reduce((a, b) => a + b.amount, 0)}
+              </h2>
+            </div>
+          </div>
+          <div className="bg-[#fff2e7] p-6 rounded-xl shadow-md flex items-center gap-4">
+            <Calendar className="text-orange-700" />
+            <div>
+              <p className="text-sm text-gray-600">Events</p>
+              <h2 className="text-xl font-semibold text-orange-800">
+                {eventPayments.length} | ₹{eventPayments.reduce((a, b) => a + b.amount, 0)}
+              </h2>
+            </div>
+          </div>
+          <div className="bg-[#ede7f6] p-6 rounded-xl shadow-md flex items-center gap-4">
+            <User className="text-purple-700" />
+            <div>
+              <p className="text-sm text-gray-600">Subscriptions</p>
+              <h2 className="text-xl font-semibold text-purple-800">
+                {subscriptionPayments.length} | ₹{subscriptionPayments.reduce((a, b) => a + b.amount, 0)}
+              </h2>
+            </div>
           </div>
         </div>
-        <div className="bg-white p-6 rounded-xl shadow flex items-center gap-3">
-          <User />
-          <div>
-            <p className="text-sm text-gray-500 mb-1">Sessions</p>
-            <h2 className="text-xl font-semibold">
-              {sessionPayments.length} | ₹{sessionPayments.reduce((a, b) => a + b.amount, 0)}
-            </h2>
-          </div>
+
+        {/* Search Box */}
+        <div className="relative mb-10">
+          <Search className="absolute top-3.5 left-3 text-gray-400" size={18} />
+          <input
+            type="text"
+            placeholder="Search by trainer, session type, or event name..."
+            className="border pl-10 pr-4 py-2 rounded-lg w-full shadow-sm focus:ring-2 focus:ring-blue-300 focus:outline-none"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+          />
         </div>
-        <div className="bg-white p-6 rounded-xl shadow flex items-center gap-3">
-          <Calendar />
+
+        {/* Sectioned Payment Lists */}
+        <section className="space-y-10">
+          {/* Sessions */}
           <div>
-            <p className="text-sm text-gray-500 mb-1">Events</p>
-            <h2 className="text-xl font-semibold">
-              {eventPayments.length} | ₹{eventPayments.reduce((a, b) => a + b.amount, 0)}
-            </h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Session Payments</h2>
+            <div className="grid gap-6">
+              {filteredSessions.map((p) => (
+                <PaymentCard
+                  key={p._id}
+                  title={p.sessionType}
+                  name={p.sessionTrainerName}
+                  date={p.createdAt}
+                  amount={p.amount}
+                  transactionId={p.transactionId}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-        <div className="bg-white p-6 rounded-xl shadow flex items-center gap-3">
-          <User className="text-indigo-600" />
+
+          {/* Events */}
           <div>
-            <p className="text-sm text-gray-500 mb-1">Subscriptions</p>
-            <h2 className="text-xl font-semibold">
-              {subscriptionPayments.length} | ₹{subscriptionPayments.reduce((a, b) => a + b.amount, 0)}
-            </h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Event Payments</h2>
+            <div className="grid gap-6">
+              {filteredEvents.map((p) => (
+                <PaymentCard
+                  key={p._id}
+                  title={p.eventName}
+                  name="Event Organizer"
+                  date={p.createdAt}
+                  amount={p.amount}
+                  transactionId={p.transactionId}
+                />
+              ))}
+            </div>
           </div>
-        </div>
+
+          {/* Subscriptions */}
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Subscription Payments</h2>
+            <div className="grid gap-6">
+              {filteredSubscriptions.map((p) => (
+                <PaymentCard
+                  key={p._id}
+                  title="Trainer Subscription"
+                  name={p.subscriptionTrainerName}
+                  date={p.createdAt}
+                  amount={p.amount}
+                  transactionId={p.transactionId}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
       </div>
-
-      {/* Search Box */}
-      <div className="relative mb-10">
-        <Search className="absolute top-3.5 left-3 text-gray-400" size={18} />
-        <input
-          type="text"
-          placeholder="Search by trainer, session type, or event name..."
-          className="border pl-10 pr-4 py-2 rounded-lg w-full shadow-sm"
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-        />
-      </div>
-
-      {/* Sectioned Payment Lists */}
-      <section className="space-y-10">
-        {/* Sessions */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Session Payments</h2>
-          <div className="grid gap-6">
-            {filteredSessions.map((p) => (
-              <PaymentCard
-                key={p._id}
-                title={p.sessionType}
-                name={p.sessionTrainerName}
-                date={p.createdAt}
-                amount={p.amount}
-                transactionId={p.transactionId}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Events */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Event Payments</h2>
-          <div className="grid gap-6">
-            {filteredEvents.map((p) => (
-              <PaymentCard
-                key={p._id}
-                title={p.eventName}
-                name="Event Organizer"
-                date={p.createdAt}
-                amount={p.amount}
-                transactionId={p.transactionId}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Subscriptions */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Subscription Payments</h2>
-          <div className="grid gap-6">
-            {filteredSubscriptions.map((p) => (
-              <PaymentCard
-                key={p._id}
-                title="Trainer Subscription"
-                name={p.subscriptionTrainerName}
-                date={p.createdAt}
-                amount={p.amount}
-                transactionId={p.transactionId}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
     </div>
   );
 };

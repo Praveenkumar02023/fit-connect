@@ -10,8 +10,8 @@ interface EventTypes extends Document{
     prizePool? : number,
     status : string,
     registrationFee? : number,
-    date : Date 
-
+    date : Date,
+    avatar : string
 }
 
 const eventSchema = new Schema<EventTypes>({
@@ -29,7 +29,8 @@ const eventSchema = new Schema<EventTypes>({
     prizePool : {type : Number },
     status : {type : String , required : true},
     registrationFee : {type : Number },
-    date : {type : Date , required : true}
+    date : {type : Date , required : true},
+    avatar : {type : String,required : true}
 
 },{timestamps : true});
 
