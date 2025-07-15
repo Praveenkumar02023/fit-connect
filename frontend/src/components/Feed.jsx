@@ -165,19 +165,22 @@ const Feed = () => {
                           Upcoming
                         </span>
                       )}
-                      {event.avatar ? (
+                      <div className="w-full flex items-center justify-center-safe" >
+                        {event.avatar ? (
                        <img
-                        src={event.avatar}
-                        alt="Event"
-                        className="h-32 w-full object-cover rounded bg-gray-100"
-                      /> 
+                          src={event.avatar}
+                          alt="Event"
+                          className="object-cover rounded-md bg-gray-100"
+                        />
+
                       ) : (
                         <img
                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0ZcnsKC3iF9pB8_po80WXkn7h_3fd2bNx-Rq9T6B_mCx3IDZsdPjG8qNYt0pPC_YhJEA&usqp=CAU"
                         alt="Event"
-                        className="h-32 w-full object-cover rounded bg-gray-100"
+                        className="h-32 object-cover rounded bg-gray-100"
                       />
                       )}
+                      </div>
                     </div>
 
                     <h3 className="font-semibold text-blue-600">
@@ -228,19 +231,22 @@ const Feed = () => {
                           Ongoing
                         </span>
                       )}
-                      {event.avatar ? (
+                      <div className="w-full flex items-center justify-center-safe" >
+                        {event.avatar ? (
                        <img
-                        src={event.avatar}
-                        alt="Event"
-                        className="h-32 w-full object-cover rounded bg-gray-100"
-                      /> 
+                          src={event.avatar}
+                          alt="Event"
+                          className="object-cover rounded-md bg-gray-100"
+                        />
+
                       ) : (
                         <img
                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0ZcnsKC3iF9pB8_po80WXkn7h_3fd2bNx-Rq9T6B_mCx3IDZsdPjG8qNYt0pPC_YhJEA&usqp=CAU"
                         alt="Event"
-                        className="h-32 w-full object-cover rounded bg-gray-100"
+                        className="h-32 object-cover rounded bg-gray-100"
                       />
                       )}
+                      </div>
                     </div>
 
                     <h3 className="font-semibold text-blue-600">
