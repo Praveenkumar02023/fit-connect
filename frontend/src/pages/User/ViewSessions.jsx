@@ -8,14 +8,13 @@ import {
   Clock,
   IndianRupee,
   User,
-  Search
+  Search,
 } from 'lucide-react';
 import 'react-toastify/dist/ReactToastify.css';
 
 const ViewSessions = () => {
   const { url, token } = useContext(StoreContext);
   const [sessions, setSessions] = useState([]);
-  const [filteredSessions, setFilteredSessions] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
   const fetchSessions = async () => {
@@ -43,7 +42,6 @@ const ViewSessions = () => {
       );
 
       setSessions(sessionsWithTrainer);
-      setFilteredSessions(sessionsWithTrainer);
     } catch (error) {
       console.log('Error in fetching sessions', error);
     }
@@ -73,12 +71,17 @@ const ViewSessions = () => {
     fetchSessions();
   }, []);
 
-  // Filter logic
-  
+  const filteredSessions = sessions.filter((session) => {
+    return (
+      session.type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      session.trainerName?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#ffffff]">
       <ToastContainer />
-      
+
       {/* Header */}
       <div className="bg-blue-600 py-6 px-4 sm:px-10 shadow-md">
         <h1 className="text-3xl font-bold text-white text-center">Sessions You Have Booked</h1>
@@ -114,10 +117,15 @@ const ViewSessions = () => {
                   <BadgeCheck className="h-5 w-5 bg-blue-100 p-1 rounded-full" />
                   {session.type}
                 </div>
-                <span className={`text-xs font-medium px-3 py-1 rounded-full uppercase 
-                  ${session.status === 'completed' ? 'bg-green-100 text-green-700' :
-                    session.status === 'cancelled' ? 'bg-red-100 text-red-700' :
-                      'bg-yellow-100 text-yellow-800'}`}>
+                <span
+                  className={`text-xs font-medium px-3 py-1 rounded-full uppercase 
+                    ${session.status === 'completed'
+                      ? 'bg-green-100 text-green-700'
+                      : session.status === 'cancelled'
+                      ? 'bg-red-100 text-red-700'
+                      : 'bg-yellow-100 text-yellow-800'
+                    }`}
+                >
                   {session.status}
                 </span>
               </div>
@@ -125,28 +133,34 @@ const ViewSessions = () => {
               {/* Trainer */}
               <div className="flex items-center text-gray-600 text-sm mb-2">
                 <User className="h-4 w-4 mr-2 text-gray-500" />
-                <span><strong>Trainer:</strong> {session.trainerName}</span>
+                <span>
+                  <strong>Trainer:</strong> {session.trainerName}
+                </span>
               </div>
 
               {/* Duration */}
               <div className="flex items-center text-gray-600 text-sm mb-2">
                 <Clock className="h-4 w-4 mr-2 text-gray-500" />
-                <span><strong>Duration:</strong> {session.duration} mins</span>
+                <span>
+                  <strong>Duration:</strong> {session.duration} mins
+                </span>
               </div>
 
               {/* Scheduled Date & Time */}
               <div className="flex items-center text-gray-600 text-sm mb-2">
                 <CalendarDays className="h-4 w-4 mr-2 text-gray-500" />
                 <span>
-                  <strong>Scheduled at:</strong>{' '}
-                  {new Date(session.date).toLocaleDateString()} {session.time}
+                  <strong>Scheduled at:</strong>{" "}
+                    {new Date(session.scheduledAt).toLocaleString()}
                 </span>
               </div>
 
               {/* Fee */}
               <div className="flex items-center text-gray-600 text-sm mb-2">
                 <IndianRupee className="h-4 w-4 mr-2 text-gray-500" />
-                <span><strong>Paid:</strong> ₹{session.fee}</span>
+                <span>
+                  <strong>Paid:</strong> ₹{session.fee}
+                </span>
               </div>
 
               {/* Cancel Button */}
