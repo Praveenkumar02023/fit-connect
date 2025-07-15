@@ -5,36 +5,62 @@ import { participantModel } from "../models/event_participant.model";
 
 
 const createEventValidator = z.object({
+  title: z.string(),
+  description: z.string().optional(),
+  type: z.string().optional(),
+  location: z.string(),
 
-    title : z.string(),
-    description : z.string().optional(),
-    type : z.string().optional(),
-    location : z.string(),
-    prizePool : z.number().optional(),
-    registerationFee : z.number().optional(),
-    
-    date: z.string().refine(val => !isNaN(Date.parse(val)), {
-    message: "Invalid date format"
-  }).transform(val => new Date(val))
-    
-})
+  prizePool: z
+    .preprocess((val) => (val !== "" ? Number(val) : undefined), z.number().optional()),
 
-export const createEvent = async(req : Request , res : Response) : Promise<any> => {
+  registerationFee: z
+    .preprocess((val) => (val !== "" ? Number(val) : undefined), z.number().optional()),
 
-    const organizerId = (req as any).userId as string;
+ date: z.preprocess((val) => {
+  if (typeof val === "string" || val instanceof String) {
+    const d = new Date(val as string);
+    return isNaN(d.getTime()) ? undefined : d;
+  }
+  return val;
+}, z.date({
+  required_error: "Date is required",
+  invalid_type_error: "Invalid date",
+})),
 
-    const parsed = createEventValidator.safeParse(req.body);
+});
+
+
+
+export const createEvent = async (req: Request, res: Response): Promise<any> => {
+  // console.log("in the controller");
+  
+  const organizerId = (req as any).userId as string;
+
+//   console.log("📥 req.body:", req.body);
+// console.log("📅 req.body.date:", req.body.date);
+
+
+  const parsed = createEventValidator.safeParse(req.body);
 
   if (!parsed.success) {
     return res.status(400).json({
       message: "Invalid input",
-      errors: parsed.error.flatten()
+      errors: parsed.error.flatten(),
     });
   }
 
-  const { title, description, type, location, prizePool, registerationFee, date} = parsed.data;
+  const { title, description, type, location, prizePool, registerationFee, date } = parsed.data;
+
+  
 
   try {
+    if (!req.file?.path) {
+      return res.status(404).json({ message: "Image file missing" });
+    }
+
+    // console.log("in try catch");
+    const avatar = req.file.path;
+
     const event = await eventModel.create({
       title,
       description,
@@ -44,21 +70,30 @@ export const createEvent = async(req : Request , res : Response) : Promise<any> 
       registerationFee,
       date,
       organizerId,
-      status : "upcoming"
+      status: "upcoming",
+      avatar,
     });
+
+    if (!event) {
+      return res.status(401).json({ message: "Error creating event!" });
+    }
+
+    
+
+    // console.log("Event created:", event);
 
     res.status(201).json({
       message: "Event created successfully",
-      event
+      event,
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      message: (error as Error).message || "Internal Server Error"
+      message: (error as Error).message || "Internal Server Error",
     });
   }
+};
 
-}
 
 export const getAllEvents = async(req : Request ,res : Response) : Promise<any> => {
 
@@ -74,8 +109,8 @@ export const getAllEvents = async(req : Request ,res : Response) : Promise<any> 
 
     } catch (error) {
 
-        console.error(error);
-    res.status(500).json({
+      console.error(error);
+      res.status(501).json({
       message: (error as Error).message || "Internal Server Error"
     });
 
