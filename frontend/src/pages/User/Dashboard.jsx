@@ -101,16 +101,22 @@ const Dashboard = () => {
         <div className="bg-gradient-to-br from-blue-200 to-blue-100 rounded-2xl p-6 shadow-md">
           <h2 className="text-lg font-semibold text-blue-800 mb-5">Quick Actions</h2>
           <button
-            className="w-full bg-blue-600 text-white text-lg font-semibold py-3 px-4 rounded-lg mb-4 hover:bg-blue-700 transition"
+            className="w-full bg-white border border-blue-600 text-blue-600 text-lg font-semibold py-3 px-4 rounded-lg mb-4 hover:bg-blue-50 transition"
             onClick={() => navigate("/sessions")}
           >
             View All Sessions
           </button>
           <button
-            className="w-full bg-white border border-blue-600 text-blue-600 text-lg font-semibold py-3 px-4 rounded-lg hover:bg-blue-50 transition"
+            className="w-full bg-white border  border-blue-600 text-blue-600 text-lg font-semibold py-3 px-4 rounded-lg mb-4 hover:bg-blue-50 transition"
             onClick={() => navigate("/user/buySubscription")}
           >
             Buy Subscription
+          </button>
+          <button
+            className="w-full bg-white border border-blue-600 text-blue-600 text-lg font-semibold py-3 px-4 rounded-lg mb-4 hover:bg-blue-50 transition"
+            onClick={() => navigate("/user/registerEvents")}
+          >
+            Register for an event
           </button>
         </div>
       </div>
