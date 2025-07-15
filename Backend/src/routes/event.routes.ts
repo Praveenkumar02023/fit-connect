@@ -1,12 +1,12 @@
 import { Router } from "express";
 import { authMiddlware } from "../middlewares/auth.middleware";
-import { createEvent, deleteEvent, deleteRegistration, getAllEvents, getAllParticipants, getEventById, getUserRegisteredEvents, registerEvent, updateEvent } from "../controllers/event.contoller";
+import { createEvent, deleteEvent, deleteRegistration, getAllEvents, getAllParticipants, getEventById, getUserRegisteredEvents, registerEvent, updateEvent , createStripeSession } from "../controllers/event.contoller";
 
 export const eventRouter = Router();
 
 //related to events
 eventRouter.post('/create',authMiddlware,createEvent);
-eventRouter.get('/all',authMiddlware,getAllEvents);
+eventRouter.get('/all',getAllEvents);
 eventRouter.get('/:id',authMiddlware,getEventById);
 eventRouter.patch('/update',authMiddlware,updateEvent);
 eventRouter.post('/delete',authMiddlware,deleteEvent);
@@ -16,3 +16,4 @@ eventRouter.post('/register',authMiddlware,registerEvent);
 eventRouter.post('/cancel',authMiddlware,deleteRegistration);
 eventRouter.post('/all-participants',authMiddlware,getAllParticipants);
 eventRouter.post('/UserRegisteredEvents' , authMiddlware , getUserRegisteredEvents)
+eventRouter.post('/checkout-stripe-session' , authMiddlware , createStripeSession)

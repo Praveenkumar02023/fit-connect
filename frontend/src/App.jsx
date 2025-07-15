@@ -21,6 +21,7 @@ import Feed from "./components/Feed"
 import BuySubscription from './pages/User/BuySubscription';
 import SubscriptionSuccess from './pages/User/SubscriptionSuccess';
 import RegisterEvents from './pages/User/RegisterEvents';
+import EventSuccess from './pages/User/EventSuccess';
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
          <Route path = "/user/buySubscription" element = {<BuySubscription />} />
          <Route path="/subscription-success" element={<SubscriptionSuccess />} />
          <Route path = "/user/registerEvents" element = {<RegisterEvents />} />
+         <Route path="/event-success" element={<EventSuccess />} />
         
 
         <Route path="/signup/:role" element={<Signup />} />

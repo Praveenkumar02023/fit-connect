@@ -26,7 +26,7 @@ const BuySubscription = () => {
     };
 
     fetchTrainers();
-  }, []);
+  }, [url]);
 
   const handleSubscribe = async (trainer) => {
     try {
@@ -49,57 +49,62 @@ const BuySubscription = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f9fafb] py-0">
+    <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#ffffff]">
       {/* Header Bar */}
-      <div className="bg-blue-600 py-6 px-4 sm:px-10 shadow">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white">Choose Your Trainer</h1>
+      <div className="bg-blue-600 py-6 px-4 sm:px-10 shadow-md">
+        <h1 className="text-3xl font-bold text-white text-center">Subscribe to a Trainer</h1>
       </div>
 
       {/* Trainer Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4 sm:px-10 py-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-6 sm:px-12 py-10">
         {trainers.map((trainer) => (
           <div
             key={trainer._id}
-            className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-all duration-300 border border-blue-100"
+            className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 border border-gray-200"
           >
-            <div className="flex items-center mb-2 text-blue-800 font-semibold">
-              <UserCircle className="w-5 h-5 mr-2" />
-              <span className="text-lg">{trainer.firstName}</span>
-              <span className="text-lg">&nbsp;</span>
-              <span className="text-lg">{trainer.lastName}</span>
+            {/* Name */}
+            <div className="flex items-center text-blue-700 font-semibold text-lg mb-3">
+              <UserCircle className="h-5 w-5 bg-blue-100 p-1 rounded-full mr-2" />
+              <span>
+                {trainer.firstName} {trainer.lastName}
+              </span>
             </div>
 
-            <div className="flex items-center text-gray-700 text-sm mb-1">
-              <BadgePercent className="w-4 h-4 mr-2" />
-              Specialties:{" "}
-              <span className="ml-1 text-gray-600 font-medium">
+            {/* Specialties */}
+            <div className="flex items-center text-gray-700 text-sm mb-2">
+              <BadgePercent className="h-4 w-4 mr-2 text-gray-500" />
+              <span className="font-semibold mr-1">Specialties:</span>
+              <span className="font-medium">
                 {Array.isArray(trainer.speciality)
                   ? trainer.speciality.join(", ")
                   : trainer.speciality}
               </span>
             </div>
 
-            <div className="flex items-center text-gray-700 text-sm mb-1">
-              <Clock3 className="w-4 h-4 mr-2" />
-              Experience:{" "}
-              <span className="ml-1 font-medium text-gray-600">
-                {trainer.experience || 1} yrs
-              </span>
+            {/* Experience */}
+            <div className="flex items-center text-gray-700 text-sm mb-2">
+              <Clock3 className="h-4 w-4 mr-2 text-gray-500" />
+              <span className="font-semibold mr-1">Experience:</span>
+              <span className="font-medium">{trainer.experience || 1} yrs</span>
             </div>
 
-            <div className="flex items-center text-gray-700 text-sm mb-1">
-              <CalendarCheck2 className="w-4 h-4 mr-2" />
-              Duration: <span className="ml-1 font-medium text-gray-600">1 Month</span>
+            {/* Duration */}
+            <div className="flex items-center text-gray-700 text-sm mb-2">
+              <CalendarCheck2 className="h-4 w-4 mr-2 text-gray-500" />
+              <span className="font-semibold mr-1">Duration:</span>
+              <span className="font-medium">1 Month</span>
             </div>
 
+            {/* Pricing */}
             <div className="flex items-center text-blue-700 text-md font-bold mt-3">
-              <BadgeIndianRupee className="w-4 h-4 mr-1" />
+              <BadgeIndianRupee className="h-5 w-5 mr-2 text-blue-600" />
               ₹{trainer.pricing_perMonth}
             </div>
 
+            {/* Subscribe Button */}
             <button
               onClick={() => handleSubscribe(trainer)}
-              className="mt-5 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition font-medium"
+              className="mt-6 w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white py-2 rounded-xl text-sm font-semibold shadow-sm transition-all"
             >
               Subscribe Now
             </button>

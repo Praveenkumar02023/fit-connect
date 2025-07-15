@@ -4,13 +4,10 @@ import { Mail, KeyRoundIcon } from 'lucide-react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from "axios"
 import toast from "react-hot-toast"
-<<<<<<< HEAD
 import { useRef, useContext  } from 'react';
 import {StoreContext} from '../Context/StoreContext';
-=======
-import { useContext, useRef } from 'react';
-import { StoreContext } from '../Context/StoreContext';
->>>>>>> upstream/main
+
+
 
 const Signin = () => {
   const emailRef = useRef(null)
@@ -19,7 +16,6 @@ const Signin = () => {
   const navigate = useNavigate();
   const {url , setToken} = useContext(StoreContext);
 
-  const {setToken} = useContext(StoreContext)
 
   const currentRole = role === 'trainer' ? 'Trainer' : 'User'; // default to User
 
