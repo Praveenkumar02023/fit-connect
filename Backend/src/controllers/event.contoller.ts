@@ -2,6 +2,13 @@ import { Request, Response } from "express";
 import {z} from 'zod';
 import { eventModel } from "../models/event.model";
 import { participantModel } from "../models/event_participant.model";
+import Stripe from 'stripe';
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+if (!stripeSecretKey) {
+  throw new Error("STRIPE_SECRET_KEY environment variable is not set.");
+}
+const stripe = new Stripe(stripeSecretKey);
+const frontend_url = "http://localhost:5173";
 
 
 const createEventValidator = z.object({
@@ -367,3 +374,47 @@ export const getUserRegisteredEvents = async (req: Request, res: Response): Prom
     });
   }
 }
+export const createStripeSession = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = (req as any).userId;
+    const { eventId } = req.body;
+    if (!eventId) {
+          res.status(400).json({ success: false, message: "Event ID is required" });
+          return;
+        }
+
+        const event = await eventModel.findById(eventId);
+        if (!event) {
+          res.status(404).json({ success: false, message: "Event not found" });
+          return;
+        }
+        const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "inr",
+            product_data: {
+              name: `Registration for ${event.title}`,
+              description: `Type: ${event.type}`,
+            },
+            unit_amount: ((event.registrationFee ?? 0) * 100), // Convert to paise, default to 0 if undefined
+          },
+          quantity: 1,
+        },
+      ],
+      mode: "payment",
+      success_url: `${frontend_url}/event-success?success=true&eventId=${eventId}&userId=${userId}&purpose=event&amount=${(event.registrationFee ?? 0)}`,
+
+      cancel_url: `${frontend_url}/event-success?success=false`
+    });
+
+    res.status(200).json({ success: true, sessionurl: session.url });
+  } catch (err) {
+    console.error("Stripe error", err);
+    res.status(500).json({ success: false, message: "Stripe session error" });
+  }
+};

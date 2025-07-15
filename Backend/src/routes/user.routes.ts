@@ -4,6 +4,7 @@ import { authMiddlware } from "../middlewares/auth.middleware";
 import upload from "../middlewares/multer.middleware";
 
 
+
 export const userRouter = Router();
 
 userRouter.post('/signup',Signup);

@@ -18,6 +18,11 @@ import Payment from './pages/User/Payment';
 import MyEvents from './pages/User/MyEvents';
 import { Toaster } from 'react-hot-toast';
 import Feed from "./components/Feed"
+import BuySubscription from './pages/User/BuySubscription';
+import SubscriptionSuccess from './pages/User/SubscriptionSuccess';
+import RegisterEvents from './pages/User/RegisterEvents';
+import EventSuccess from './pages/User/EventSuccess';
+import ViewSessions from './pages/User/ViewSessions';
 
 function App() {
   return (
@@ -41,6 +46,11 @@ function App() {
           <Route path="feed" element={<Feed/>}/>
         </Route>
          <Route path="/session-success" element={<SessionSuccess />} />
+         <Route path = "/user/buySubscription" element = {<BuySubscription />} />
+         <Route path="/subscription-success" element={<SubscriptionSuccess />} />
+         <Route path = "/user/registerEvents" element = {<RegisterEvents />} />
+         <Route path = "/user/cancelSessions" element = {<ViewSessions />} />
+         <Route path="/event-success" element={<EventSuccess />} />
         
 
         <Route path="/signup/:role" element={<Signup />} />
@@ -49,6 +59,7 @@ function App() {
         {/* Redirects to default 'user' role */}
         <Route path="/signup" element={<Navigate to="/signup/user" />} />
         <Route path="/signin" element={<Navigate to="/signin/user" />} />
+        
 
       </Routes>
     </Router>
