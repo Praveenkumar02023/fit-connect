@@ -22,6 +22,7 @@ import BuySubscription from './pages/User/BuySubscription';
 import SubscriptionSuccess from './pages/User/SubscriptionSuccess';
 import RegisterEvents from './pages/User/RegisterEvents';
 import EventSuccess from './pages/User/EventSuccess';
+import ViewSessions from './pages/User/ViewSessions';
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
          <Route path = "/user/buySubscription" element = {<BuySubscription />} />
          <Route path="/subscription-success" element={<SubscriptionSuccess />} />
          <Route path = "/user/registerEvents" element = {<RegisterEvents />} />
+         <Route path = "/user/cancelSessions" element = {<ViewSessions />} />
          <Route path="/event-success" element={<EventSuccess />} />
         
 
