@@ -59,6 +59,10 @@ function App() {
         {/* Redirects to default 'user' role */}
         <Route path="/signup" element={<Navigate to="/signup/user" />} />
         <Route path="/signin" element={<Navigate to="/signin/user" />} />
+
+        <Route path="/trainer" element={<UserLayout />}>
+          <Route index element={<Dashboard />} /> 
+        </Route>
         
 
       </Routes>

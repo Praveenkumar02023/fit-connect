@@ -193,3 +193,23 @@ export const getAllTrainers = async (req: Request, res: Response): Promise<any> 
     res.status(500).json({ message: "Failed to fetch trainers" });
   }
 };
+export const getTrainerProfile = async (req: Request, res: Response) : Promise<any> => {
+  const trainerId = (req as any).userId as string;
+
+  if (!trainerId) {
+    return res.status(400).json({ message: "User ID not provided" });
+  }
+
+  try {
+    const trainer = await Trainer.findById(trainerId).select("-password");
+
+    if (!trainer) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ trainer });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
