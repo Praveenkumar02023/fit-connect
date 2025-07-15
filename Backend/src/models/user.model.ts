@@ -4,7 +4,8 @@ interface UserTypes extends Document{
     name : string,
     email : string,
     password : string,
-    gender : string
+    gender : string,
+    avatar : string
 }
 
 const userSchema = new mongoose.Schema<UserTypes>({
@@ -24,6 +25,9 @@ const userSchema = new mongoose.Schema<UserTypes>({
     },
     gender : {
         type : String,
+    },
+    avatar : {
+        type : String
     }
 
 },{timestamps : true}

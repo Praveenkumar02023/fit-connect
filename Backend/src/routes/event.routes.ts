@@ -1,11 +1,12 @@
 import { Router } from "express";
 import { authMiddlware } from "../middlewares/auth.middleware";
 import { createEvent, deleteEvent, deleteRegistration, getAllEvents, getAllParticipants, getEventById, getUserRegisteredEvents, registerEvent, updateEvent } from "../controllers/event.contoller";
+import upload from "../middlewares/multer.middleware";
 
 export const eventRouter = Router();
 
 //related to events
-eventRouter.post('/create',authMiddlware,createEvent);
+eventRouter.post('/create',authMiddlware,upload.single("image"),createEvent);
 eventRouter.get('/all',authMiddlware,getAllEvents);
 eventRouter.get('/:id',authMiddlware,getEventById);
 eventRouter.patch('/update',authMiddlware,updateEvent);

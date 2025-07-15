@@ -27,7 +27,7 @@ export const authMiddlware : RequestHandler  =( async (req : AuthRequest,res : R
         }
 
         req.userId = isValid.userId;
-
+        console.log("moving forward");
         next();
 
     } catch (error) {

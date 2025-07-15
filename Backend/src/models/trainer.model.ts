@@ -12,6 +12,7 @@ interface TrainerTypes extends Document{
     pricing_perSession : number,
     pricing_perMonth : number,
     rating? : number,
+    avatar : string
 }
 
 const trainerSchema = new Schema<TrainerTypes>({
@@ -47,6 +48,9 @@ const trainerSchema = new Schema<TrainerTypes>({
     },
     rating : {
         type : Number,
+    },
+    avatar : {
+        type : String
     }
 },{timestamps : true});
 
