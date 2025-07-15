@@ -24,7 +24,7 @@ const Dashboard = () => {
 
   const fetchUserData = async () => {
     try {
-      const userRes = await axios.get(`${url}/api/v1/user/id`, {
+      const userRes = await axios.get(`${url}/api/v1/user/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser(userRes.data.user?.name || "User");
