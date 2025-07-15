@@ -145,6 +145,10 @@ export const updateUserProfile = async(req : Request , res : Response) : Promise
 
     }
 
+     if (req.file?.path) {
+      (parsed.data as any).avatar = req.file.path; 
+    }
+
     const updatedUser = await userModel.updateOne({_id : userId},parsed.data);
 
     if(!updatedUser){

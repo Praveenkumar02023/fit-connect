@@ -100,13 +100,17 @@ const Sidebar = () => {
             onClick={() => {
               navigate("/user/profile");
             }}
-            className="flex items-center space-x-3 bg-gray-700 p-3 rounded-lg"
+            className="hover:scale-105 transition-transform flex items-center space-x-3 bg-gray-700 p-3 rounded-lg"
           >
-            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-              <FaUser className="text-white text-lg" />
+            <div className="  w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center overflow-hidden">
+              {user?.avatar ? (
+                <img src={user.avatar} alt="user avatar" />
+              ) : (
+                <FaUser className="text-white text-lg" />
+              ) }
             </div>
             <div className="text-sm">
-              <p className="text-white font-medium">
+              <p className="text-white font-medium text-lg">
                 {user ? user.name : "Loading..."}
               </p>
             </div>
