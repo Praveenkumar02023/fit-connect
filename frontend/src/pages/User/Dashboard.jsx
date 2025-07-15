@@ -3,9 +3,9 @@ import { FaCreditCard, FaChartLine, FaBullseye, FaCalendarAlt } from 'react-icon
 
 const Dashboard = () => {
   return (
-    <div>
+    <div className='bg-gray-100 px-12 h-screen w-full flex flex-col items-center justify-center' >
       {/* Welcome Banner */}
-      <div className="bg-blue-500 text-white p-6 rounded-xl mb-6">
+      <div className="flex flex-col items-center justify-center text-center w-full h-[8rem] bg-blue-600 text-white p-6 rounded-xl mb-6">
         <h2 className="text-2xl font-bold mb-1">Welcome back, John! 💪</h2>
         <p className="text-sm text-gray-200">
           Ready to crush your fitness goals today? You've got 2 upcoming sessions this week.
@@ -13,8 +13,8 @@ const Dashboard = () => {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white p-4 rounded-lg shadow flex items-center justify-between transition duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1">
+      <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="border border-gray-200 hover:bg-blue-50/50 hover:border-blue-200 bg-white p-4 rounded-lg shadow flex items-center justify-between transition duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1">
           <div>
             <p className="text-sm text-gray-500">Active Subscription</p>
             <h3 className="text-xl font-semibold">Premium</h3>
@@ -26,7 +26,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-lg shadow flex items-center justify-between transition duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1">
+        <div className="border border-gray-200 hover:bg-blue-50/50 hover:border-blue-200 bg-white p-4 rounded-lg shadow flex items-center justify-between transition duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1">
           <div>
             <p className="text-sm text-gray-500">This Month</p>
             <h3 className="text-xl font-semibold">12</h3>
@@ -38,7 +38,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-lg shadow flex items-center justify-between transition duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1">
+        <div className="border border-gray-200 hover:bg-blue-50/50 hover:border-blue-200 bg-white p-4 rounded-lg shadow flex items-center justify-between transition duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1">
           <div>
             <p className="text-sm text-gray-500">Goal Progress</p>
             <h3 className="text-xl font-semibold">85%</h3>
@@ -50,7 +50,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-lg shadow flex items-center justify-between transition duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1">
+        <div className="border border-gray-200 hover:bg-blue-50/50 hover:border-blue-200 bg-white p-4 rounded-lg shadow flex items-center justify-between transition duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1">
           <div>
             <p className="text-sm text-gray-500">Next Session</p>
             <h3 className="text-xl font-semibold">Today</h3>
@@ -63,8 +63,8 @@ const Dashboard = () => {
       </div>
 
       {/* Action Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div className="bg-white p-6 rounded-lg shadow border border-blue-200 transition duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1">
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="bg-white p-6 rounded-lg shadow border border-gray-200 hover:border-blue-200 hover:bg-blue-50/50 transition duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1">
           <h3 className="text-lg font-semibold mb-2">Book a New Session</h3>
           <p className="text-sm text-gray-600 mb-4">
             Schedule your next workout with our certified trainers.
@@ -74,7 +74,7 @@ const Dashboard = () => {
           </button>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow border border-blue-200 transition duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1">
+        <div className="hover:border-blue-200 hover:bg-blue-50/50 bg-white p-6 rounded-lg shadow border border-blue-200 transition duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1">
           <h3 className="text-lg font-semibold mb-2">Join Upcoming Events</h3>
           <p className="text-sm text-gray-600 mb-4">
             Participate in group fitness challenges and community events.
@@ -86,7 +86,7 @@ const Dashboard = () => {
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white p-6 rounded-lg shadow transition duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1">
+      <div className="w-full border border-gray-200 bg-white p-6 rounded-lg shadow transition duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1">
         <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
         <ul className="space-y-3 text-sm text-gray-700">
           <li className="flex flex-col hover:bg-blue-50 p-2 rounded">
