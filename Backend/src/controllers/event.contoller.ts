@@ -32,7 +32,7 @@ export const createEvent = async(req : Request , res : Response) : Promise<any> 
     });
   }
 
-  const { title, description, type, location, prizePool, registerationFee, date } = parsed.data;
+  const { title, description, type, location, prizePool, registerationFee, date} = parsed.data;
 
   try {
     const event = await eventModel.create({

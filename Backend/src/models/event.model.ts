@@ -30,7 +30,7 @@ const eventSchema = new Schema<EventTypes>({
     status : {type : String , required : true},
     registrationFee : {type : Number },
     date : {type : Date , required : true},
-    avatar : {type : String}
+    avatar : {type : String,required : true}
 
 },{timestamps : true});
 
