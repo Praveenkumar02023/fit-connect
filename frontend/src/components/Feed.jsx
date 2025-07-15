@@ -165,11 +165,19 @@ const Feed = () => {
                           Upcoming
                         </span>
                       )}
-                      <img
+                      {event.avatar ? (
+                       <img
+                        src={event.avatar}
+                        alt="Event"
+                        className="h-32 w-full object-cover rounded bg-gray-100"
+                      /> 
+                      ) : (
+                        <img
                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0ZcnsKC3iF9pB8_po80WXkn7h_3fd2bNx-Rq9T6B_mCx3IDZsdPjG8qNYt0pPC_YhJEA&usqp=CAU"
                         alt="Event"
                         className="h-32 w-full object-cover rounded bg-gray-100"
                       />
+                      )}
                     </div>
 
                     <h3 className="font-semibold text-blue-600">
@@ -220,11 +228,19 @@ const Feed = () => {
                           Ongoing
                         </span>
                       )}
-                      <img
+                      {event.avatar ? (
+                       <img
+                        src={event.avatar}
+                        alt="Event"
+                        className="h-32 w-full object-cover rounded bg-gray-100"
+                      /> 
+                      ) : (
+                        <img
                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0ZcnsKC3iF9pB8_po80WXkn7h_3fd2bNx-Rq9T6B_mCx3IDZsdPjG8qNYt0pPC_YhJEA&usqp=CAU"
                         alt="Event"
                         className="h-32 w-full object-cover rounded bg-gray-100"
                       />
+                      )}
                     </div>
 
                     <h3 className="font-semibold text-blue-600">
