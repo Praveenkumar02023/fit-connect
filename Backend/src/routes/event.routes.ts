@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authMiddlware } from "../middlewares/auth.middleware";
-import { createEvent, deleteEvent, deleteRegistration, getAllEvents, getAllParticipants, getEventById, getUserRegisteredEvents, registerEvent, updateEvent } from "../controllers/event.contoller";
+import { createEvent, deleteEvent, deleteRegistration, getAllEvents, getAllParticipants, getEventById, getUserRegisteredEvents, registerEvent, updateEvent  , createStripeSession} from "../controllers/event.contoller";
 import upload from "../middlewares/multer.middleware";
 
 export const eventRouter = Router();

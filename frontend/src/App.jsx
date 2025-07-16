@@ -23,6 +23,7 @@ import SubscriptionSuccess from './pages/User/SubscriptionSuccess';
 import RegisterEvents from './pages/User/RegisterEvents';
 import EventSuccess from './pages/User/EventSuccess';
 import ViewSessions from './pages/User/ViewSessions';
+import TrainerLayout from './pages/Trainer/TrainerLayout';
 
 function App() {
   return (
@@ -60,8 +61,7 @@ function App() {
         <Route path="/signup" element={<Navigate to="/signup/user" />} />
         <Route path="/signin" element={<Navigate to="/signin/user" />} />
 
-        <Route path="/trainer" element={<UserLayout />}>
-          <Route index element={<Dashboard />} /> 
+        <Route path="/trainer" element={<TrainerLayout />}> 
         </Route>
         
 

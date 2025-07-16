@@ -43,8 +43,7 @@ const TrainerSidebar = () => {
     { to: "/trainer/create-event", label: "Create Event", icon: <FaCalendarAlt /> },
     { to: "/trainer/subscribers", label: "Subscribers", icon: <FaUser /> },
     { to: "/trainer/events", label: "My Events", icon: <FaRegListAlt /> },
-    { to: "/trainer/earnings", label: "Earnings", icon: <FaMoneyBillWave /> },
-    { to: "/trainer/profile", label: "Profile", icon: <FaIdBadge /> },
+    { to: "/trainer/earnings", label: "Earnings", icon: <FaMoneyBillWave /> }
   ];
 
   return (
@@ -101,7 +100,7 @@ const TrainerSidebar = () => {
             </div>
             <div className="text-sm">
               <p className="text-white font-medium text-lg">
-                {trainer ? trainer.name : "Loading..."}
+                {trainer ? trainer.firstName + " "  + trainer.lastName : "Loading..."}
               </p>
             </div>
           </div>
