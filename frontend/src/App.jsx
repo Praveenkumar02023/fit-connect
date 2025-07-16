@@ -26,6 +26,7 @@ import ViewSessions from './pages/User/ViewSessions';
 import TrainerLayout from './pages/Trainer/TrainerLayout';
 import TrainerProfile from './components/User-Dashboard/TrainerProfile';
 import TrainerSessionsPage from './pages/Trainer/ViewMySessions';
+import Subscribers from './pages/Trainer/Subscribers';
 
 function App() {
   return (
@@ -66,6 +67,7 @@ function App() {
 
         <Route path="/trainer" element={<TrainerLayout />}> 
         <Route path = "sessions" element = {<TrainerSessionsPage /> } />
+        <Route path = "subscribers" element = {<Subscribers /> } />
         </Route>
         
 
