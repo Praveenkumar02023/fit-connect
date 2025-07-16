@@ -23,7 +23,10 @@ import SubscriptionSuccess from './pages/User/SubscriptionSuccess';
 import RegisterEvents from './pages/User/RegisterEvents';
 import EventSuccess from './pages/User/EventSuccess';
 import ViewSessions from './pages/User/ViewSessions';
+import TrainerLayout from './pages/Trainer/TrainerLayout';
 import TrainerProfile from './components/User-Dashboard/TrainerProfile';
+import TrainerSessionsPage from './pages/Trainer/ViewMySessions';
+import Subscribers from './pages/Trainer/Subscribers';
 
 function App() {
   return (
@@ -61,6 +64,11 @@ function App() {
         {/* Redirects to default 'user' role */}
         <Route path="/signup" element={<Navigate to="/signup/user" />} />
         <Route path="/signin" element={<Navigate to="/signin/user" />} />
+
+        <Route path="/trainer" element={<TrainerLayout />}> 
+        <Route path = "sessions" element = {<TrainerSessionsPage /> } />
+        <Route path = "subscribers" element = {<Subscribers /> } />
+        </Route>
         
 
       </Routes>

@@ -196,3 +196,20 @@ export const createStripeSession = async (
     res.status(500).json({ success: false, message: "Stripe session error" });
   }
 };
+export const getTrainerSubscription = async(req : Request , res : Response) : Promise<any> => {
+    const userId = (req as any).userId as string;
+
+    try {
+        
+        const Allsubscription = await subscriptionModel.find({trainerId : userId});
+
+        res.status(200).json({message : "subscription fetched",Allsubscription});
+
+    } catch (error) {
+        console.error(error);
+    res.status(500).json({
+      message: (error as Error).message || "Internal Server Error"
+    });
+    }
+
+}

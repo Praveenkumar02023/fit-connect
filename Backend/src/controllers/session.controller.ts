@@ -21,7 +21,7 @@ const bookSessionValidator = z.object({
   fee: z.number().min(0, "Fee must be a positive number"),
 });
 const updateSessionStatusValidator = z.object({
-  status: z.enum(["pending", "confirmed", "cancelled"]),
+  status: z.enum(["pending", "confirmed", "cancelled", "completed"]),
   paymentStatus: z.enum(["pending", "success", "failed"]),
 });
 
@@ -190,10 +190,9 @@ export const createStripeSession = async (
     res.status(500).json({ success: false, message: "Stripe session error" });
   }
 };
-export const updateSessionStatus = async (req: Request, res: Response) : Promise<void>=> {
+export const updateSessionStatus = async (req: Request, res: Response): Promise<void> => {
   const sessionId = req.params.id;
   const userId = (req as any).userId as string;
-
 
   const parsed = updateSessionStatusValidator.safeParse(req.body);
 
@@ -208,14 +207,27 @@ export const updateSessionStatus = async (req: Request, res: Response) : Promise
   const { status, paymentStatus } = parsed.data;
 
   try {
-    const updated = await sessionModel.updateOne(
-      { _id: sessionId, clientId: userId },
+    // Fetch the session
+    const session = await sessionModel.findById(sessionId);
+    if (!session) {
+        res.status(404).json({ message: "Session not found" });
+        return;
+    }
+
+    // Check if user is either the client or the trainer
+    if (
+      session.clientId.toString() !== userId &&
+      session.trainerId.toString() !== userId
+    ) {
+      res.status(403).json({ message: "Unauthorized to update session" });
+      return;
+    }
+
+    // Update session
+    await sessionModel.updateOne(
+      { _id: sessionId },
       { status, paymentStatus }
     );
-
-    if (!updated.matchedCount) {
-      throw new Error("Session not found");
-    }
 
     res.status(200).json({ message: "Session status updated successfully" });
   } catch (error) {
