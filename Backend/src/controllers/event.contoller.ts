@@ -418,3 +418,18 @@ export const createStripeSession = async (
     res.status(500).json({ success: false, message: "Stripe session error" });
   }
 };
+export const checkEventRegistration = async (req: Request, res: Response): Promise<any> => {
+  const userId = (req as any).userId;
+  const { eventId } = req.body;
+
+  if (!eventId) return res.status(400).json({ message: "Event ID required" });
+
+  try {
+    const existing = await participantModel.findOne({ userId, eventId });
+    res.status(200).json({ registered: !!existing });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
