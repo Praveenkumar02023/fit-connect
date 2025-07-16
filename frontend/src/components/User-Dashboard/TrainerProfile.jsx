@@ -2,13 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 
 import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Dot, Star } from "lucide-react";
 import Button from "../ui/Button";
 
 const TrainerProfile = () => {
   const { id } = useParams();
-
+  const navigate = useNavigate();
   const { url, token } = useContext(StoreContext);
   const [trainer, setTrainer] = useState();
   const [subscription, setSubscription] = useState([]);
@@ -72,6 +72,27 @@ const TrainerProfile = () => {
     getSubscription();
   }, [trainer]);
 
+
+  const handleSubscribe = async (trainer) => {
+    try {
+      const res = await axios.post(
+        `${url}/api/v1/subscription/checkout-stripe-session`,
+        { trainerId: trainer._id },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (res.data.success && res.data.sessionurl) {
+        window.location.href = res.data.sessionurl;
+      } else {
+        alert("Payment session creation failed");
+      }
+    } catch (error) {
+      alert("Something went wrong");
+    }
+  };
+
   if (!trainer) return <div>Loading...</div>;
   if (!subscription) return <div>Loading...</div>;
 
@@ -81,7 +102,7 @@ const TrainerProfile = () => {
         <div className="p-4 flex flex-col  h-full w-[30%] bg-white border rounded-xl border-gray-200 shadow ">
           <div className="w-full flex justify-center">
             <img
-              src={trainer.avatar}
+              src={trainer.avatar ? trainer.avatar : "https://i.pinimg.com/474x/2c/47/d5/2c47d5dd5b532f83bb55c4cd6f5bd1ef.jpg?nii=t"}
               alt="trainer profile"
               className="h-32 w-32 rounded-full border-2 border-black"
             />
@@ -97,13 +118,13 @@ const TrainerProfile = () => {
           </div>
 
           <div className=" border border-dashed p-2 border-black w-full justify-center mt-3 text-sm font-semibold flex flex-wrap text-center">
-            {trainer.speciality.map((s, i) => {
+            {(trainer.speciality.length > 0) ? (trainer.speciality.map((s, i) => {
               return (
                 <div key={i} className="underline px-1 flex">
                   {s}
                 </div>
               );
-            })}
+            })) : "No speciality found"  }
           </div>
           <div className="mt-3 flex items-center w-full justify-center gap-x-1 ">
             <h3>Rating : </h3>
@@ -111,14 +132,14 @@ const TrainerProfile = () => {
               {
                 <Star className="text-yellow-400 fill-yellow-300 bg-transparent mt-1 size-5 " />
               }{" "}
-              {trainer.rating}
+              {trainer.rating ? trainer.rating : "-" }
             </h3>
           </div>
 
           <div className="px-4 mt-4 w-full flex flex-col items-center justify-center">
             <h1 className="font-semibold text-lg">Experience</h1>
             <p className="text-gray-600 mt-2 text-md flex flex-wrap text-center">
-              {trainer.experience}
+              {trainer.experience ? trainer.experience : "No experience"}
             </p>
           </div>
           <div className="mt-4 flex flex-col items-center justify-center">
@@ -147,11 +168,11 @@ const TrainerProfile = () => {
           <div className="flex flex-col items-center justify-center">
             <h1 className="font-semibold text-lg">About Me</h1>
             <p className="text-gray-700 font-semibold text-sm">
-              {trainer.about}
+              {trainer.about ? trainer.about : "Nothing found"}
             </p>
           </div>
 
-          <div className="flex flex-col items-center justify-center">
+          {trainer.Achievements && <div className="flex flex-col items-center justify-center">
             <h1 className="font-semibold text-lg">Achievements</h1>
             <div className="text-gray-700 font-semibold text-sm mt-2 space-y-1">
               {trainer.Achievements.split(".").map((e, i) =>
@@ -163,7 +184,7 @@ const TrainerProfile = () => {
                 ) : null
               )}
             </div>
-          </div>
+          </div>}
 
           <div className="mt-2 w-full">
             <div className="bg-white  flex flex-col items-center">
@@ -178,7 +199,9 @@ const TrainerProfile = () => {
                   <span className="ml-2 font-semibold text-black">
                     ₹{trainer.pricing_perSession}
                   </span>
-                  <button className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-1 rounded text-sm transition">
+                  <button
+                  onClick={() => {navigate("/user/bookSessions")}}
+                  className="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white py-1 rounded text-sm transition">
                     Book Session
                   </button>
                 </div>
@@ -189,7 +212,7 @@ const TrainerProfile = () => {
                   <span className="ml-2 font-semibold text-black">
                     ₹{trainer.pricing_perMonth}
                   </span>
-                  <button className="mt-2 w-full bg-green-600 hover:bg-green-700 text-white py-1 rounded text-sm transition">
+                  <button onClick={() => handleSubscribe(trainer)} className="mt-2 w-full bg-green-600 hover:bg-green-700 text-white py-1 rounded text-sm transition">
                     Subscribe Monthly
                   </button>
                 </div>
