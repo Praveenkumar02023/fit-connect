@@ -120,13 +120,13 @@ export const getTrainerById = async (req: Request, res: Response) : Promise<any>
     const trainer = await Trainer.findById(trainerId).select("-password");
 
     if (!trainer) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "Trainer not found" });
     }
 
     res.status(200).json({ trainer });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message:  (error as Error).message || "Internal server error" });
   }
 };
 
@@ -137,7 +137,10 @@ const updateTrainerValidator = z.object({
   experience : z.string().optional(),
   pricing_perSession : z.number().optional(),
   pricing_perMonth : z.number().optional(),
-  speciality : z.array(z.string()).optional()
+  speciality : z.array(z.string()).optional(),
+  about : z.string().optional(),
+  rating : z.string().optional(),
+  Achievements : z.string().optional()
 });
 
 export const updateTrainerProfile = async(req : Request,res : Response) : Promise<any> =>{
@@ -168,6 +171,8 @@ export const updateTrainerProfile = async(req : Request,res : Response) : Promis
     parsed.data.password = hashedPassword;
 
   }
+    console.log(parsed.data);
+    
     const updatedTrainer = await Trainer.updateOne({_id : trainerId },parsed.data);
 
     if(!updatedTrainer.matchedCount){

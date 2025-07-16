@@ -24,6 +24,7 @@ import RegisterEvents from './pages/User/RegisterEvents';
 import EventSuccess from './pages/User/EventSuccess';
 import ViewSessions from './pages/User/ViewSessions';
 import TrainerLayout from './pages/Trainer/TrainerLayout';
+import TrainerProfile from './components/User-Dashboard/TrainerProfile';
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
           <Route path = "events" element ={<MyEvents />} />
           <Route path="feed" element={<Feed/>}/>
         </Route>
+          <Route path="/trainers/:id" element={<TrainerProfile/>}/>
          <Route path="/session-success" element={<SessionSuccess />} />
          <Route path = "/user/buySubscription" element = {<BuySubscription />} />
          <Route path="/subscription-success" element={<SubscriptionSuccess />} />
