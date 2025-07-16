@@ -19,7 +19,7 @@ const sessionSchema = new Schema<sessionTypes>({
     type : {required : true, type : String },
     scheduledAt : {type : Date , required : true},
     duration : {type : Number},
-    status : {type : String , enum : ['pending','confirmed','cancelled']},
+    status : {type : String , enum : ['pending','confirmed','cancelled' , 'completed']},
     trainerId : {
         type : Schema.Types.ObjectId,
         required : true,

@@ -145,10 +145,6 @@ export const updateUserProfile = async(req : Request , res : Response) : Promise
 
     }
 
-     if (req.file?.path) {
-      (parsed.data as any).avatar = req.file.path; 
-    }
-
     const updatedUser = await userModel.updateOne({_id : userId},parsed.data);
 
     if(!updatedUser){
@@ -221,23 +217,14 @@ export const getUserSessions = async(req : Request,res : Response) =>{
   }
 
 }
-export const getUsersById = async (req: Request, res: Response) : Promise<any> => {
-  const userId = (req as any).userId as string;
-
-  if (!userId) {
-    return res.status(400).json({ message: "User ID not provided" });
-  }
-
+export const getUserByIdParam = async (req: Request, res: Response) : Promise<any> => {
+  const { id } = req.params;
   try {
-    const user = await userModel.findById(userId).select("-password");
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
+    const user = await userModel.findById(id).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
     res.status(200).json({ user });
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+

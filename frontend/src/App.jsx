@@ -25,6 +25,7 @@ import EventSuccess from './pages/User/EventSuccess';
 import ViewSessions from './pages/User/ViewSessions';
 import TrainerLayout from './pages/Trainer/TrainerLayout';
 import TrainerProfile from './components/User-Dashboard/TrainerProfile';
+import TrainerSessionsPage from './pages/Trainer/ViewMySessions';
 
 function App() {
   return (
@@ -64,6 +65,7 @@ function App() {
         <Route path="/signin" element={<Navigate to="/signin/user" />} />
 
         <Route path="/trainer" element={<TrainerLayout />}> 
+        <Route path = "sessions" element = {<TrainerSessionsPage /> } />
         </Route>
         
 
