@@ -27,7 +27,6 @@ const EventSuccess = () => {
       }
 
       try {
-        // Register for event
         const res = await axios.post(
           `${url}/api/v1/event/register`,
           { eventId },
@@ -37,13 +36,12 @@ const EventSuccess = () => {
         );
 
         if (res.data.message === "Registered successfully") {
-          // Log payment
           const paymentPayload = {
             amount: Number(amount),
             purpose: "Event",
             referenceId: eventId,
             method: "card",
-            transactionId: eventId, // Ideally, you should get a real Stripe payment ID here
+            transactionId: eventId,
           };
 
           await axios.post(`${url}/api/v1/payment/make-payment`, paymentPayload, {
@@ -57,7 +55,9 @@ const EventSuccess = () => {
         }
       } catch (err) {
         console.error("Event registration error:", err);
-        toast.error("Something went wrong. Please try again.");
+        const message =
+          err?.response?.data?.message || "Something went wrong. Please try again.";
+        toast.error(message);
       }
     };
 

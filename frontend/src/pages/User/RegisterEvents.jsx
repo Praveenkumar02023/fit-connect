@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { StoreContext } from '../../Context/StoreContext';
 import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
 import {
   CalendarDays,
   MapPin,
@@ -27,28 +28,44 @@ const RegisterEvents = () => {
     fetchEvents();
   }, [url]);
 
-  const handleClick = async (event) => {
-    try {
-      const res = await axios.post(
-        `${url}/api/v1/event/checkout-stripe-session`,
-        { eventId: event._id },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      if (res.data.success && res.data.sessionurl) {
-        window.location.href = res.data.sessionurl;
-      } else {
-        alert("Payment session creation failed");
+ const handleClick = async (event) => {
+  try {
+    //Check if user already registered
+    const alreadyRegistered = await axios.post(
+      `${url}/api/v1/event/register-check`,
+      { eventId: event._id },
+      {
+        headers: { Authorization: `Bearer ${token}` },
       }
-    } catch (error) {
-      alert("Something went wrong");
+    );
+
+    if (alreadyRegistered.data.registered) {
+      toast.info("You're already registered for this event.");
+      return;
     }
-  };
+    //If not registered, initiate Stripe session
+    const res = await axios.post(
+      `${url}/api/v1/event/checkout-stripe-session`,
+      { eventId: event._id },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    if (res.data.success && res.data.sessionurl) {
+      window.location.href = res.data.sessionurl;
+    } else {
+      toast.error("Payment session creation failed.");
+    }
+  } catch (error) {
+    console.error(error);
+    toast.error("Something went wrong. Please try again.");
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#ffffff] py-0">
+      <ToastContainer />
       {/* Header Bar */}
       <div className="bg-blue-600 py-6 px-4 sm:px-10 shadow-md">
         <h1 className="text-3xl font-bold text-white text-center">🏆 Register for Upcoming Events</h1>
