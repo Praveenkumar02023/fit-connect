@@ -18,7 +18,9 @@ const RegisterEvents = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await axios.get(`${url}/api/v1/event/all`);
+        const res = await axios.get(`${url}/api/v1/event/all`,{
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setEvents(res.data.allEvents);
       } catch (error) {
         console.log("Error in fetching the events");
