@@ -1,0 +1,49 @@
+.react-calendar {
+  background: white;
+  border: none;
+  font-family: inherit;
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.custom-calendar {
+  width: 100%;
+}
+
+.react-calendar__tile {
+  height: 2.5rem;
+  width: 2.5rem;
+  border-radius: 0.5rem;
+  transition: 0.2s;
+  margin: 0.2rem;
+  text-align: center;
+}
+
+.react-calendar__tile--active {
+  background: #2563eb !important; /* blue-600 */
+  color: white !important;
+}
+
+.react-calendar__tile--now {
+  background: #dbeafe !important; /* blue-100 */
+  color: #1e40af !important;      /* blue-800 */
+}
+
+/* Highlight session dates */
+.highlight-date {
+  background-color: #bfdbfe !important;  /* Tailwind blue-200 */
+  color: #1e3a8a !important;             /* Tailwind blue-900 */
+  border-radius: 0.5rem;
+  width: 80%;
+  height: 80%;
+  display: block;
+}
+
+/* Navigation Buttons */
+.react-calendar__navigation button {
+  color: #1e3a8a; /* Tailwind's blue-900 */
+  font-weight: 600;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+}

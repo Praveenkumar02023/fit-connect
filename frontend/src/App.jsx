@@ -28,6 +28,7 @@ import TrainerProfile from './components/User-Dashboard/TrainerProfile';
 import TrainerSessionsPage from './pages/Trainer/ViewMySessions';
 import Subscribers from './pages/Trainer/Subscribers';
 import Earnings from './pages/Trainer/Earnings';
+import TrainerDashboard from './pages/Trainer/TrainerDashboard';
 
 function App() {
   return (
@@ -67,6 +68,7 @@ function App() {
         <Route path="/signin" element={<Navigate to="/signin/user" />} />
 
         <Route path="/trainer" element={<TrainerLayout />}> 
+        <Route index element={<TrainerDashboard />} />
         <Route path = "sessions" element = {<TrainerSessionsPage /> } />
         <Route path = "subscribers" element = {<Subscribers /> } />
         <Route path = "earnings" element = {<Earnings />} />

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "calender": "^1.0.3",
+    "react": "^19.1.0"
+  }
+}
