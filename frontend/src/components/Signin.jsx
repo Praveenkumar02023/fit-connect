@@ -34,6 +34,7 @@ const Signin = () => {
           res = await axios.post(`${url}/api/v1/trainer/signin`,{
           email :  email,
           password : password
+
         });
       
         }else{
@@ -53,7 +54,12 @@ const Signin = () => {
         setToken(res.data.token);
         toast.success(res.message || "signin successfull");
         setToken(res.data.token)
-        navigate("/user/Feed");
+       
+        if(currentRole === "Trainer"){
+           navigate("/trainer");
+        }else{
+           navigate("/user/Feed");
+        }
 
       } catch (error) {
           toast.error(error.message);

@@ -73,7 +73,7 @@ const Reviews = () => {
         <div className="relative flex flex-col items-center gap-y-4 w-[60%] text-center" >
           <h1 className="text-black font-bold text-5xl" >Loved by the community</h1>
           <p className="text-gray-500 w-[50%] text-lg " >
-            Don't take our word for it - listen to what Vite community members have to say. 
+            Don't take our word for it - listen to what FitConnect community members have to say. 
           </p>
         </div>
         <div className="relative flex gap-x-6" >

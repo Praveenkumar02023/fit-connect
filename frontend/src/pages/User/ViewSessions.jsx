@@ -23,6 +23,7 @@ const ViewSessions = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+
       const sessionsWithTrainer = await Promise.all(
         res.data.Allsession.map(async (session) => {
           try {
