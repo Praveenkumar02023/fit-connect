@@ -79,6 +79,10 @@ const RegisterEvents = () => {
             key={event._id}
             className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 border border-gray-200"
           >
+            {/* image */}
+
+            
+
             {/* Title */}
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2 text-blue-700 font-semibold text-lg">

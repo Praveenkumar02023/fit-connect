@@ -10,11 +10,8 @@ import {
   UserPlus,
   Ban,
   Wallet,
-  Activity
 } from "lucide-react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
-
-const COLORS = ["#3B82F6", "#10B981", "#F59E0B"];
 
 const Dashboard = () => {
   const { token, url } = useContext(StoreContext);
@@ -66,22 +63,22 @@ const Dashboard = () => {
     [sessions]
   );
 
-  const pieData = useMemo(
-    () => [
+  const pieData = useMemo(() => {
+    const cancelledCount =
+      sessions.length - (upcomingSessions.length + completedSessions.length);
+    return [
       { name: "Upcoming", value: upcomingSessions.length },
       { name: "Completed", value: completedSessions.length },
-      {
-        name: "Other",
-        value: sessions.length - (upcomingSessions.length + completedSessions.length),
-      },
-    ],
-    [sessions.length, upcomingSessions.length, completedSessions.length]
-  );
+      { name: "Cancelled", value: cancelledCount },
+    ];
+  }, [sessions.length, upcomingSessions.length, completedSessions.length]);
 
   if (!user) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <p className="text-blue-600 font-semibold text-lg">Loading dashboard...</p>
+        <p className="text-blue-600 font-semibold text-lg">
+          Loading dashboard...
+        </p>
       </div>
     );
   }
@@ -92,7 +89,9 @@ const Dashboard = () => {
       <div className="bg-blue-600 text-white rounded-xl p-6 mb-8 shadow-md flex justify-between items-center h-[120px]">
         <div>
           <h1 className="text-2xl font-bold">Welcome back, {user.name}!</h1>
-          <p className="text-sm opacity-90">Ready to crush your fitness goals today?</p>
+          <p className="text-sm opacity-90">
+            Ready to crush your fitness goals today?
+          </p>
         </div>
         <div className="h-12 w-12 rounded-full">
           <img
@@ -105,10 +104,30 @@ const Dashboard = () => {
 
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 mb-8">
-        <StatCard icon={<Clock />} title="Upcoming Sessions" value={upcomingSessions.length} description="Future Sessions." />
-        <StatCard icon={<CheckCircle />} title="Completed Sessions" value={completedSessions.length} description="Sessions you've completed." />
-        <StatCard icon={<CreditCard />} title="Subscriptions" value={subscriptions.length} description="Your active subscriptions." />
-        <StatCard icon={<Trophy />} title="Events Joined" value={totalEvents.length} description="Group challenge events." />
+        <StatCard
+          icon={<Clock />}
+          title="Upcoming Sessions"
+          value={upcomingSessions.length}
+          description="Future Sessions."
+        />
+        <StatCard
+          icon={<CheckCircle />}
+          title="Completed Sessions"
+          value={completedSessions.length}
+          description="Sessions you've completed."
+        />
+        <StatCard
+          icon={<CreditCard />}
+          title="Subscriptions"
+          value={subscriptions.length}
+          description="Your active subscriptions."
+        />
+        <StatCard
+          icon={<Trophy />}
+          title="Events Joined"
+          value={totalEvents.length}
+          description="Group challenge events."
+        />
       </div>
 
       {/* Action Cards */}
@@ -128,27 +147,31 @@ const Dashboard = () => {
           onClick={() => navigate("/user/cancelSessions")}
         />
       </div>
-     <div className="mb-10 max-w-7xl mx-auto">
-  <ActionCard
-    title="Register for Events"
-    description={`Show your skills, compete with the best, and win amazing prizes.
+      <div className="mb-10 max-w-7xl mx-auto">
+        <ActionCard
+          title="Register for Events"
+          description={`Show your skills, compete with the best, and win amazing prizes.
 Don’t miss out on upcoming fitness challenges and events!
 Be bold, step up, and let your performance speak for itself.`}
-    buttonText="Register Now"
-    icon={<UserPlus size={26} className="text-yellow-500 ml-2" />}
-    onClick={() => navigate("/user/registerEvents")}
-    fullHeight
-  />
-</div>
+          buttonText="Register Now"
+          icon={<UserPlus size={26} className="text-yellow-500 ml-2" />}
+          onClick={() => navigate("/user/registerEvents")}
+          fullHeight
+        />
+      </div>
 
-
-
-      {/* Chart */}
+      {/* Pie Chart */}
       <div className="bg-white rounded-xl p-6 shadow mb-10 max-w-7xl mx-auto">
-        <h2 className="text-lg font-bold text-blue-800 mb-4">Track Your Fitness Progress</h2>
-        <div className="w-full h-72">
+        <h2 className="text-lg font-bold text-blue-800 mb-4">
+          Track Your Session Progress
+        </h2>
+        <div className=" w-full h-72">
           <ResponsiveContainer width="100%" height="100%">
-            <PieChart width={350} height={350}>
+            <PieChart
+              width={300}
+              height={300}
+              margin={{ top: 40, right: 100, bottom: 60, left: 100 }}
+            >
               <Pie
                 data={pieData}
                 cx="50%"
@@ -157,12 +180,48 @@ Be bold, step up, and let your performance speak for itself.`}
                 outerRadius={125}
                 labelLine={false}
                 dataKey="value"
-                label={({ name, percent, value }) =>
-                  value > 0 ? `${name} (${(percent * 100).toFixed(0)}%)` : ""
-                }
+                label={({ name, value, percent, cx, cy, midAngle }) => {
+                  if (value === 0) return null;
+
+                  const RADIAN = Math.PI / 180;
+
+                  // Set default distance from center
+                  let labelDistance = 140;
+
+                  // Push "Cancelled" further away
+                  if (name === "Cancelled") {
+                    labelDistance = 170;
+                  }
+
+                  const angle = -midAngle;
+                  const x = cx + labelDistance * Math.cos(angle * RADIAN);
+                  const y = cy + labelDistance * Math.sin(angle * RADIAN);
+                  const isRightSide = angle >= -90 && angle <= 90;
+
+                  return (
+                    <text
+                      x={x}
+                      y={y}
+                      textAnchor={isRightSide ? "start" : "end"}
+                      dominantBaseline="middle"
+                      className="text-sm fill-gray-800"
+                    >
+                      {`${name} (${(percent * 100).toFixed(0)}%)`}
+                    </text>
+                  );
+                }}
               >
                 {pieData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={
+                      entry.name === "Completed"
+                        ? "#10B981"
+                        : entry.name === "Upcoming"
+                        ? "#3B82F6"
+                        : "#F59E0B"
+                    }
+                  />
                 ))}
               </Pie>
               <Tooltip />
@@ -173,8 +232,16 @@ Be bold, step up, and let your performance speak for itself.`}
 
       {/* Sessions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-7xl mx-auto">
-        <SessionList title="Upcoming Sessions" sessions={upcomingSessions} color="blue" />
-        <SessionList title="Completed Sessions" sessions={completedSessions} color="green" />
+        <SessionList
+          title="Upcoming Sessions"
+          sessions={upcomingSessions}
+          color="blue"
+        />
+        <SessionList
+          title="Completed Sessions"
+          sessions={completedSessions}
+          color="green"
+        />
       </div>
     </div>
   );
@@ -191,13 +258,26 @@ const StatCard = ({ icon, title, value, description }) => (
   </div>
 );
 
-const ActionCard = ({ title, description, buttonText, onClick, icon, fullHeight }) => (
-  <div className={`bg-white border border-blue-200 rounded-xl shadow hover:shadow-md transition w-full flex flex-col justify-between p-6 ${fullHeight ? 'min-h-[220px]' : 'min-h-[220px]'}`}>
+const ActionCard = ({
+  title,
+  description,
+  buttonText,
+  onClick,
+  icon,
+  fullHeight,
+}) => (
+  <div
+    className={`bg-white border border-blue-200 rounded-xl shadow hover:shadow-md transition w-full flex flex-col justify-between p-6 ${
+      fullHeight ? "min-h-[220px]" : "min-h-[220px]"
+    }`}
+  >
     <div className="flex items-center justify-between mb-3">
       <h4 className="text-lg font-bold text-blue-900">{title}</h4>
       {icon}
     </div>
-    <p className="text-sm text-gray-600 mb-4 leading-relaxed flex-1">{description}</p>
+    <p className="text-sm text-gray-600 mb-4 leading-relaxed flex-1">
+      {description}
+    </p>
     <button
       onClick={onClick}
       className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition"
@@ -219,9 +299,12 @@ const SessionList = ({ title, sessions, color }) => (
             key={s._id}
             className={`p-4 bg-${color}-50 rounded-xl border-l-4 border-${color}-600 shadow-sm`}
           >
-            <p className={`text-sm font-semibold text-${color}-800`}>{s.type}</p>
+            <p className={`text-sm font-semibold text-${color}-800`}>
+              {s.type}
+            </p>
             <p className="text-xs text-gray-600">
-              {color === "blue" ? "Scheduled" : "Completed"}: {new Date(s.scheduledAt).toLocaleString()}
+              {color === "blue" ? "Scheduled" : "Completed"}:{" "}
+              {new Date(s.scheduledAt).toLocaleString()}
             </p>
           </li>
         ))}
