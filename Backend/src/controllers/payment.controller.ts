@@ -97,3 +97,20 @@ export const userPaymentById = async(req : Request , res : Response) => {
     }
 
 }
+export const getPaymentsByUserId = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+
+  try {
+    const payments = await paymentModel.find({ userId : userId });
+
+    res.status(200).json({
+      message: "Fetched payments by userId successfully",
+      payments,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: (error as Error).message || "Internal Server Error",
+    });
+  }
+};

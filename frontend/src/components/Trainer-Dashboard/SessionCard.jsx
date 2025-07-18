@@ -1,9 +1,11 @@
 import axios from "axios";
-import { useContext } from "react";
+import { useContext, useState  , useEffect} from "react";
 import { StoreContext } from "../../Context/StoreContext";
 
-const SessionCard = ({ sessionId, scheduledAt, type, clientName, clientImage, onRemoveSession}) => {
+
+const SessionCard = ({ sessionId, scheduledAt, type, clientName, clientImage, onRemoveSession , meetingLink , duration}) => {
   const { token, url } = useContext(StoreContext);
+  const[isMeetingActive , setIsMeetingActive] = useState(false);
 
   const markCompleteHandler = async () => {
     try {
@@ -24,6 +26,25 @@ const SessionCard = ({ sessionId, scheduledAt, type, clientName, clientImage, on
       console.error("Failed to mark session complete:", error);
     }
   };
+    useEffect(() => {
+    const checkMeetingAvailability = () => {
+      const now = new Date();
+      const startTime = new Date(scheduledAt);
+      const endTime = new Date(startTime.getTime() + duration * 60000); 
+
+      if (now >= startTime && now <= endTime) {
+        setIsMeetingActive(true);
+      } else {
+        setIsMeetingActive(false);
+      }
+    };
+    checkMeetingAvailability();
+
+    const interval = setInterval(checkMeetingAvailability, 10000);
+
+    return () => clearInterval(interval);
+  }, [scheduledAt, duration]);
+
 
   return (
     <div className="relative transition-transform hover:scale-105 min-w-[300px] max-w-[330px] bg-white/80 backdrop-blur-md shadow-lg rounded-2xl overflow-hidden border border-gray-200 hover:border-blue-400">
@@ -60,7 +81,27 @@ const SessionCard = ({ sessionId, scheduledAt, type, clientName, clientImage, on
         <p className="text-sm text-gray-500 mt-1">
           Scheduled At : <span className="text-blue-600 font-medium">{scheduledAt}</span>
         </p>
+        <p className="text-sm text-gray-500 mt-1">
+          Duration: <span className="text-blue-600 font-medium">{duration === 30 || duration === 45 ?<span>{duration} mins</span> : <span>{duration} hour</span>}</span>
+        </p>
       </div>
+      {meetingLink && (
+  <div className="text-center mt-1">
+    <a
+      href={isMeetingActive ? meetingLink : "#"}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={`inline-flex items-center justify-center gap-2 rounded-full ${
+        isMeetingActive ? 'bg-blue-500 hover:bg-blue-700' : 'bg-gray-300 cursor-not-allowed'
+      } text-white text-sm px-4 py-2 shadow transition mb-2 w-48`}
+      onClick={(e) => {
+        if (!isMeetingActive) e.preventDefault();
+      }}
+    >
+      {isMeetingActive ? "Join Meeting" : "Meeting Not Started"}
+    </a>
+  </div>
+      )}
     </div>
   );
 };

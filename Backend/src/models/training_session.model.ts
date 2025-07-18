@@ -11,7 +11,8 @@ interface sessionTypes extends Document{
     clientId : Types.ObjectId,
     paymentId? : Types.ObjectId,
     paymentStatus : string,
-    fee : number
+    fee : number,
+    meetingLink : string
 }
 
 const sessionSchema = new Schema<sessionTypes>({
@@ -42,6 +43,10 @@ const sessionSchema = new Schema<sessionTypes>({
     fee : {
         type : Number,
         required : true,  
+    },
+    meetingLink: {
+        type: String,
+       required: false,
     }
 
 },{timestamps : true});

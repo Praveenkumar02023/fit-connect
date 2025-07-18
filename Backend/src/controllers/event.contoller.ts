@@ -3,6 +3,7 @@ import {z} from 'zod';
 import { eventModel } from "../models/event.model";
 import { participantModel } from "../models/event_participant.model";
 import Stripe from 'stripe';
+import { userModel } from "../models/user.model";
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 if (!stripeSecretKey) {
   throw new Error("STRIPE_SECRET_KEY environment variable is not set.");
@@ -432,4 +433,55 @@ export const checkEventRegistration = async (req: Request, res: Response): Promi
     res.status(500).json({ message: "Internal server error" });
   }
 };
+export const getTrainerEvents = async (req: Request, res: Response) => {
+  const trainerId = (req as any).userId; 
+
+  try {
+    const events = await eventModel.find({ organiserId: trainerId });
+
+    res.status(200).json({
+      message: "Trainer events fetched successfully",
+      events,
+    });
+  } catch (error) {
+    console.error("Error fetching trainer events:", error);
+    res.status(500).json({
+      message: "Failed to fetch trainer events",
+      error: (error as Error).message,
+    });
+  }
+};
+
+export const getEventParticipants = async (req: Request, res: Response) => {
+  const { eventId } = req.params;
+
+  try {
+    const registrations = await participantModel.find({ eventId });
+
+    const participants = await Promise.all(
+      registrations.map(async (registration) => {
+        const user = await userModel.findById(registration.userId).select("name email");
+
+        return {
+          name: user?.name || "Unknown",
+          email: user?.email || "Unknown",
+          userId: registration.userId
+        };
+      })
+    );
+
+    res.status(200).json({
+      message: "Participants fetched successfully",
+      participants,
+    });
+
+  } catch (error) {
+    console.error("Error fetching event participants:", error);
+    res.status(500).json({
+      message: "Failed to fetch participants",
+      error: (error as Error).message,
+    });
+  }
+};
+
 

@@ -66,10 +66,12 @@ const TrainerSessionsPage = () => {
                 key={session._id}
                 sessionId={session._id}
                 scheduledAt={formattedDate}
+                duration = {session.duration}
                 type={session.type}
                 clientName={session.clientName || "Client"}
                 clientImage={session.clientImage || "/default-profile.png"}
                onRemoveSession={() => setSessions(prev => prev.filter(s => s._id !== session._id))}
+               meetingLink={session.meetingLink}
               />
             );
           })}

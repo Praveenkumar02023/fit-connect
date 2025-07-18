@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authMiddlware } from "../middlewares/auth.middleware";
-import { createEvent, deleteEvent, deleteRegistration, getAllEvents, getAllParticipants, getEventById, getUserRegisteredEvents, registerEvent, updateEvent  , createStripeSession , checkEventRegistration} from "../controllers/event.contoller";
+import { createEvent, deleteEvent, deleteRegistration, getAllEvents, getAllParticipants, getEventById, getUserRegisteredEvents, registerEvent, updateEvent  , createStripeSession , checkEventRegistration, getTrainerEvents , getEventParticipants} from "../controllers/event.contoller";
 import upload from "../middlewares/multer.middleware";
 
 export const eventRouter = Router();
@@ -8,7 +8,6 @@ export const eventRouter = Router();
 //related to events
 eventRouter.post('/create',authMiddlware,upload.single("image"),createEvent);
 eventRouter.get('/all',getAllEvents);
-eventRouter.get('/:id',authMiddlware,getEventById);
 eventRouter.patch('/update',authMiddlware,updateEvent);
 eventRouter.post('/delete',authMiddlware,deleteEvent);
 
@@ -19,4 +18,7 @@ eventRouter.post('/all-participants',authMiddlware,getAllParticipants);
 eventRouter.post('/UserRegisteredEvents' , authMiddlware , getUserRegisteredEvents)
 eventRouter.post('/checkout-stripe-session' , authMiddlware , createStripeSession)
 eventRouter.post('/register-check', authMiddlware, checkEventRegistration);
+eventRouter.get('/trainer' , authMiddlware , getTrainerEvents);
+eventRouter.get("/:eventId/participants", authMiddlware, getEventParticipants);
+eventRouter.get('/:id',authMiddlware,getEventById);
 

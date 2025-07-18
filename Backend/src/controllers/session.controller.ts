@@ -11,6 +11,11 @@ if (!stripeSecretKey) {
 const stripe = new Stripe(stripeSecretKey);
 const frontend_url = "http://localhost:5173";
 
+const generateMeetingLink = (trainerId: string) => {
+  return `https://meet.jit.si/FitConnect-${trainerId}-${Date.now()}`;
+};
+
+
 const bookSessionValidator = z.object({
   type: z.string(),
   scheduledAt: z.string().refine((val) => !isNaN(Date.parse(val)), {
@@ -48,6 +53,7 @@ export const bookSession = async (
     if (!trainer) {
       throw new Error("Trainer not found");
     }
+    const meetingLink = generateMeetingLink(trainerId);
 
 
     const session = await sessionModel.create({
@@ -59,6 +65,7 @@ export const bookSession = async (
       trainerId,
       paymentStatus: "pending",
       status: "pending",
+      meetingLink
     });
 
 

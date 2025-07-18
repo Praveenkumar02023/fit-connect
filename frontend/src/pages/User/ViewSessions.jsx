@@ -173,6 +173,17 @@ const ViewSessions = () => {
                   Cancel Session
                 </button>
               )}
+              {/* Join Meeting Button */}
+             {/* {session.meetingLink && (
+                <a
+                  href={session.meetingLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 w-full block text-center bg-green-600 hover:bg-green-700 text-white py-2 rounded-xl text-sm font-semibold shadow-md transition-all"
+                >
+                  Join Meeting
+                </a>
+              )} */}
             </div>
           ))
         )}
