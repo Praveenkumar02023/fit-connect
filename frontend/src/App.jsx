@@ -51,7 +51,7 @@ function App() {
           <Route path = "events" element ={<MyEvents />} />
           <Route path="feed" element={<Feed/>}/>
         </Route>
-          <Route path="/trainers/:id" element={<TrainerProfile/>}/>
+         <Route path="/trainers/:id" element={<TrainerProfile/>}/>
          <Route path="/session-success" element={<SessionSuccess />} />
          <Route path = "/user/buySubscription" element = {<BuySubscription />} />
          <Route path="/subscription-success" element={<SubscriptionSuccess />} />

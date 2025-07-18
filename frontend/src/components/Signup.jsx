@@ -19,7 +19,7 @@ const Signup = () => {
 
 
   const { role } = useParams();
-
+  let token ;
 
   const navigate = useNavigate();
   const {url , setToken} = useContext(StoreContext);
@@ -47,12 +47,15 @@ const Signup = () => {
           }
         );
 
+
+        token = res.data.token;
+
         if (res.status != 201) {
           toast.error("Signup failed :(");
           return;
         }
 
-        navigate("/Feed");
+        navigate("/user/feed");
         toast.success("Sign up successfull :)");
       } catch (error) {
         console.log(error);
@@ -184,21 +187,7 @@ const Signup = () => {
             className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-500"
           />
         </div>
-        <div className="w-[80%] mb-4">
-    <label className="text-sm flex items-center gap-1 mb-1">
-    Gender
-  </label>
-  <select
-    ref={genderRef}
-    className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-500"
-  >
-    <option value="">Select Gender</option>
-    <option value="male">Male</option>
-    <option value="female">Female</option>
-    <option value="other">Other</option>
-  </select>
-</div>
-
+        
         {/* Gender for User only */}
         {currentRole === "User" && (
           <div className="w-[80%] mb-4">
