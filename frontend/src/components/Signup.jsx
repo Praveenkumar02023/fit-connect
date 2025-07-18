@@ -19,7 +19,7 @@ const Signup = () => {
 
 
   const { role } = useParams();
-
+  let token ;
 
   const navigate = useNavigate();
   const {url , setToken} = useContext(StoreContext);
@@ -47,12 +47,15 @@ const Signup = () => {
           }
         );
 
+
+        token = res.data.token;
+
         if (res.status != 201) {
           toast.error("Signup failed :(");
           return;
         }
 
-        navigate("/Feed");
+        navigate("/user/feed");
         toast.success("Sign up successfull :)");
       } catch (error) {
         console.log(error);
