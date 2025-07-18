@@ -58,7 +58,6 @@ const SessionSuccess = () => {
         }, 3500); 
       } else {
         alert("Something went wrong during booking");
-         console.error("Book session response unexpected:", res.data);
       }
     } catch (err) {
       console.error(err);
