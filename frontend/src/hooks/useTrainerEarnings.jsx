@@ -5,6 +5,7 @@ import { StoreContext } from "../Context/StoreContext";
 export const useTrainerEarnings = () => {
   const { token, url } = useContext(StoreContext);
   const [loading, setLoading] = useState(true);
+
   const [earnings, setEarnings] = useState({
     total: 0,
     sessions: 0,
@@ -15,11 +16,19 @@ export const useTrainerEarnings = () => {
     eventPayments: [],
   });
 
+  const [monthlyEarnings, setMonthlyEarnings] = useState([]);
+
   useEffect(() => {
     const fetchEarnings = async () => {
       try {
         let total = 0, sessionTotal = 0, subsTotal = 0, eventTotal = 0;
         let sessionPaymentList = [], subsPaymentList = [], eventPaymentList = [];
+
+        let sessionMonthTotal = 0, subsMonthTotal = 0, eventMonthTotal = 0;
+
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
 
         // Sessions
         const sessionRes = await axios.get(`${url}/api/v1/trainer/sessions`, {
@@ -49,13 +58,20 @@ export const useTrainerEarnings = () => {
               { headers: { Authorization: `Bearer ${token}` } }
             );
 
+            const paymentDate = new Date(payment.createdAt);
+            const isCurrentMonth =
+              paymentDate.getMonth() === currentMonth &&
+              paymentDate.getFullYear() === currentYear;
+
             sessionPaymentList.push({
               clientName: userRes.data.user.name,
               purpose: payment.purpose,
               amount: payment.amount,
               createdAt: payment.createdAt,
             });
+
             sessionTotal += payment.amount;
+            if (isCurrentMonth) sessionMonthTotal += payment.amount;
           }
         }
 
@@ -83,13 +99,20 @@ export const useTrainerEarnings = () => {
               { headers: { Authorization: `Bearer ${token}` } }
             );
 
+            const paymentDate = new Date(payment.createdAt);
+            const isCurrentMonth =
+              paymentDate.getMonth() === currentMonth &&
+              paymentDate.getFullYear() === currentYear;
+
             subsPaymentList.push({
               clientName: userRes.data.user.name,
               purpose: payment.purpose,
               amount: payment.amount,
               createdAt: payment.createdAt,
             });
+
             subsTotal += payment.amount;
+            if (isCurrentMonth) subsMonthTotal += payment.amount;
           }
         }
 
@@ -118,13 +141,20 @@ export const useTrainerEarnings = () => {
             );
 
             for (const payment of eventPaymentsForUser) {
+              const paymentDate = new Date(payment.createdAt);
+              const isCurrentMonth =
+                paymentDate.getMonth() === currentMonth &&
+                paymentDate.getFullYear() === currentYear;
+
               eventPaymentList.push({
                 clientName: participant.name,
                 purpose: payment.purpose,
                 amount: payment.amount,
                 createdAt: payment.createdAt,
               });
+
               eventTotal += payment.amount;
+              if (isCurrentMonth) eventMonthTotal += payment.amount;
             }
           }
         }
@@ -140,6 +170,15 @@ export const useTrainerEarnings = () => {
           subscriptionPayments: subsPaymentList,
           eventPayments: eventPaymentList,
         });
+
+        // Set chart data (3 bars for current month)
+        const currentMonthData = [
+          { category: "Sessions", amount: sessionMonthTotal },
+          { category: "Subscriptions", amount: subsMonthTotal },
+          { category: "Events", amount: eventMonthTotal },
+        ];
+        setMonthlyEarnings(currentMonthData);
+
       } catch (err) {
         console.error("Error fetching trainer earnings:", err);
       } finally {
@@ -150,5 +189,6 @@ export const useTrainerEarnings = () => {
     fetchEarnings();
   }, [token, url]);
 
-  return { earnings, loading };
+  return { earnings, loading, monthlyEarnings };
 };
+export default useTrainerEarnings
