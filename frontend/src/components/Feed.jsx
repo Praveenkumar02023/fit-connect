@@ -4,10 +4,13 @@ import { StoreContext } from "../Context/StoreContext";
 import {User} from "lucide-react"
 
 
+
 const Feed = () => {
   
   const [event, setEvent] = useState([]);
+
   const [trainers, setTrainers] = useState([]);
+
   const { url, token } = useContext(StoreContext);
 
   useEffect(() => {
@@ -36,8 +39,8 @@ const Feed = () => {
         if (res.status != 200) {
           return;
         }
-        console.log(res);
-
+        
+        console.log(res.data.trainers[6]);
         setTrainers(res.data.trainers);
       } catch (error) {
         console.log(error);
