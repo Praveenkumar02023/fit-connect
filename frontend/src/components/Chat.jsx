@@ -3,15 +3,27 @@ import Button from './ui/Button';
 import { io } from 'socket.io-client';
 import axios from 'axios';
 import { StoreContext } from '../Context/StoreContext';
+import { useLocation, useParams } from 'react-router-dom';
 
 const Chat = () => {
+
+  const {id} = useParams();
+  const location = useLocation();
+  const who = location.state.who
+  console.log(who);
+  
+
   const { token, url } = useContext(StoreContext); // Make sure token and url are provided
   const [user, setUser] = useState(null);
   const inputRef = useRef(null);
   const socketRef = useRef(null);
 
   useEffect(() => {
-    getUser();
+    if(who == "trainer"){
+      getUser()
+    }else{
+      getTrainer()
+    }
   }, []);
 
   useEffect(() => {
@@ -44,7 +56,7 @@ const Chat = () => {
     if (!message) return;
 
     socketRef.current.emit('private-message', {
-      to: "124",
+      to: id,
       message,
     });
 
@@ -61,6 +73,22 @@ const Chat = () => {
 
       if (res.status === 200) {
         setUser(res.data.user);
+      }
+    } catch (error) {
+      console.error('Failed to get user:', error);
+    }
+  };
+
+  const getTrainer = async () => {
+    try {
+      const res = await axios.get(`${url}/api/v1/trainer/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.status === 200) {
+        setUser(res.data.trainer);
       }
     } catch (error) {
       console.error('Failed to get user:', error);

@@ -55,13 +55,17 @@ const MyTrainers = () => {
 
               <div className="flex space-x-3">
                 <button
-                  onClick={() => navigate(`/trainer/${trainer._id}`)}
+                  onClick={() => navigate(`/trainers/${trainer._id}`)}
                   className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
                 >
                   View Profile
                 </button>
                 <button
-                  onClick={() => navigate(`/chat/${trainer._id}`)}
+                  onClick={() => navigate(`/chat/${trainer._id}`,{
+                    state : {
+                      who : "trainer"
+                    }
+                  })}
                   className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
                 >
                   Chat

@@ -54,7 +54,7 @@ function App() {
           <Route path="feed" element={<Feed/>}/>
           <Route path="MyTrainers" element={<MyTrainers/>}/>
         </Route>
-          <Route path='/users/chat' element={<Chat/>}/>
+          <Route path='/chat/:id' element={<Chat/>}/>
          <Route path="/trainers/:id" element={<TrainerProfile/>}/>
          <Route path="/session-success" element={<SessionSuccess />} />
          <Route path = "/user/buySubscription" element = {<BuySubscription />} />
@@ -62,7 +62,7 @@ function App() {
          <Route path = "/user/registerEvents" element = {<RegisterEvents />} />
          <Route path = "/user/cancelSessions" element = {<ViewSessions />} />
          <Route path="/event-success" element={<EventSuccess />} />
-          <Route path ="/trainer/chat" element={<Chat/>}/>
+         
 
         <Route path="/signup/:role" element={<Signup />} />
         <Route path="/signin/:role" element={<Signin />} />
