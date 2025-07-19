@@ -40,7 +40,7 @@ const TrainerSidebar = () => {
   const navItems = [
     { to: "/trainer", label: "Dashboard", icon: <FaThLarge /> },
     { to: "/trainer/sessions", label: "My Sessions", icon: <FaCalendarAlt /> },
-    { to: "/trainer/create-event", label: "Create Event", icon: <FaCalendarAlt /> },
+    { to: "/trainer/createEvent", label: "Create Event", icon: <FaCalendarAlt /> },
     { to: "/trainer/subscribers", label: "Subscribers", icon: <FaUser /> },
     { to: "/trainer/events", label: "My Events", icon: <FaRegListAlt /> },
     { to: "/trainer/earnings", label: "Earnings", icon: <FaMoneyBillWave /> }

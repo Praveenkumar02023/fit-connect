@@ -29,6 +29,7 @@ import TrainerSessionsPage from './pages/Trainer/ViewMySessions';
 import Subscribers from './pages/Trainer/Subscribers';
 import Earnings from './pages/Trainer/Earnings';
 import TrainerDashboard from './pages/Trainer/TrainerDashboard';
+import CreateEvent from './pages/Trainer/CreateEvent';
 
 function App() {
   return (
@@ -72,6 +73,7 @@ function App() {
         <Route path = "sessions" element = {<TrainerSessionsPage /> } />
         <Route path = "subscribers" element = {<Subscribers /> } />
         <Route path = "earnings" element = {<Earnings />} />
+        <Route path = 'createEvent' element = {<CreateEvent />} />
         </Route>
         
 
