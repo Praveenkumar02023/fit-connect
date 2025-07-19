@@ -137,7 +137,12 @@ export const getAllSubscription = async(req : Request , res : Response) : Promis
 
     try {
         
-        const Allsubscription = await subscriptionModel.find({userId : userId});
+        const Allsubscription = await subscriptionModel.find({
+         $or: [
+        { userId },
+        { trainerId : userId },
+      ],
+        });
 
         res.status(200).json({message : "subscription fetched",Allsubscription});
 
