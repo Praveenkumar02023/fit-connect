@@ -93,6 +93,8 @@ const Subscribers = () => {
                   navigate(`/chat/${sub.userId}`, {
                     state: {
                       who: "User",
+                      username : sub.UserName,
+                      avatar : sub.UserImage
                     },
                   })
                 }
