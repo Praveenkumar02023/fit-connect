@@ -1,30 +1,50 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import Button from './ui/Button';
-import { io } from 'socket.io-client';
-import axios from 'axios';
-import { StoreContext } from '../Context/StoreContext';
-import { useLocation, useParams } from 'react-router-dom';
+import React, { useContext, useEffect, useRef, useState } from "react";
+import Button from "./ui/Button";
+import { io } from "socket.io-client";
+import axios from "axios";
+import { StoreContext } from "../Context/StoreContext";
+import { useLocation, useParams } from "react-router-dom";
 
 const Chat = () => {
-
-  const {id} = useParams();
+  const { id } = useParams();
   const location = useLocation();
-  const who = location.state.who
+  const who = location.state.who;
   console.log(who);
-  
 
   const { token, url } = useContext(StoreContext); // Make sure token and url are provided
   const [user, setUser] = useState(null);
+  const [messages, setMessages] = useState([]);
   const inputRef = useRef(null);
   const socketRef = useRef(null);
 
   useEffect(() => {
-    if(who == "trainer"){
-      getUser()
-    }else{
-      getTrainer()
+    if (who == "trainer") {
+      getUser();
+    } else {
+      getTrainer();
     }
   }, []);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const res = await axios.post(
+          `${url}/api/v1/message/get`,
+          { receiverId: id },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setMessages(res.data.messages);
+      } catch (err) {
+        console.error("Failed to load messages", err);
+      }
+    };
+
+    if (user && id) {
+      fetchMessages();
+    }
+  }, [user, id]);
 
   useEffect(() => {
     if (!user) return;
@@ -35,12 +55,18 @@ const Chat = () => {
 
     socketRef.current = socket;
 
-    socket.on('connect', () => {
-      console.log('Connected to socket server');
+    socket.on("connect", () => {
+      console.log("Connected to socket server");
 
-      socket.on('receive-message', ({ from, message }) => {
-        console.log('Message received:', message);
-        // You can update local state here to display messages
+      socket.on("receive-message", ({ from, message }) => {
+        console.log("Message received:", message);
+        const newMsg = {
+          senderId: from,
+          receiverId: user._id, // assuming message is to current user
+          message,
+          createdAt: new Date().toISOString(), // or let backend send it
+        };
+        setMessages((prev) => [...prev, newMsg]);
       });
     });
 
@@ -55,12 +81,21 @@ const Chat = () => {
     const message = inputRef.current.value.trim();
     if (!message) return;
 
-    socketRef.current.emit('private-message', {
+    socketRef.current.emit("private-message", {
       to: id,
       message,
     });
 
-    inputRef.current.value = '';
+     const newMsg = {
+          senderId: user._id,
+          receiverId: id ,// assuming message is to current user
+          message,
+          createdAt: new Date().toISOString(), // or let backend send it
+        };
+
+        setMessages((prev) => [...prev,newMsg])
+
+    inputRef.current.value = "";
   };
 
   const getUser = async () => {
@@ -75,7 +110,7 @@ const Chat = () => {
         setUser(res.data.user);
       }
     } catch (error) {
-      console.error('Failed to get user:', error);
+      console.error("Failed to get user:", error);
     }
   };
 
@@ -91,7 +126,7 @@ const Chat = () => {
         setUser(res.data.trainer);
       }
     } catch (error) {
-      console.error('Failed to get user:', error);
+      console.error("Failed to get user:", error);
     }
   };
 
@@ -99,7 +134,34 @@ const Chat = () => {
     <div className="flex items-center justify-center h-screen w-screen bg-gray-100">
       <div className="flex flex-col w-[50vw] h-screen bg-white shadow-2xl rounded-md overflow-hidden border border-gray-300">
         <div className="flex-1 bg-gray-100 p-4 overflow-y-auto">
-          {/* You can display messages here */}
+          {messages.map((m, idx) => {
+            const isSender = m.senderId === user._id;
+
+            return (
+              <div
+                key={idx}
+                className={`flex ${
+                  isSender ? "justify-end" : "justify-start"
+                } mb-2`}
+              >
+                <div
+                  className={`max-w-xs p-3 rounded-lg shadow-md ${
+                    isSender
+                      ? "bg-blue-500 text-white rounded-br-none"
+                      : "bg-gray-200 text-gray-800 rounded-bl-none"
+                  }`}
+                >
+                  <p className="text-sm">{m.message}</p>
+                  <span className="text-[10px] opacity-70 block mt-1 text-right">
+                    {new Date(m.createdAt).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
         </div>
         <div className="flex items-center gap-2 p-4 bg-white border-t border-gray-200">
           <input

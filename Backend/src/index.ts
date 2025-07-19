@@ -13,6 +13,7 @@ import { createServer } from "http";
 import cors from "cors"
 import { Server } from "socket.io";
 import { messageRouter } from "./routes/message.routes";
+import { messageModel } from "./models/chat.model";
 
 
 dotenv.config()
@@ -58,9 +59,17 @@ io.on("connection",(socket)=>{
 
     console.log("user connected");
 
-    socket.on("private-message",({to , message}) => {
+    socket.on("private-message",async({to , message}) => {
 
         const receiverSocketId = userSocketMap[to];
+
+        if(!receiverSocketId) return;
+
+        await messageModel.create({
+            senderId : userId,
+            receiverId : to,
+            message,
+        });
 
         io.to(receiverSocketId).emit("receive-message",{from : userId,message});
 
