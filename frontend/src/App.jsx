@@ -31,6 +31,7 @@ import Earnings from './pages/Trainer/Earnings';
 import TrainerDashboard from './pages/Trainer/TrainerDashboard';
 import Chat from './components/Chat';
 import MyTrainers from './components/User-Dashboard/MyTrainers';
+import UpdateTrainerProfile from './components/Trainer-Dashboard/UpdateTrainerProfile';
 
 function App() {
   return (
@@ -76,6 +77,7 @@ function App() {
         <Route path = "sessions" element = {<TrainerSessionsPage /> } />
         <Route path = "subscribers" element = {<Subscribers /> } />
         <Route path = "earnings" element = {<Earnings />} />
+        <Route path='profile' element={<UpdateTrainerProfile/>}/>
         </Route>
         
 
