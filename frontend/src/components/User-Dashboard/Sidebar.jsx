@@ -1,4 +1,4 @@
-import { Shell } from "lucide-react";
+import { Shell, User } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import {
   FaCalendarAlt,
@@ -55,6 +55,7 @@ const Sidebar = () => {
     { to: "/user/events", label: "Events", icon: <FaRegListAlt /> },
     { to: "/user/payments", label: "Payments", icon: <FaMoneyBillWave /> },
     { to: "/user/feed", label: "Feed", icon: <FaRegListAlt /> },
+    {to : "/user/MyTrainers" , label : "My Trainers" , icon : <User/>}
   ];
 
   return (

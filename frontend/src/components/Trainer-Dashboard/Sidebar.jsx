@@ -43,7 +43,7 @@ const TrainerSidebar = () => {
     { to: "/trainer/create-event", label: "Create Event", icon: <FaCalendarAlt /> },
     { to: "/trainer/subscribers", label: "Subscribers", icon: <FaUser /> },
     { to: "/trainer/events", label: "My Events", icon: <FaRegListAlt /> },
-    { to: "/trainer/earnings", label: "Earnings", icon: <FaMoneyBillWave /> }
+    { to: "/trainer/earnings", label: "Earnings", icon: <FaMoneyBillWave /> },
   ];
 
   return (
