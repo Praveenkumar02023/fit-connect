@@ -29,6 +29,8 @@ import TrainerSessionsPage from './pages/Trainer/ViewMySessions';
 import Subscribers from './pages/Trainer/Subscribers';
 import Earnings from './pages/Trainer/Earnings';
 import TrainerDashboard from './pages/Trainer/TrainerDashboard';
+import Chat from './components/Chat';
+import MyTrainers from './components/User-Dashboard/MyTrainers';
 
 function App() {
   return (
@@ -50,7 +52,9 @@ function App() {
           <Route path="payments" element={<Payment/>} />
           <Route path = "events" element ={<MyEvents />} />
           <Route path="feed" element={<Feed/>}/>
+          <Route path="MyTrainers" element={<MyTrainers/>}/>
         </Route>
+          <Route path='/users/chat' element={<Chat/>}/>
          <Route path="/trainers/:id" element={<TrainerProfile/>}/>
          <Route path="/session-success" element={<SessionSuccess />} />
          <Route path = "/user/buySubscription" element = {<BuySubscription />} />
@@ -58,7 +62,7 @@ function App() {
          <Route path = "/user/registerEvents" element = {<RegisterEvents />} />
          <Route path = "/user/cancelSessions" element = {<ViewSessions />} />
          <Route path="/event-success" element={<EventSuccess />} />
-        
+          <Route path ="/trainer/chat" element={<Chat/>}/>
 
         <Route path="/signup/:role" element={<Signup />} />
         <Route path="/signin/:role" element={<Signin />} />
