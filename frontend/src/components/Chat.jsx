@@ -8,14 +8,20 @@ import { useLocation, useParams } from "react-router-dom";
 const Chat = () => {
   const { id } = useParams();
   const location = useLocation();
-  const who = location.state.who;
-  console.log(who);
+  const { who, username, avatar } = location.state;
+
+  // console.log(who, username, avatar);
 
   const { token, url } = useContext(StoreContext); // Make sure token and url are provided
   const [user, setUser] = useState(null);
   const [messages, setMessages] = useState([]);
   const inputRef = useRef(null);
   const socketRef = useRef(null);
+  const scrollRef = useRef(null)
+
+  useEffect(()=>{
+    scrollRef.current.scrollIntoView({behavior : 'smooth'});
+  },[messages])
 
   useEffect(() => {
     if (who == "trainer") {
@@ -86,14 +92,14 @@ const Chat = () => {
       message,
     });
 
-     const newMsg = {
-          senderId: user._id,
-          receiverId: id ,// assuming message is to current user
-          message,
-          createdAt: new Date().toISOString(), // or let backend send it
-        };
+    const newMsg = {
+      senderId: user._id,
+      receiverId: id, // assuming message is to current user
+      message,
+      createdAt: new Date().toISOString(), // or let backend send it
+    };
 
-        setMessages((prev) => [...prev,newMsg])
+    setMessages((prev) => [...prev, newMsg]);
 
     inputRef.current.value = "";
   };
@@ -131,9 +137,20 @@ const Chat = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen w-screen bg-gray-100">
+    <div className="flex items-center justify-center h-screen w-screen bg-blue-50">
       <div className="flex flex-col w-[50vw] h-screen bg-white shadow-2xl rounded-md overflow-hidden border border-gray-300">
-        <div className="flex-1 bg-gray-100 p-4 overflow-y-auto">
+        <div className="flex items-center gap-4 px-4 py-2 h-[8vh] border-b border-white/30 bg-white/20 backdrop-blur-md shadow-md">
+          <img
+            src={avatar}
+            alt="client"
+            className="w-10 h-10 rounded-full object-cover border border-white/40 shadow"
+          />
+          <h1 className="text-lg font-semibold text-gray-800 drop-shadow-sm">
+            {username}
+          </h1>
+        </div>
+
+        <div  className="flex-1 bg-gray-100 p-4 overflow-y-auto">
           {messages.map((m, idx) => {
             const isSender = m.senderId === user._id;
 
@@ -162,6 +179,8 @@ const Chat = () => {
               </div>
             );
           })}
+
+           <div ref={scrollRef}></div>
         </div>
         <div className="flex items-center gap-2 p-4 bg-white border-t border-gray-200">
           <input

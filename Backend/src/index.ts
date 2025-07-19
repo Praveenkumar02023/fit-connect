@@ -63,14 +63,14 @@ io.on("connection",(socket)=>{
 
         const receiverSocketId = userSocketMap[to];
 
-        if(!receiverSocketId) return;
-
+        
         await messageModel.create({
             senderId : userId,
             receiverId : to,
             message,
         });
-
+        
+        if(!receiverSocketId) return;
         io.to(receiverSocketId).emit("receive-message",{from : userId,message});
 
     })
