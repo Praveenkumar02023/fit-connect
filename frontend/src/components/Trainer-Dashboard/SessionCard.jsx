@@ -102,7 +102,7 @@ const SessionCard = ({
       </div>
 
       {/* Meeting Status Display */}
-      {meetingStatus === "active" && meetingLink && (
+      {meetingStatus === "active" &&  meetingLink  && (
         <div className="text-center">
           <a
             href={meetingLink}

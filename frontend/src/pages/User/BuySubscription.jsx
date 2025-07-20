@@ -56,61 +56,63 @@ const BuySubscription = () => {
       </div>
 
       {/* Trainer Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-6 sm:px-12 py-10">
-        {trainers.map((trainer) => (
-          <div
-            key={trainer._id}
-            className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 border border-gray-200"
-          >
-            {/* Name */}
-            <div className="flex items-center text-blue-700 font-semibold text-lg mb-3">
-              <UserCircle className="h-5 w-5 bg-blue-100 p-1 rounded-full mr-2" />
-              <span>
-                {trainer.firstName} {trainer.lastName}
-              </span>
-            </div>
-
-            {/* Specialties */}
-            <div className="flex items-center text-gray-700 text-sm mb-2">
-              <BadgePercent className="h-4 w-4 mr-2 text-gray-500" />
-              <span className="font-semibold mr-1">Specialties:</span>
-              <span className="font-medium">
-                {Array.isArray(trainer.speciality)
-                  ? trainer.speciality.join(", ")
-                  : trainer.speciality}
-              </span>
-            </div>
-
-            {/* Experience */}
-            <div className="flex items-center text-gray-700 text-sm mb-2">
-              <Clock3 className="h-4 w-4 mr-2 text-gray-500" />
-              <span className="font-semibold mr-1">Experience:</span>
-              <span className="font-medium">{trainer.experience || 1} yrs</span>
-            </div>
-
-            {/* Duration */}
-            <div className="flex items-center text-gray-700 text-sm mb-2">
-              <CalendarCheck2 className="h-4 w-4 mr-2 text-gray-500" />
-              <span className="font-semibold mr-1">Duration:</span>
-              <span className="font-medium">1 Month</span>
-            </div>
-
-            {/* Pricing */}
-            <div className="flex items-center text-blue-700 text-md font-bold mt-3">
-              <BadgeIndianRupee className="h-5 w-5 mr-2 text-blue-600" />
-              ₹{trainer.pricing_perMonth}
-            </div>
-
-            {/* Subscribe Button */}
-            <button
-              onClick={() => handleSubscribe(trainer)}
-              className="mt-6 w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white py-2 rounded-xl text-sm font-semibold shadow-sm transition-all"
-            >
-              Subscribe Now
-            </button>
-          </div>
-        ))}
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-6 sm:px-12 py-10">
+  {trainers.map((trainer) => (
+    <div
+      key={trainer._id}
+      className="max-w-sm w-80 mx-auto border border-gray-300 p-4 rounded shadow hover:shadow-lg transition flex flex-col justify-between items-center space-y-3"
+    >
+      {/* Avatar */}
+      <div className="w-full flex justify-center">
+        <img
+          src={
+            trainer.avatar ||
+            "https://i.pinimg.com/474x/2c/47/d5/2c47d5dd5b532f83bb55c4cd6f5bd1ef.jpg?nii=t"
+          }
+          alt={`${trainer.firstName || "Trainer"} ${trainer.lastName || ""}`}
+          className="h-28 w-28 rounded-full object-cover bg-gray-100"
+        />
       </div>
+
+      {/* Name */}
+      <h3 className="font-semibold text-blue-600 text-lg text-center">
+        {trainer.firstName && trainer.lastName
+          ? `${trainer.firstName} ${trainer.lastName}`
+          : "Not available"}
+      </h3>
+
+      {/* Specialities */}
+      <p className="text-gray-700 text-sm text-center">
+        {Array.isArray(trainer.speciality) && trainer.speciality.length > 0
+          ? trainer.speciality.join(", ")
+          : trainer.speciality || "Not available"}
+      </p>
+
+      {/* Experience */}
+      <p className="text-sm text-gray-600 text-center">
+        💼 {trainer.experience ? `${trainer.experience} yrs` : "Not available"}
+      </p>
+
+      {/* Duration */}
+      <p className="text-sm text-gray-600 text-center">📆 Duration: 1 Month</p>
+
+      {/* Price */}
+      <p className="text-blue-600 font-semibold text-md text-center">
+        ₹{trainer.pricing_perMonth ?? "Not available"}
+      </p>
+
+      {/* Subscribe Button */}
+      <button
+        onClick={() => handleSubscribe(trainer)}
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-sm font-semibold shadow transition-all"
+      >
+        Subscribe Now
+      </button>
+    </div>
+  ))}
+</div>
+
+
     </div>
   );
 };
