@@ -62,7 +62,7 @@ const Feed = () => {
               <h2 className="text-xl font-semibold text-black">
                 Featured Trainers
               </h2>
-              <a href="/trainers" className="text-blue-600">
+              <a href="/user/buySubscription" className="text-blue-600">
                 View All →
               </a>
             </div>
@@ -148,7 +148,7 @@ const Feed = () => {
               <h2 className="text-xl font-semibold text-black">
                 Featured Upcoming Events
               </h2>
-              <a href="/events" className="text-blue-600">
+              <a  href="/user/registerEvents" className="text-blue-600">
                 View All Events →
               </a>
             </div>
@@ -214,7 +214,7 @@ const Feed = () => {
               <h2 className="text-xl font-semibold text-black">
                 Featured Ongoing Events
               </h2>
-              <a href="/events" className="text-blue-600">
+              <a href="/user/registerEvents" className="text-blue-600">
                 View All Events →
               </a>
             </div>

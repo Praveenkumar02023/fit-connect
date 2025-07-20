@@ -2,14 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { StoreContext } from '../../Context/StoreContext';
 import { toast, ToastContainer } from 'react-toastify';
-import {
-  CalendarDays,
-  BadgeCheck,
-  Clock,
-  IndianRupee,
-  User,
-  Search,
-} from 'lucide-react';
+import { Search } from 'lucide-react';
 import 'react-toastify/dist/ReactToastify.css';
 
 const ViewSessions = () => {
@@ -23,28 +16,32 @@ const ViewSessions = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-
       const sessionsWithTrainer = await Promise.all(
         res.data.Allsession.map(async (session) => {
           try {
             const trainerRes = await axios.get(`${url}/api/v1/trainer/${session.trainerId}`, {
               headers: { Authorization: `Bearer ${token}` },
             });
+
             const trainer = trainerRes.data.trainer;
             return {
               ...session,
-              trainerName: `${trainer.firstName} ${trainer.lastName}`,
+              trainerName: `${trainer.firstName || ''} ${trainer.lastName || ''}`.trim() || 'Not available',
+              trainerAvatar: trainer.avatar || null,
             };
           } catch (err) {
-            console.error('Trainer fetch failed', err);
-            return session;
+            return {
+              ...session,
+              trainerName: 'Not available',
+              trainerAvatar: null,
+            };
           }
         })
       );
 
       setSessions(sessionsWithTrainer);
     } catch (error) {
-      console.log('Error in fetching sessions', error);
+      console.error('Error in fetching sessions', error);
     }
   };
 
@@ -61,9 +58,8 @@ const ViewSessions = () => {
         }
       );
       toast.success('Your session has been cancelled successfully. Refund will be processed soon.');
-      fetchSessions(); // Refresh the list
+      fetchSessions();
     } catch (error) {
-      console.error('Cancel failed', error);
       toast.error('Cannot cancel the session.');
     }
   };
@@ -72,21 +68,93 @@ const ViewSessions = () => {
     fetchSessions();
   }, []);
 
-  const filteredSessions = sessions.filter((session) => {
-    return (
-      session.type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      session.trainerName?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+  const filteredSessions = sessions.filter((session) =>
+    session.type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    session.trainerName?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const upcomingSessions = filteredSessions.filter(
+    (s) => s.status === 'confirmed'
+  );
+
+  const pastSessions = filteredSessions.filter(
+    (s) => s.status === 'completed' || s.status === 'cancelled'
+  );
+
+  const renderCard = (session) => (
+    <div
+      key={session._id}
+      className="max-w-sm w-80 mx-auto bg-white rounded-2xl shadow hover:shadow-lg transition-all duration-300 p-6 border border-gray-200 flex flex-col items-center space-y-4"
+    >
+      <img
+        src={
+          session.trainerAvatar ||
+          "https://i.pinimg.com/474x/2c/47/d5/2c47d5dd5b532f83bb55c4cd6f5bd1ef.jpg?nii=t"
+        }
+        alt={session.trainerName || "Trainer"}
+        className="h-24 w-24 rounded-full object-cover bg-gray-100"
+      />
+      <h3 className="text-lg font-semibold text-blue-700 text-center">
+        {session.trainerName || "Not available"}
+      </h3>
+      <p className="text-sm text-gray-600 text-center">
+        🏋️‍♂️ {session.type || "Not available"}
+      </p>
+      <p className="text-sm text-gray-600 text-center">
+        ⏱ Duration: {session.duration || "Not available"} mins
+      </p>
+      <p className="text-sm text-gray-600 text-center">
+        📅 {new Date(session.scheduledAt).toLocaleString()}
+      </p>
+      <p className="text-blue-600 font-bold text-md text-center">
+        ₹{session.fee ?? "Not available"}
+      </p>
+      <span
+        className={`text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wide ${
+          session.status === "completed"
+            ? "bg-green-100 text-green-700"
+            : session.status === "cancelled"
+            ? "bg-red-100 text-red-700"
+            : "bg-yellow-100 text-yellow-800"
+        }`}
+      >
+        {session.status}
+      </span>
+
+      {session.meetingLink && (
+        <a
+          href={session.meetingLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full block text-center mt-2 bg-green-600 hover:bg-green-700 text-white py-2 rounded-xl text-sm font-semibold shadow transition-all"
+        >
+          Join Meeting
+        </a>
+      )}
+      {session.status === 'confirmed' && (
+        <button
+          onClick={() => handleClick(session)}
+          className="w-full bg-gradient-to-r mt-[-12px] from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 text-white py-2 rounded-xl text-sm font-semibold shadow transition-all"
+        >
+          Cancel Session
+        </button>
+      )}
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#ffffff]">
       <ToastContainer />
-
-      {/* Header */}
-      <div className="bg-blue-600 py-6 px-4 sm:px-10 shadow-md">
-        <h1 className="text-3xl font-bold text-white text-center">Sessions You Have Booked</h1>
-      </div>
+      <div className="bg-gradient-to-r from-blue-500 to-blue-700 py-8 px-4 sm:px-10 shadow-md rounded-b-xl">
+  <div className="text-center">
+    <h1 className="text-3xl sm:text-4xl font-extrabold text-white flex items-center justify-center gap-3">
+      🎯 My Sessions
+    </h1>
+    <p className="text-sm sm:text-base text-blue-100 mt-2">
+      Manage all your upcoming, ongoing, and past training sessions here
+    </p>
+  </div>
+</div>
 
       {/* Search */}
       <div className="px-6 sm:px-12 mt-6 flex items-center gap-3">
@@ -102,92 +170,33 @@ const ViewSessions = () => {
         </div>
       </div>
 
-      {/* Session Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-6 sm:px-12 py-10">
-        {filteredSessions.length === 0 ? (
-          <p className="text-center col-span-full text-gray-600">No sessions found</p>
-        ) : (
-          filteredSessions.map((session) => (
-            <div
-              key={session._id}
-              className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 border border-gray-200"
-            >
-              {/* Type and Status */}
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-2 text-blue-700 font-semibold text-lg">
-                  <BadgeCheck className="h-5 w-5 bg-blue-100 p-1 rounded-full" />
-                  {session.type}
-                </div>
-                <span
-                  className={`text-xs font-medium px-3 py-1 rounded-full uppercase 
-                    ${session.status === 'completed'
-                      ? 'bg-green-100 text-green-700'
-                      : session.status === 'cancelled'
-                      ? 'bg-red-100 text-red-700'
-                      : 'bg-yellow-100 text-yellow-800'
-                    }`}
-                >
-                  {session.status}
-                </span>
-              </div>
+      {/* Upcoming Section */}
+      <section className="px-6 sm:px-12 py-10">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-black">Upcoming / Ongoing Sessions</h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-3 gap-8">
+          {upcomingSessions.length === 0 ? (
+            <p className="text-center col-span-full text-gray-600">No upcoming sessions</p>
+          ) : (
+            upcomingSessions.map(renderCard)
+          )}
+        </div>
+      </section>
 
-              {/* Trainer */}
-              <div className="flex items-center text-gray-600 text-sm mb-2">
-                <User className="h-4 w-4 mr-2 text-gray-500" />
-                <span>
-                  <strong>Trainer:</strong> {session.trainerName}
-                </span>
-              </div>
-
-              {/* Duration */}
-              <div className="flex items-center text-gray-600 text-sm mb-2">
-                <Clock className="h-4 w-4 mr-2 text-gray-500" />
-                <span>
-                  <strong>Duration:</strong> {session.duration} mins
-                </span>
-              </div>
-
-              {/* Scheduled Date & Time */}
-              <div className="flex items-center text-gray-600 text-sm mb-2">
-                <CalendarDays className="h-4 w-4 mr-2 text-gray-500" />
-                <span>
-                  <strong>Scheduled at:</strong>{" "}
-                    {new Date(session.scheduledAt).toLocaleString()}
-                </span>
-              </div>
-
-              {/* Fee */}
-              <div className="flex items-center text-gray-600 text-sm mb-2">
-                <IndianRupee className="h-4 w-4 mr-2 text-gray-500" />
-                <span>
-                  <strong>Paid:</strong> ₹{session.fee}
-                </span>
-              </div>
-
-              {/* Cancel Button */}
-              {session.status === 'confirmed' && (
-                <button
-                  onClick={() => handleClick(session)}
-                  className="mt-4 w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white py-2 rounded-xl text-sm font-semibold shadow-md transition-all"
-                >
-                  Cancel Session
-                </button>
-              )}
-              {/* Join Meeting Button */}
-             {/* {session.meetingLink && (
-                <a
-                  href={session.meetingLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-2 w-full block text-center bg-green-600 hover:bg-green-700 text-white py-2 rounded-xl text-sm font-semibold shadow-md transition-all"
-                >
-                  Join Meeting
-                </a>
-              )} */}
-            </div>
-          ))
-        )}
-      </div>
+      {/* Past Section */}
+      <section className="px-6 sm:px-12 pb-16">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-black">Completed / Cancelled Sessions</h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {pastSessions.length === 0 ? (
+            <p className="text-center col-span-full text-gray-600">No past sessions</p>
+          ) : (
+            pastSessions.map(renderCard)
+          )}
+        </div>
+      </section>
     </div>
   );
 };
