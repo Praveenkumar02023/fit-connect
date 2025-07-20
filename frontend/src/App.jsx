@@ -29,6 +29,9 @@ import TrainerSessionsPage from './pages/Trainer/ViewMySessions';
 import Subscribers from './pages/Trainer/Subscribers';
 import Earnings from './pages/Trainer/Earnings';
 import TrainerDashboard from './pages/Trainer/TrainerDashboard';
+import CreateEvent from './pages/Trainer/CreateEvent';
+import ViewEvents from './pages/Trainer/ViewEvents';
+import EditEventPage from './pages/Trainer/EditEventPage';
 import Chat from './components/Chat';
 import MyTrainers from './components/User-Dashboard/MyTrainers';
 import UpdateTrainerProfile from './components/Trainer-Dashboard/UpdateTrainerProfile';
@@ -77,6 +80,9 @@ function App() {
         <Route path = "sessions" element = {<TrainerSessionsPage /> } />
         <Route path = "subscribers" element = {<Subscribers /> } />
         <Route path = "earnings" element = {<Earnings />} />
+        <Route path = 'createEvent' element = {<CreateEvent />} />
+        <Route path = "events" element = {<ViewEvents/>} />
+        <Route path = "event/edit/:eventId" element={<EditEventPage />} />
         <Route path='profile' element={<UpdateTrainerProfile/>}/>
         </Route>
         

@@ -1,3 +1,5 @@
+// ViewSessions.jsx
+
 import React, { useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { StoreContext } from '../../Context/StoreContext';
@@ -9,6 +11,30 @@ const ViewSessions = () => {
   const { url, token } = useContext(StoreContext);
   const [sessions, setSessions] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [meetingStatuses, setMeetingStatuses] = useState({});
+
+  useEffect(() => {
+    fetchSessions();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(updateMeetingStatuses, 10000);
+    updateMeetingStatuses();
+    return () => clearInterval(interval);
+  }, [sessions]);
+
+  const updateMeetingStatuses = () => {
+    const now = new Date();
+    const updatedStatuses = {};
+    sessions.forEach((session) => {
+      const start = new Date(session.scheduledAt);
+      const end = new Date(start.getTime() + session.duration * 60000);
+      if (now < start) updatedStatuses[session._id] = 'not_started';
+      else if (now >= start && now <= end) updatedStatuses[session._id] = 'active';
+      else updatedStatuses[session._id] = 'ended';
+    });
+    setMeetingStatuses(updatedStatuses);
+  };
 
   const fetchSessions = async () => {
     try {
@@ -22,181 +48,180 @@ const ViewSessions = () => {
             const trainerRes = await axios.get(`${url}/api/v1/trainer/${session.trainerId}`, {
               headers: { Authorization: `Bearer ${token}` },
             });
-
             const trainer = trainerRes.data.trainer;
             return {
               ...session,
-              trainerName: `${trainer.firstName || ''} ${trainer.lastName || ''}`.trim() || 'Not available',
-              trainerAvatar: trainer.avatar || null,
+              trainerName: `${trainer.firstName || ''} ${trainer.lastName || ''}`.trim(),
+              trainerAvatar: trainer.avatar,
             };
-          } catch (err) {
-            return {
-              ...session,
-              trainerName: 'Not available',
-              trainerAvatar: null,
-            };
+          } catch {
+            return { ...session, trainerName: 'Not available', trainerAvatar: null };
           }
         })
       );
-
       setSessions(sessionsWithTrainer);
     } catch (error) {
       console.error('Error in fetching sessions', error);
     }
   };
 
-  const handleClick = async (session) => {
+  const handleCancel = async (session) => {
     const confirmed = window.confirm("Are you sure you want to cancel this session?");
     if (!confirmed) return;
-
     try {
-      await axios.post(
-        `${url}/api/v1/session/cancel`,
-        { sessionId: session._id },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      toast.success('Your session has been cancelled successfully. Refund will be processed soon.');
+      await axios.post(`${url}/api/v1/session/cancel`, { sessionId: session._id }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success("Session cancelled successfully.");
       fetchSessions();
-    } catch (error) {
-      toast.error('Cannot cancel the session.');
+    } catch {
+      toast.error("Unable to cancel session.");
     }
   };
 
-  useEffect(() => {
-    fetchSessions();
-  }, []);
+  const renderCard = (session) => {
+    const status = meetingStatuses[session._id];
 
-  const filteredSessions = sessions.filter((session) =>
-    session.type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    session.trainerName?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const upcomingSessions = filteredSessions.filter(
-    (s) => s.status === 'confirmed'
-  );
-
-  const pastSessions = filteredSessions.filter(
-    (s) => s.status === 'completed' || s.status === 'cancelled'
-  );
-
-  const renderCard = (session) => (
-    <div
-      key={session._id}
-      className="max-w-sm w-80 mx-auto bg-white rounded-2xl shadow hover:shadow-lg transition-all duration-300 p-6 border border-gray-200 flex flex-col items-center space-y-4"
-    >
-      <img
-        src={
-          session.trainerAvatar ||
-          "https://i.pinimg.com/474x/2c/47/d5/2c47d5dd5b532f83bb55c4cd6f5bd1ef.jpg?nii=t"
-        }
-        alt={session.trainerName || "Trainer"}
-        className="h-24 w-24 rounded-full object-cover bg-gray-100"
-      />
-      <h3 className="text-lg font-semibold text-blue-700 text-center">
-        {session.trainerName || "Not available"}
-      </h3>
-      <p className="text-sm text-gray-600 text-center">
-        🏋️‍♂️ {session.type || "Not available"}
-      </p>
-      <p className="text-sm text-gray-600 text-center">
-        ⏱ Duration: {session.duration || "Not available"} mins
-      </p>
-      <p className="text-sm text-gray-600 text-center">
-        📅 {new Date(session.scheduledAt).toLocaleString()}
-      </p>
-      <p className="text-blue-600 font-bold text-md text-center">
-        ₹{session.fee ?? "Not available"}
-      </p>
-      <span
-        className={`text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wide ${
-          session.status === "completed"
-            ? "bg-green-100 text-green-700"
-            : session.status === "cancelled"
-            ? "bg-red-100 text-red-700"
-            : "bg-yellow-100 text-yellow-800"
-        }`}
+    return (
+      <div
+        key={session._id}
+        className="bg-white rounded-2xl shadow-md overflow-hidden max-w-md w-full mx-auto relative transition-transform transform hover:scale-105 hover:shadow-xl hover:border-blue-300 border border-gray-200"
       >
-        {session.status}
-      </span>
-
-      {session.meetingLink && (
-        <a
-          href={session.meetingLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-full block text-center mt-2 bg-green-600 hover:bg-green-700 text-white py-2 rounded-xl text-sm font-semibold shadow transition-all"
-        >
-          Join Meeting
-        </a>
-      )}
-      {session.status === 'confirmed' && (
-        <button
-          onClick={() => handleClick(session)}
-          className="w-full bg-gradient-to-r mt-[-12px] from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 text-white py-2 rounded-xl text-sm font-semibold shadow transition-all"
-        >
-          Cancel Session
-        </button>
-      )}
-    </div>
-  );
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#ffffff]">
-      <ToastContainer />
-      <div className="bg-gradient-to-r from-blue-500 to-blue-700 py-8 px-4 sm:px-10 shadow-md rounded-b-xl">
-  <div className="text-center">
-    <h1 className="text-3xl sm:text-4xl font-extrabold text-white flex items-center justify-center gap-3">
-      🎯 My Sessions
-    </h1>
-    <p className="text-sm sm:text-base text-blue-100 mt-2">
-      Manage all your upcoming, ongoing, and past training sessions here
-    </p>
-  </div>
-</div>
-
-      {/* Search */}
-      <div className="px-6 sm:px-12 mt-6 flex items-center gap-3">
-        <div className="relative w-full max-w-md">
-          <Search className="absolute left-3 top-2.5 text-gray-400" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by session type or trainer name"
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        {/* Trainer Image Circular */}
+        <div className="flex justify-center mt-4">
+          <img
+            src={
+              session.trainerAvatar ||
+              "https://www.gravatar.com/avatar/?d=mp"
+            }
+            alt="Trainer"
+            className="w-24 h-24 rounded-full object-cover border-2 border-blue-500"
           />
         </div>
+
+        {/* Status Pill */}
+        <div
+          className={`absolute top-2 right-2 text-sm px-3 py-1 rounded-full font-semibold ${
+            session.status === "completed"
+              ? "bg-green-200 text-green-800"
+              : session.status === "cancelled"
+              ? "bg-red-200 text-red-700"
+              : "bg-yellow-200 text-yellow-800"
+          }`}
+        >
+          {session.status}
+        </div>
+
+        {/* Session Info */}
+        <div className="p-4 space-y-2 text-center">
+          <h3 className="text-blue-900 text-lg font-bold">{session.type}</h3>
+          <p className="text-gray-600 text-sm">Personal training session</p>
+
+          <div className="text-sm text-gray-700 space-y-1">
+            <p>
+              <strong>📅 Scheduled:</strong>{" "}
+              {new Date(session.scheduledAt).toLocaleString()}
+            </p>
+            <p>
+              <strong>🕒 Duration:</strong> {session.duration} mins
+            </p>
+            <p>
+              <strong>👤 Trainer:</strong> {session.trainerName}
+            </p>
+            <p>
+              <strong>💰 Fee:</strong> ₹{session.fee}
+            </p>
+          </div>
+        </div>
+
+        {/* Actions */}
+        {session.status === "confirmed" && (
+          <div className="flex justify-between px-4 py-3 border-t bg-gray-50 gap-2">
+            {status === "active" && session.meetingLink && (
+              <a
+                href={session.meetingLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 text-center bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium"
+              >
+                Join Meeting
+              </a>
+            )}
+
+            {status === "not_started" && (
+              <p className="flex-1 text-center bg-gray-200 text-gray-600 px-4 py-2 rounded-md text-sm cursor-not-allowed">
+                Meeting not started
+              </p>
+            )}
+
+            {status === "ended" && (
+              <p className="flex-1 text-center bg-red-100 text-red-600 px-4 py-2 rounded-md text-sm cursor-not-allowed">
+                Meeting has ended
+              </p>
+            )}
+
+            <button
+              onClick={() => handleCancel(session)}
+              className="flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium"
+            >
+              Cancel Session
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const filtered = sessions.filter((s) =>
+    s.type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    s.trainerName?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const upcoming = filtered.filter((s) => s.status === 'confirmed');
+  const past = filtered.filter((s) => s.status === 'completed' || s.status === 'cancelled');
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <ToastContainer />
+      <div className="bg-blue-600 py-5 px-4 text-center text-white shadow mt-4 rounded-xl ml-3 mr-3 h-20">
+        <h1 className="text-3xl font-bold">Your Sessions</h1>
       </div>
 
-      {/* Upcoming Section */}
-      <section className="px-6 sm:px-12 py-10">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-black">Upcoming / Ongoing Sessions</h2>
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* Search Box */}
+        <div className="mb-6 flex justify-center">
+          <div className="relative w-full max-w-md">
+            <Search className="absolute left-3 top-2.5 text-gray-400" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search by session type or trainer name"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-3 gap-8">
-          {upcomingSessions.length === 0 ? (
-            <p className="text-center col-span-full text-gray-600">No upcoming sessions</p>
-          ) : (
-            upcomingSessions.map(renderCard)
-          )}
-        </div>
-      </section>
 
-      {/* Past Section */}
-      <section className="px-6 sm:px-12 pb-16">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-black">Completed / Cancelled Sessions</h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {pastSessions.length === 0 ? (
-            <p className="text-center col-span-full text-gray-600">No past sessions</p>
+        {/* Upcoming Sessions */}
+        <h2 className="text-lg font-semibold mb-4">Upcoming / Ongoing Sessions</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mr-3 ml-3">
+          {upcoming.length === 0 ? (
+            <p className="text-gray-600">No upcoming sessions.</p>
           ) : (
-            pastSessions.map(renderCard)
+            upcoming.map(renderCard)
           )}
         </div>
-      </section>
+
+        {/* Past Sessions */}
+        <h2 className="text-lg font-semibold mt-10 mb-4 ">Completed / Cancelled Sessions</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mr-3 ml-3">
+          {past.length === 0 ? (
+            <p className="text-gray-600">No past sessions.</p>
+          ) : (
+            past.map(renderCard)
+          )}
+        </div>
+      </div>
     </div>
   );
 };

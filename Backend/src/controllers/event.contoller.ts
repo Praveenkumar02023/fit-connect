@@ -21,7 +21,7 @@ const createEventValidator = z.object({
   prizePool: z
     .preprocess((val) => (val !== "" ? Number(val) : undefined), z.number().optional()),
 
-  registerationFee: z
+  registrationFee: z
     .preprocess((val) => (val !== "" ? Number(val) : undefined), z.number().optional()),
 
  date: z.preprocess((val) => {
@@ -57,7 +57,7 @@ export const createEvent = async (req: Request, res: Response): Promise<any> => 
     });
   }
 
-  const { title, description, type, location, prizePool, registerationFee, date } = parsed.data;
+  const { title, description, type, location, prizePool, registrationFee, date } = parsed.data;
 
   
 
@@ -75,7 +75,7 @@ export const createEvent = async (req: Request, res: Response): Promise<any> => 
       type,
       location,
       prizePool,
-      registerationFee,
+      registrationFee,
       date,
       organizerId,
       status: "upcoming",
@@ -156,8 +156,9 @@ title: z.string().optional(),
   description: z.string().optional(),
   type: z.string().optional(),
   location: z.string().optional(),
-  prizePool: z.number().optional(),
-  registerationFee: z.number().optional(),
+ prizePool: z.preprocess((val) => Number(val), z.number()).optional(),
+registrationFee: z.preprocess((val) => Number(val), z.number()).optional(),
+
   date: z
     .string()
     .refine(val => !isNaN(Date.parse(val)), {
@@ -437,7 +438,7 @@ export const getTrainerEvents = async (req: Request, res: Response) => {
   const trainerId = (req as any).userId; 
 
   try {
-    const events = await eventModel.find({ organiserId: trainerId });
+    const events = await eventModel.find({ organizerId: trainerId });
 
     res.status(200).json({
       message: "Trainer events fetched successfully",
