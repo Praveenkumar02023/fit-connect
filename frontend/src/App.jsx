@@ -30,6 +30,8 @@ import Subscribers from './pages/Trainer/Subscribers';
 import Earnings from './pages/Trainer/Earnings';
 import TrainerDashboard from './pages/Trainer/TrainerDashboard';
 import CreateEvent from './pages/Trainer/CreateEvent';
+import ViewEvents from './pages/Trainer/ViewEvents';
+import EditEventPage from './pages/Trainer/EditEventPage';
 
 function App() {
   return (
@@ -74,6 +76,8 @@ function App() {
         <Route path = "subscribers" element = {<Subscribers /> } />
         <Route path = "earnings" element = {<Earnings />} />
         <Route path = 'createEvent' element = {<CreateEvent />} />
+        <Route path = "events" element = {<ViewEvents/>} />
+        <Route path = "event/edit/:eventId" element={<EditEventPage />} />
         </Route>
         
 

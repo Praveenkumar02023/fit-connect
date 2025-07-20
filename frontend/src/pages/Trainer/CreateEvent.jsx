@@ -22,7 +22,7 @@ const CreateEvent = () => {
     type: '',
     location: '',
     prizePool: '',
-    registerationFee: '',
+    registrationFee: '',
     date: '',
   });
 
@@ -50,7 +50,7 @@ const CreateEvent = () => {
       formPayload.append('type', formData.type);
       formPayload.append('location', formData.location);
       formPayload.append('prizePool', Number(formData.prizePool));
-      formPayload.append('registerationFee', Number(formData.registerationFee));
+      formPayload.append('registrationFee', Number(formData.registrationFee));
       formPayload.append('date', formData.date);
       if (image) {
         formPayload.append('image', image);
@@ -174,8 +174,8 @@ const CreateEvent = () => {
               </label>
               <input
                 type="number"
-                name="registerationFee"
-                value={formData.registerationFee}
+                name="registrationFee"
+                value={formData.registrationFee}
                 onChange={handleChange}
                 className="w-full bg-blue-50 p-3 rounded-md"
                 required
