@@ -15,7 +15,7 @@ trainerRouter.post('/signin',Signin);
 trainerRouter.patch('/update',authMiddlware,upload.single("image"),updateTrainerProfile)
 trainerRouter.get('/sessions',authMiddlware,getTrainerSessions);
 trainerRouter.get('/profile' , authMiddlware ,getTrainerProfile);
+trainerRouter.get('/:id' , authMiddlware ,getTrainerById);
 trainerRouter.get("/", getAllTrainers);
 
-trainerRouter.get('/:id' , authMiddlware ,getTrainerById);
 

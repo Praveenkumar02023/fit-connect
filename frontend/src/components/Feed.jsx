@@ -62,7 +62,7 @@ const Feed = () => {
               <h2 className="text-xl font-semibold text-black">
                 Featured Trainers
               </h2>
-              <a href="/trainers" className="text-blue-600">
+              <a href="/user/buySubscription" className="text-blue-600">
                 View All →
               </a>
             </div>
@@ -72,9 +72,9 @@ const Feed = () => {
                 <a
                   key={t._id}
                   href={`/trainers/${t._id}`}
-                  className="block border border-gray-300 p-4 rounded shadow hover:shadow-lg transition"
+                  className="flex flex-col  border border-gray-300 p-4 rounded-2xl shadow hover:shadow-lg transition gap-y-2 justify-between "
                 >
-                  <div className="relative mb-4">
+                  <div className="flex flex-col relative mb-4 ">
                     {/* Featured Tag */}
                     {t.featured && (
                       <span className="absolute top-2 right-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
@@ -148,7 +148,7 @@ const Feed = () => {
               <h2 className="text-xl font-semibold text-black">
                 Featured Upcoming Events
               </h2>
-              <a href="/events" className="text-blue-600">
+              <a  href="/user/registerEvents" className="text-blue-600">
                 View All Events →
               </a>
             </div>
@@ -160,7 +160,7 @@ const Feed = () => {
                   <a
                     key={event._id}
                     href={`/event/${event._id}`}
-                    className="block border border-gray-300 p-4 rounded shadow hover:shadow-lg transition"
+                    className="flex flex-col gap-y-2 border border-gray-300 p-4 rounded-2xl shadow hover:shadow-lg transition"
                   >
                     <div className="relative mb-4">
                       {event.status === "upcoming" && (
@@ -214,7 +214,7 @@ const Feed = () => {
               <h2 className="text-xl font-semibold text-black">
                 Featured Ongoing Events
               </h2>
-              <a href="/events" className="text-blue-600">
+              <a href="/user/registerEvents" className="text-blue-600">
                 View All Events →
               </a>
             </div>
@@ -226,7 +226,7 @@ const Feed = () => {
                   <a
                     key={event._id}
                     href={`/event/${event._id}`}
-                    className="block border border-gray-300 p-4 rounded shadow hover:shadow-lg transition"
+                    className="flex flex-col gap-y-2 border border-gray-300 p-4  shadow hover:shadow-lg transition rounded-2xl"
                   >
                     <div className="relative mb-4">
                       {event.status === "ongoing" && (
@@ -279,5 +279,5 @@ const Feed = () => {
     </>
   );
 };
-
+``
 export default Feed;

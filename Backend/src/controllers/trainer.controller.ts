@@ -173,13 +173,15 @@ export const updateTrainerProfile = async(req : Request,res : Response) : Promis
   }
     console.log(parsed.data);
     
-    const updatedTrainer = await Trainer.updateOne({_id : trainerId },parsed.data);
+    const acknowledge = await Trainer.updateOne({_id : trainerId },parsed.data);
 
-    if(!updatedTrainer.matchedCount){
+    if(!acknowledge.matchedCount){
       throw new Error("Trainer not found");
     } 
 
-    res.status(200).json({message : "Trainer details updated!",updatedTrainer});
+    const updatedTrainer = await Trainer.find({_id : trainerId});
+
+    res.status(200).json({message : "Trainer details updated!",acknowledge,updatedTrainer});
 
   } catch (error) {
 

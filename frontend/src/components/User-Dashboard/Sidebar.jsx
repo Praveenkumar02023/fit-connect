@@ -1,4 +1,4 @@
-import { Shell } from "lucide-react";
+import { Calendar, Shell, User } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import {
   FaCalendarAlt,
@@ -54,6 +54,8 @@ const Sidebar = () => {
     },
     { to: "/user/events", label: "Events", icon: <FaRegListAlt /> },
     { to: "/user/payments", label: "Payments", icon: <FaMoneyBillWave /> },
+    {to : "/user/MyTrainers" , label : "My Trainers" , icon : <User className="size-5" />},
+    {to : "/user/MySessions" , label : "My Sessions" , icon : <Calendar className="size-5" />},
     { to: "/user/feed", label: "Feed", icon: <FaRegListAlt /> },
   ];
 

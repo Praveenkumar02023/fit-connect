@@ -137,7 +137,12 @@ export const getAllSubscription = async(req : Request , res : Response) : Promis
 
     try {
         
-        const Allsubscription = await subscriptionModel.find({userId : userId});
+        const Allsubscription = await subscriptionModel.find({
+         $or: [
+        { userId },
+        { trainerId : userId },
+      ],
+        });
 
         res.status(200).json({message : "subscription fetched",Allsubscription});
 
@@ -212,4 +217,21 @@ export const getTrainerSubscription = async(req : Request , res : Response) : Pr
     });
     }
 
+}
+
+export const getTrainers = async (req : Request, res : Response) => {
+
+
+
+  try {
+    const subscriptions = await subscriptionModel
+      .find({ userId: (req as any).userId as string, isActive: true })
+      .populate("trainerId");
+
+    const trainers = subscriptions.map((sub) => sub.trainerId);
+
+    res.status(200).json({ trainers });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch subscribed trainers" });
+  }
 }
