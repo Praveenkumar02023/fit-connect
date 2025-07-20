@@ -54,9 +54,9 @@ const Sidebar = () => {
     },
     { to: "/user/events", label: "Events", icon: <FaRegListAlt /> },
     { to: "/user/payments", label: "Payments", icon: <FaMoneyBillWave /> },
-    { to: "/user/feed", label: "Feed", icon: <FaRegListAlt /> },
     {to : "/user/MyTrainers" , label : "My Trainers" , icon : <User className="size-5" />},
-    {to : "/user/MySessions" , label : "My Sessions" , icon : <Calendar className="size-5" />}
+    {to : "/user/MySessions" , label : "My Sessions" , icon : <Calendar className="size-5" />},
+    { to: "/user/feed", label: "Feed", icon: <FaRegListAlt /> },
   ];
 
   return (
