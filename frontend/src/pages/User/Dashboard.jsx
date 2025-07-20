@@ -144,7 +144,7 @@ const Dashboard = () => {
           description="Need to reschedule? Cancel your upcoming sessions with just a click. Flexible and easy."
           buttonText="Cancel Session"
           icon={<Ban size={26} className="text-red-500 ml-2" />}
-          onClick={() => navigate("/user/cancelSessions")}
+          onClick={() => navigate("/user/MySessions")}
         />
       </div>
       <div className="mb-10 max-w-7xl mx-auto">

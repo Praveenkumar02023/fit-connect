@@ -54,6 +54,7 @@ function App() {
           <Route path = "events" element ={<MyEvents />} />
           <Route path="feed" element={<Feed/>}/>
           <Route path="MyTrainers" element={<MyTrainers/>}/>
+          <Route path="MySessions" element={<ViewSessions/>}/>
         </Route>
           <Route path='/chat/:id' element={<Chat/>}/>
          <Route path="/trainers/:id" element={<TrainerProfile/>}/>
@@ -61,7 +62,6 @@ function App() {
          <Route path = "/user/buySubscription" element = {<BuySubscription />} />
          <Route path="/subscription-success" element={<SubscriptionSuccess />} />
          <Route path = "/user/registerEvents" element = {<RegisterEvents />} />
-         <Route path = "/user/cancelSessions" element = {<ViewSessions />} />
          <Route path="/event-success" element={<EventSuccess />} />
          
 
