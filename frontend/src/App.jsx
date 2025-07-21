@@ -35,6 +35,10 @@ import EditEventPage from './pages/Trainer/EditEventPage';
 import Chat from './components/Chat';
 import MyTrainers from './components/User-Dashboard/MyTrainers';
 import UpdateTrainerProfile from './components/Trainer-Dashboard/UpdateTrainerProfile';
+import AboutUs from './components/AboutUs';
+import Contact from './components/Contact';
+import Policy from './components/Policy';
+import Terms from './components/Terms';
 
 function App() {
   return (
@@ -66,7 +70,10 @@ function App() {
          <Route path="/subscription-success" element={<SubscriptionSuccess />} />
          <Route path = "/user/registerEvents" element = {<RegisterEvents />} />
          <Route path="/event-success" element={<EventSuccess />} />
-         
+         <Route path="/about" element={<AboutUs/>} />
+         <Route path="/contact" element={<Contact/>} />
+         <Route path="/policy" element={<Policy/>} />
+         <Route path="/terms" element={<Terms/>} />
 
         <Route path="/signup/:role" element={<Signup />} />
         <Route path="/signin/:role" element={<Signin />} />

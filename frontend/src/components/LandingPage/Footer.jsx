@@ -30,10 +30,10 @@ const Footer = () => {
           <div className="ml-8 flex flex-col gap-y-3">
             <h3 className="text-lg font-bold">Company</h3>
             <ul className="ml-2 flex flex-col gap-y-2">
-              <li className="hover:underline"><Link to="/">About Us</Link></li>
-              <li className="hover:underline"><Link to="/">Contact</Link></li>
-              <li className="hover:underline"><Link to="/">Privacy Policy</Link></li>
-              <li className="hover:underline"><Link to="/">Terms of Service</Link></li>
+              <li className="hover:underline"><Link to="/about">About Us</Link></li>
+              <li className="hover:underline"><Link to="/contact">Contact</Link></li>
+              <li className="hover:underline"><Link to="/policy">Privacy Policy</Link></li>
+              <li className="hover:underline"><Link to="/terms">Terms of Service</Link></li>
             </ul>
           </div>
         </div>
