@@ -9,7 +9,7 @@ if (!stripeSecretKey) {
   throw new Error("STRIPE_SECRET_KEY environment variable is not set.");
 }
 const stripe = new Stripe(stripeSecretKey);
-const frontend_url = "http://localhost:5173";
+const frontend_url = process.env.FRONTEND_URL;
 
 const generateMeetingLink = (trainerId: string) => {
   return `https://meet.jit.si/FitConnect-${trainerId}-${Date.now()}`;
