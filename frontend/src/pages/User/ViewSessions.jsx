@@ -36,6 +36,28 @@ const ViewSessions = () => {
     setMeetingStatuses(updatedStatuses);
   };
 
+  const markCompletedSessions = async (sessionList) => {
+    const now = new Date();
+
+    for (const session of sessionList) {
+      const start = new Date(session.scheduledAt);
+      const end = new Date(start.getTime() + session.duration * 60000);
+
+      if (now > end && session.status === "confirmed") {
+        try {
+          await axios.put(`${url}/api/v1/session/update-status/${session._id}`, {
+            status: "completed",
+            paymentStatus: "success",
+          }, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        } catch (error) {
+          console.error("Failed to mark session as completed", error);
+        }
+      }
+    }
+  };
+
   const fetchSessions = async () => {
     try {
       const res = await axios.get(`${url}/api/v1/session/all`, {
@@ -59,7 +81,9 @@ const ViewSessions = () => {
           }
         })
       );
+
       setSessions(sessionsWithTrainer);
+      markCompletedSessions(sessionsWithTrainer); // ✅ mark ended confirmed sessions
     } catch (error) {
       console.error('Error in fetching sessions', error);
     }
@@ -87,19 +111,14 @@ const ViewSessions = () => {
         key={session._id}
         className="bg-white rounded-2xl shadow-md overflow-hidden max-w-md w-full mx-auto relative transition-transform transform hover:scale-105 hover:shadow-xl hover:border-blue-300 border border-gray-200"
       >
-        {/* Trainer Image Circular */}
         <div className="flex justify-center mt-4">
           <img
-            src={
-              session.trainerAvatar ||
-              "https://www.gravatar.com/avatar/?d=mp"
-            }
+            src={session.trainerAvatar || "https://www.gravatar.com/avatar/?d=mp"}
             alt="Trainer"
             className="w-24 h-24 rounded-full object-cover border-2 border-blue-500"
           />
         </div>
 
-        {/* Status Pill */}
         <div
           className={`absolute top-2 right-2 text-sm px-3 py-1 rounded-full font-semibold ${
             session.status === "completed"
@@ -112,29 +131,18 @@ const ViewSessions = () => {
           {session.status}
         </div>
 
-        {/* Session Info */}
         <div className="p-4 space-y-2 text-center">
           <h3 className="text-blue-900 text-lg font-bold">{session.type}</h3>
           <p className="text-gray-600 text-sm">Personal training session</p>
 
           <div className="text-sm text-gray-700 space-y-1">
-            <p>
-              <strong>📅 Scheduled:</strong>{" "}
-              {new Date(session.scheduledAt).toLocaleString()}
-            </p>
-            <p>
-              <strong>🕒 Duration:</strong> {session.duration} mins
-            </p>
-            <p>
-              <strong>👤 Trainer:</strong> {session.trainerName}
-            </p>
-            <p>
-              <strong>💰 Fee:</strong> ₹{session.fee}
-            </p>
+            <p><strong>📅 Scheduled:</strong> {new Date(session.scheduledAt).toLocaleString()}</p>
+            <p><strong>🕒 Duration:</strong> {session.duration} mins</p>
+            <p><strong>👤 Trainer:</strong> {session.trainerName}</p>
+            <p><strong>💰 Fee:</strong> ₹{session.fee}</p>
           </div>
         </div>
 
-        {/* Actions */}
         {session.status === "confirmed" && (
           <div className="flex justify-between px-4 py-3 border-t bg-gray-50 gap-2">
             {status === "active" && session.meetingLink && (
@@ -188,7 +196,6 @@ const ViewSessions = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-6">
-        {/* Search Box */}
         <div className="mb-6 flex justify-center">
           <div className="relative w-full max-w-md">
             <Search className="absolute left-3 top-2.5 text-gray-400" />
@@ -202,7 +209,6 @@ const ViewSessions = () => {
           </div>
         </div>
 
-        {/* Upcoming Sessions */}
         <h2 className="text-lg font-semibold mb-4">Upcoming / Ongoing Sessions</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mr-3 ml-3">
           {upcoming.length === 0 ? (
@@ -212,8 +218,7 @@ const ViewSessions = () => {
           )}
         </div>
 
-        {/* Past Sessions */}
-        <h2 className="text-lg font-semibold mt-10 mb-4 ">Completed / Cancelled Sessions</h2>
+        <h2 className="text-lg font-semibold mt-10 mb-4">Completed / Cancelled Sessions</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mr-3 ml-3">
           {past.length === 0 ? (
             <p className="text-gray-600">No past sessions.</p>
