@@ -43,7 +43,7 @@ const MyTrainers = () => {
             >
               <div className="flex items-center space-x-4">
                 <img
-                  src={trainer.avatar || "/default-avatar.png"}
+                  src={trainer.avatar || "https://i.pinimg.com/474x/2c/47/d5/2c47d5dd5b532f83bb55c4cd6f5bd1ef.jpg?nii=t"}
                   alt={trainer.firstName}
                   className="w-16 h-16 rounded-full object-cover border"
                 />

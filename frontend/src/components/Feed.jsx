@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { StoreContext } from "../Context/StoreContext";
 import {User} from "lucide-react"
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -13,6 +14,7 @@ const Feed = () => {
 
   const { url, token } = useContext(StoreContext);
 
+  const navigate = useNavigate();
   useEffect(() => {
     async function getEvents() {
       try {
@@ -159,8 +161,8 @@ const Feed = () => {
                 .map((event) => (
                   <a
                     key={event._id}
-                    href={`/event/${event._id}`}
-                    className="flex flex-col gap-y-2 border border-gray-300 p-4 rounded-2xl shadow hover:shadow-lg transition"
+                    href={"/user/registerEvents"}
+                    className="flex flex-col justify-between  gap-y-2 border border-gray-300 p-4 rounded-2xl shadow hover:shadow-lg transition"
                   >
                     <div className="relative mb-4">
                       {event.status === "upcoming" && (
@@ -225,8 +227,8 @@ const Feed = () => {
                 .map((event) => (
                   <a
                     key={event._id}
-                    href={`/event/${event._id}`}
-                    className="flex flex-col gap-y-2 border border-gray-300 p-4  shadow hover:shadow-lg transition rounded-2xl"
+                    href={"/user/registerEvents"}
+                    className="flex flex-col justify-between  gap-y-2 border border-gray-300 p-4  shadow hover:shadow-lg transition rounded-2xl"
                   >
                     <div className="relative mb-4">
                       {event.status === "ongoing" && (

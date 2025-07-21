@@ -141,7 +141,7 @@ const Chat = () => {
       <div className="flex flex-col w-[50vw] h-screen bg-white shadow-2xl rounded-md overflow-hidden border border-gray-300">
         <div className="flex items-center gap-4 px-4 py-2 h-[8vh] border-b border-white/30 bg-white/20 backdrop-blur-md shadow-md">
           <img
-            src={avatar}
+            src={avatar || "https://i.pinimg.com/474x/2c/47/d5/2c47d5dd5b532f83bb55c4cd6f5bd1ef.jpg?nii=t"}
             alt="client"
             className="w-10 h-10 rounded-full object-cover border border-white/40 shadow"
           />

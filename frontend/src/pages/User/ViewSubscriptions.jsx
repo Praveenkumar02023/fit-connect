@@ -42,6 +42,7 @@ const ViewSubscriptions = () => {
               ...sub,
               trainerName: `${trainer.firstName} ${trainer.lastName}`,
               speciality: trainer.speciality?.join(', ') || 'N/A',
+              avatar : trainer.avatar
             };
           })
         );
@@ -96,10 +97,10 @@ const ViewSubscriptions = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
             {activeSubscriptions.length === 0 && <p className="text-gray-500">No active subscriptions</p>}
             {activeSubscriptions.map((sub) => (
-              <div key={sub._id} className="bg-white rounded-lg shadow-md p-5">
+              <div key={sub._id} className="flex flex-col justify-between bg-white rounded-lg shadow-md p-5">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center space-x-3">
-                    <FiUser className="text-blue-600 text-2xl" />
+                    <img className='h-12 w-12 rounded-full' src={sub.avatar || "https://i.pinimg.com/474x/2c/47/d5/2c47d5dd5b532f83bb55c4cd6f5bd1ef.jpg?nii=t"} alt="traier_img" />
                     <div>
                       <h3 className="font-semibold text-lg text-gray-800">{sub.trainerName}</h3>
                       <p className="text-sm text-gray-500">{sub.speciality}</p>
@@ -141,13 +142,13 @@ const ViewSubscriptions = () => {
         {/* Expired Subscriptions */}
         <div>
           <h2 className="text-xl font-semibold text-gray-800 mb-4">⚫ Expired Subscriptions</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
+          <div className=" grid md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
             {expiredSubscriptions.length === 0 && <p className="text-gray-500">No expired subscriptions</p>}
             {expiredSubscriptions.map((sub) => (
-              <div key={sub._id} className="bg-white rounded-lg shadow-md p-5">
+              <div key={sub._id} className="flex flex-col justify-between bg-white rounded-lg shadow-md p-5">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center space-x-3">
-                    <FiUser className="text-blue-600 text-2xl" />
+                     <img className='h-12 w-12 rounded-full' src={sub.avatar || "https://i.pinimg.com/474x/2c/47/d5/2c47d5dd5b532f83bb55c4cd6f5bd1ef.jpg?nii=t"} alt="traier_img" />
                     <div>
                       <h3 className="font-semibold text-lg text-gray-800">{sub.trainerName}</h3>
                       <p className="text-sm text-gray-500">{sub.speciality}</p>

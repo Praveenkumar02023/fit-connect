@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext";
+import { useNavigate } from "react-router-dom";
 
 const UserProfile = () => {
   const { token, url } = useContext(StoreContext);
@@ -12,6 +13,8 @@ const UserProfile = () => {
     gender: "",
     avatar: null,
   });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchUser() {
@@ -212,12 +215,20 @@ const UserProfile = () => {
               </button>
             </div>
           ) : (
-            <button
+            <div className="flex flex-col gap-y-2" >
+              <button
               onClick={() => setEditMode(true)}
               className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 text-sm"
             >
               Edit Info
             </button>
+            <button onClick={
+              () => {
+                localStorage.removeItem("jwt_token");
+                navigate("/signin/user")
+              }
+            } className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 text-sm" >Logout</button>
+            </div>
           )}
         </div>
       </div>

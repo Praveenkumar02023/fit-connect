@@ -2,8 +2,11 @@ import React from 'react';
 
 const EventCard = ({ event, onCancel }) => {
   return (
-    <div className="bg-white shadow rounded-2xl p-6 w-full max-w-sm">
-      <div className="flex justify-between items-center mb-2">
+    <div className="flex flex-col justify-between bg-white shadow rounded-2xl p-6 w-full max-w-sm">
+     <div className='bg-neutral-100 flex w-full justify-center' >
+       <img  className='h-36 w-36' src={event.avatar || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0ZcnsKC3iF9pB8_po80WXkn7h_3fd2bNx-Rq9T6B_mCx3IDZsdPjG8qNYt0pPC_YhJEA&usqp=CAU"} alt="" />
+     </div>
+      <div className="mt-4 flex justify-between items-center mb-2">
         <h2 className="text-xl font-bold">{event.title}</h2>
         <span
           className={`text-sm font-semibold px-3 py-1 rounded-full ${
@@ -18,7 +21,7 @@ const EventCard = ({ event, onCancel }) => {
         </span>
       </div>
 
-      <span className="text-xs bg-blue-100 text-blue-600 rounded-full px-2 py-1 font-medium mb-2 inline-block">
+      <span className="flex justify-center text-xs bg-blue-100 text-blue-600 rounded-full px-2 py-1 font-medium mb-2 w-[4.5rem]">
         {event.type}
       </span>
 

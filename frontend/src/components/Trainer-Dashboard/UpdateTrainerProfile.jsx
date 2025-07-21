@@ -3,6 +3,8 @@ import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext";
 import { Star } from "lucide-react";
 import Button from "../ui/Button";
+import { useNavigate } from "react-router-dom";
+
 
 const UpdateTrainerProfile = () => {
   const { url, token } = useContext(StoreContext);
@@ -17,6 +19,8 @@ const UpdateTrainerProfile = () => {
     about: "",
     Achievements: "",
   });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function getTrainer() {
@@ -163,7 +167,7 @@ const UpdateTrainerProfile = () => {
           </div>
 
           <div className="mt-4">
-            <Button onClick={() => setEditMode(!editMode)}>
+            <Button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 text-sm" onClick={() => setEditMode(!editMode)}>
               {editMode ? "Cancel" : "Edit Profile"}
             </Button>
             {editMode && (
@@ -171,6 +175,16 @@ const UpdateTrainerProfile = () => {
                 Save Changes
               </Button>
             )}
+            {
+              editMode == false && (
+                <button onClick={
+              () => {
+                localStorage.removeItem("token");
+                navigate("/signin/trainer")
+              }
+            } className="mt-2 w-full rounded-xl bg-red-600 text-white py-2 hover:bg-red-700 text-sm" >Logout</button>
+              )
+            }
           </div>
         </div>
 
