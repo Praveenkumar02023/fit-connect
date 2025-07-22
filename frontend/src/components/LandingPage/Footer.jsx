@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
-    <div className="mt-12 px-12 h-[40vh] w-full bg-gray-900">
+    <div className="relative mt-12 px-12 h-[40vh] w-full bg-gray-900">
       <div className="flex py-4 h-[75%] flex-wrap">
         {/* Left Side - Branding */}
         <div className="gap-y-4 flex flex-col justify-between text-white w-full md:w-1/2 p-8">

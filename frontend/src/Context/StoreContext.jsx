@@ -4,7 +4,7 @@ export const StoreContext = createContext();
 
 const StoreContextProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("token") || "");
-  const url = "https://fitman.onrender.com";
+  const url = "http://localhost:8001";
 
   useEffect(() => {
     localStorage.setItem("token", token);
