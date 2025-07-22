@@ -1,6 +1,10 @@
 import { ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const CallToAction = () => {
+
+  const navigate = useNavigate()
+
   return (
     <div className="relative w-screen px-14" >
         <section className="bg-gradient-to-r from-indigo-900 via-blue-600 to-pink-900 text-white py-16 text-center rounded-2xl shadow-lg mt-16">
@@ -9,10 +13,16 @@ const CallToAction = () => {
         Whether you're a trainer looking to grow or a fitness enthusiast ready to transform, FitMan gives you the tools to connect, train, and thrive.
       </p>
       <div className="flex justify-center gap-4 flex-wrap">
-        <button className="bg-white text-blue-700 hover:bg-blue-100 font-semibold py-3 px-6 rounded-full flex items-center gap-2 transition hover:scale-105 cursor-pointer">
+        <button onClick={() => {
+          navigate("/signin/trainer")
+        }} className="bg-white text-blue-700 hover:bg-blue-100 font-semibold py-3 px-6 rounded-full flex items-center gap-2 transition hover:scale-105 cursor-pointer">
           Join as a Trainer <ArrowRight className="w-4 h-4" />
         </button>
-        <button className="bg-black bg-opacity-20 hover:bg-opacity-40 font-semibold py-3 px-6 rounded-full flex items-center gap-2 transition hover:scale-105 cursor-pointer">
+        <button onClick={
+          () => {
+          navigate("/signin/user")}
+        }
+         className="bg-black bg-opacity-20 hover:bg-opacity-40 font-semibold py-3 px-6 rounded-full flex items-center gap-2 transition hover:scale-105 cursor-pointer">
           Explore Events & Trainers <ArrowRight className="w-4 h-4" />
         </button>
       </div>

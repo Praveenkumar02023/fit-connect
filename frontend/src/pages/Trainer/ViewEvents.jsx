@@ -57,18 +57,20 @@ const TrainerEvents = () => {
           events.map((event) => (
             <div
               key={event._id}
-              className="bg-white rounded-xl shadow hover:shadow-md border transition-transform hover:scale-[1.02] flex flex-col"
+              className="p-4 bg-white rounded-xl shadow hover:shadow-md border transition-transform hover:scale-[1.02] flex flex-col"
             >
               {/* Image & Status */}
               <div className="relative w-full h-40 rounded-t-xl overflow-hidden">
-                <img
+               <div className="flex justify-center w-full bg-neutral-100" >
+                 <img
                   src={
                     event.avatar ||
                     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0ZcnsKC3iF9pB8_po80WXkn7h_3fd2bNx-Rq9T6B_mCx3IDZsdPjG8qNYt0pPC_YhJEA&usqp=CAU"
                   }
                   alt="event"
-                  className="w-full h-full object-cover"
+                  className="rounded-xl h-36 w-36 object-cover"
                 />
+               </div>
 
                 <span
                   className={`absolute top-2 right-2 text-xs font-medium px-3 py-1 rounded-full shadow-sm ${
