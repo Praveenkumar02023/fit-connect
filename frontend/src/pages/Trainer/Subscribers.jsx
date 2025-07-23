@@ -90,7 +90,7 @@ const Subscribers = () => {
               </button>
               <button
                 onClick={() =>
-                  navigate(`/chat/${sub.userId}`, {
+                  navigate(`/user/chat/${sub.userId}`, {
                     state: {
                       who: "User",
                       username : sub.UserName,

@@ -9,6 +9,7 @@ import {
   Clock,
   LogOut,
   User,
+  Receipt,
 } from 'lucide-react';
 import { StoreContext } from "../../Context/StoreContext";
 import axios from "axios";
@@ -16,9 +17,10 @@ import axios from "axios";
 const navigationItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/user/' },
   { id: 'trainers', label: 'My Trainers', icon: Users, path: '/user/MyTrainers' },
-  { id: 'payments', label: 'Payments', icon: CreditCard, path: '/user/Payments' },
-  { id: 'events', label: 'My Events', icon: Calendar, path: '/user/MyEvents' },
-  { id: 'sessions', label: 'My Sessions', icon: Clock, path: '/user/MySessions' }
+  { id: 'events', label: 'My Events', icon: Calendar, path: '/user/events' },
+  { id: 'sessions', label: 'My Sessions', icon: Clock, path: '/user/MySessions' },
+  { id: 'subscriptions', label: 'My Subscriptions', icon: CreditCard , path: '/user/subscriptions' },
+  { id: 'payments', label: 'Payments', icon: Receipt, path: '/user/Payments' },
 ];
 
 const logoutItem = {
@@ -38,7 +40,7 @@ const UserSidebar = ({ isOpen, onClose, user }) => {
   const handleItemClick = (item) => {
     if (item.isLogout) {
       localStorage.clear();
-      navigate('/signin');
+      navigate('/signin/user');
     } else {
       navigate(item.path);
     }
@@ -93,7 +95,7 @@ const UserSidebar = ({ isOpen, onClose, user }) => {
                 </div>
                 <button
                   onClick={() => {
-                    navigate('/profile');
+                    navigate('/user/profile');
                     onClose();
                   }}
                   className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-blue-100 hover:bg-blue-200 transition"

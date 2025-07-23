@@ -1,20 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext";
-import { useNavigate } from "react-router-dom";
 
 const UserProfile = () => {
   const { token, url } = useContext(StoreContext);
   const [user, setUser] = useState(null);
-  const [editMode, setEditMode] = useState(false);
   const [preview, setPreview] = useState("");
+  const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     gender: "",
     avatar: null,
   });
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchUser() {
@@ -38,6 +35,10 @@ const UserProfile = () => {
     fetchUser();
   }, []);
 
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -49,10 +50,6 @@ const UserProfile = () => {
   const handleRemoveImage = () => {
     setFormData((prev) => ({ ...prev, avatar: null }));
     setPreview("https://www.gravatar.com/avatar/?d=mp");
-  };
-
-  const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value || "" }));
   };
 
   const handleSave = async () => {
@@ -79,13 +76,14 @@ const UserProfile = () => {
       });
 
       if (profileRes.status === 200) {
-        setUser(profileRes.data.user);
+        const updatedUser = profileRes.data.user;
+        setUser(updatedUser);
         setFormData({
-          name: profileRes.data.user.name || "",
-          gender: profileRes.data.user.gender || "",
+          name: updatedUser.name || "",
+          gender: updatedUser.gender || "",
           avatar: null,
         });
-        setPreview(profileRes.data.user.avatar || "https://www.gravatar.com/avatar/?d=mp");
+        setPreview(updatedUser.avatar || "https://www.gravatar.com/avatar/?d=mp");
         setEditMode(false);
       }
     } catch (err) {
@@ -102,16 +100,24 @@ const UserProfile = () => {
     );
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-[24rem] p-6 rounded-xl shadow bg-white flex flex-col items-center space-y-4">
+    <div className="relative min-h-screen flex flex-col items-center bg-gradient-to-br from-blue-50 via-white to-blue-100 pt-10 px-4 overflow-hidden">
+      {/* Background bubbles */}
+      <div className="absolute z-0 inset-0 overflow-hidden">
+        <div className="absolute top-10 left-0 w-40 h-40 bg-blue-400 opacity-50 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-16 w-48 h-48 bg-purple-400 opacity-30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-pink-300 opacity-30 rounded-full blur-2xl animate-pulse delay-2000"></div>
+      </div>
+
+      {/* Profile Card */}
+      <div className="relative w-full max-w-md sm:max-w-lg md:max-w-xl p-6 sm:p-8 rounded-xl border border-gray-300 bg-gray-50 shadow flex flex-col items-center space-y-4 z-10">
         {/* Avatar */}
         <img
           src={preview}
           alt="User"
-          className="w-28 h-28 rounded-full border-2 border-black object-cover"
+          className="w-24 sm:w-28 h-24 sm:h-28 rounded-full border-2 border-black object-cover"
         />
 
-        {/* Change/Remove image (only in edit mode) */}
+        {/* Image controls in edit mode */}
         {editMode && (
           <div className="flex flex-col items-center space-y-2">
             <label className="bg-blue-600 text-white text-sm px-4 py-1 rounded cursor-pointer hover:bg-blue-700 transition">
@@ -135,16 +141,18 @@ const UserProfile = () => {
         {/* Name */}
         <div className="w-full">
           <label className="text-sm font-medium">Name</label>
-          <input
-            type="text"
-            name="name"
-            disabled={!editMode}
-            value={formData.name || ""}
-            onChange={handleChange}
-            className={`w-full px-3 py-2 mt-1 border rounded text-sm ${
-              editMode ? "" : "bg-gray-100 text-gray-600"
-            }`}
-          />
+          {editMode ? (
+            <input
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full px-3 py-2 mt-1 border rounded text-sm"
+            />
+          ) : (
+            <div className="w-full px-3 py-2 mt-1 border rounded text-sm bg-white text-gray-700">
+              {user.name || "N/A"}
+            </div>
+          )}
         </div>
 
         {/* Gender */}
@@ -153,7 +161,7 @@ const UserProfile = () => {
           {editMode ? (
             <select
               name="gender"
-              value={formData.gender || ""}
+              value={formData.gender}
               onChange={handleChange}
               className="w-full px-3 py-2 mt-1 border rounded text-sm"
             >
@@ -162,23 +170,18 @@ const UserProfile = () => {
               <option value="female">Female</option>
             </select>
           ) : (
-            <div className="w-full px-3 py-2 mt-1 border rounded text-sm bg-gray-100 text-gray-600">
-              {formData.gender
-                ? capitalize(formData.gender)
-                : "Not specified"}
+            <div className="w-full px-3 py-2 mt-1 border rounded text-sm bg-white text-gray-700">
+              {user.gender ? capitalize(user.gender) : "Not specified"}
             </div>
           )}
         </div>
 
-        {/* Email (non-editable) */}
+        {/* Email */}
         <div className="w-full">
           <label className="text-sm font-medium">Email</label>
-          <input
-            type="text"
-            value={user.email || ""}
-            disabled
-            className="w-full px-3 py-2 mt-1 border rounded bg-gray-100 text-gray-600 text-sm"
-          />
+          <div className="w-full px-3 py-2 mt-1 border rounded text-sm bg-white text-gray-700">
+            {user.email || "N/A"}
+          </div>
         </div>
 
         {/* Join Date */}
@@ -192,12 +195,12 @@ const UserProfile = () => {
         {/* Buttons */}
         <div className="w-full mt-4">
           {editMode ? (
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-col sm:flex-row">
               <button
                 onClick={handleSave}
                 className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 text-sm"
               >
-                Save Changes
+                Save
               </button>
               <button
                 onClick={() => {
@@ -215,23 +218,20 @@ const UserProfile = () => {
               </button>
             </div>
           ) : (
-            <div className="flex flex-col gap-y-2" >
-              <button
+            <button
               onClick={() => setEditMode(true)}
               className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 text-sm"
             >
               Edit Info
             </button>
-            <button onClick={
-              () => {
-                localStorage.removeItem("jwt_token");
-                navigate("/signin/user")
-              }
-            } className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 text-sm" >Logout</button>
-            </div>
           )}
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="relative text-xs text-gray-400 text-center py-4 z-10">
+        © 2025 FitConnect. All rights reserved.
+      </footer>
     </div>
   );
 };

@@ -1,15 +1,28 @@
 import React from "react";
+import Footer from "./LandingPage/Footer";
 
 const Terms = () => {
   return (
-    <div className="min-h-screen bg-white text-gray-800 px-4 py-16 flex justify-center">
-      <div className="max-w-3xl w-full">
+    <div className="relative min-h-screen bg-gradient-to-br from-indigo-50 via-pink-50 to-orange-50 text-gray-800 pt-12  flex flex-col items-center">
+      {/* Bubble Background */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden z-0">
+        <div className="absolute top-[-80px] left-[-80px] w-72 h-72 bg-pink-300 rounded-full blur-3xl opacity-20 animate-pulse" />
+        <div className="absolute top-[200px] right-[300px] w-96 h-96 bg-violet-300 rounded-full blur-3xl opacity-40 animate-pulse" />
+        <div className="absolute top-[50%] left-[20%] w-80 h-80 bg-orange-200 rounded-full blur-[120px] opacity-20 animate-pulse" />
+        <div className="absolute bottom-[300px] left-[-60px] w-72 h-72 bg-lime-200 rounded-full blur-[100px] opacity-30 animate-pulse" />
+        <div className="absolute bottom-[120px] left-[40%] w-96 h-96 bg-indigo-200 rounded-full blur-[120px] opacity-20 animate-pulse" />
+      </div>
+
+      {/* Main Content */}
+      <div className="px-4 relative z-10 max-w-3xl w-full">
         <h1 className="text-4xl font-bold mb-6 text-center text-gray-900">
           Terms & Conditions
         </h1>
 
         <p className="text-lg mb-4 leading-relaxed">
-          These Terms & Conditions ("Terms") govern your use of the <span className="font-semibold text-blue-600">Fit-Connect</span> platform. By accessing or using our services, you agree to be bound by these Terms.
+          These Terms & Conditions ("Terms") govern your use of the{" "}
+          <span className="font-semibold text-blue-600">Fit-Connect</span>{" "}
+          platform. By accessing or using our services, you agree to be bound by these Terms.
         </p>
 
         <h2 className="text-2xl font-semibold mt-8 mb-2">1. Use of the Platform</h2>
@@ -48,9 +61,13 @@ const Terms = () => {
         </p>
 
         <p className="text-base mt-8 leading-relaxed">
-          If you have any questions about these Terms, please contact us via the <span className="text-blue-600 font-medium">Contact Us</span> page.
+          If you have any questions about these Terms, please contact us via the{" "}
+          <span className="text-blue-600 font-medium">Contact Us</span> page.
         </p>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };

@@ -40,6 +40,7 @@ import Earnings from './pages/Trainer/Earnings';
 import CreateEvent from './pages/Trainer/CreateEvent';
 import ViewEvents from './pages/Trainer/ViewEvents';
 import EditEventPage from './pages/Trainer/EditEventPage';
+import UserProfile from './pages/User/UserProfile';
 
 function App() {
   return (
@@ -51,10 +52,6 @@ function App() {
 
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
-          <Route path="/about" element={<AboutUs />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/policy" element={<Policy />} />
-          <Route path="/terms" element={<Terms />} />
 
           {/* Auth Routes */}
           <Route path="/signup/:role" element={<Signup />} />
@@ -64,10 +61,16 @@ function App() {
 
           {/* User Routes */}
           <Route path="/user" element={<UserLayout />}>
+            <Route path="trainers/:id" element={<TrainerProfile />} />
+            <Route path="chat/:id" element={<Chat />} />
+            <Route path="contact" element={<Contact />} />
+            <Route path="policy" element={<Policy />} />
+            <Route path="terms" element={<Terms />} />
             <Route index element={<Dashboard />} />
             <Route path="bookSessions" element={<BookSessions />} />
             <Route path="subscriptions" element={<ViewSubscriptions />} />
-            <Route path="profile" element={<UpdateProfile />} />
+            <Route path="about" element={<AboutUs />} />
+            <Route path="profile" element={<UserProfile />} />
             <Route path="payments" element={<Payment />} />
             <Route path="events" element={<MyEvents />} />
             <Route path="MyTrainers" element={<MyTrainers />} />
@@ -94,8 +97,6 @@ function App() {
           </Route>
 
           {/* Shared Routes */}
-          <Route path="/chat/:id" element={<Chat />} />
-          <Route path="/trainers/:id" element={<TrainerProfile />} />
 
         </Routes>
       </Router>

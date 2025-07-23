@@ -58,7 +58,7 @@ const Signin = () => {
         if(currentRole === "Trainer"){
            navigate("/trainer");
         }else{
-           navigate("/feed");
+           navigate("/user/feed");
         }
 
       } catch (error) {
