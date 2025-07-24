@@ -10,6 +10,9 @@ import {
   X
 } from "lucide-react";
 import Footer from "../LandingPage/Footer";
+import { toast , Toaster} from "react-hot-toast";
+
+
 
 const TrainerProfile = () => {
   const { id } = useParams();
@@ -44,48 +47,68 @@ const TrainerProfile = () => {
   };
 
   const handleBooking = async () => {
-    const scheduledAt = new Date(`${date} ${time}`);
-    const fee = getTotal();
+  if (!date || !time || !type || !duration) {
+    toast.error("Please fill all session details before proceeding.");
+    return;
+  }
 
-    const payload = {
-      type,
-      scheduledAt: scheduledAt.toISOString(),
-      duration: durationToMinutes[duration] || 30,
-      trainerId: trainer._id,
-      fee,
-    };
+  const scheduledAt = new Date(`${date} ${time}`);
+  const fee = getTotal();
 
-    try {
-      const res = await axios.post(
-        `${url}/api/v1/session/createstripesession`,
-        payload,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (res.data.success && res.data.sessionurl) {
-        window.location.href = res.data.sessionurl;
-      } else {
-        alert("Payment session creation failed");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Something went wrong!");
-    }
+  const payload = {
+    type,
+    scheduledAt: scheduledAt.toISOString(),
+    duration: durationToMinutes[duration] || 30,
+    trainerId: trainer._id,
+    fee,
   };
+
+  try {
+    const res = await axios.post(
+      `${url}/api/v1/session/createstripesession`,
+      payload,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    if (res.data.success && res.data.sessionurl) {
+      window.location.href = res.data.sessionurl;
+    } else {
+      toast.error("Payment session creation failed.");
+    }
+  } catch (err) {
+    console.error(err);
+    toast.error("Something went wrong while booking.");
+  }
+};
+
 
   const handleSubscribe = async () => {
-    try {
-      const res = await axios.post(
-        `${url}/api/v1/subscription/checkout-stripe-session`,
-        { trainerId: trainer._id },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (res.data.success && res.data.sessionurl) {
-        window.location.href = res.data.sessionurl;
-      }
-    } catch (error) {
-      alert("Something went wrong");
+  const alreadySubscribed = subscription.some(
+  (s) => s.trainerId?.toString() === trainer._id?.toString() && s.isActive
+);
+
+
+  if (alreadySubscribed) {
+    toast("You’ve already subscribed to this trainer!", {
+      icon: "ℹ️",
+    });
+    return;
+  }
+
+  try {
+    const res = await axios.post(
+      `${url}/api/v1/subscription/checkout-stripe-session`,
+      { trainerId: trainer._id },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    if (res.data.success && res.data.sessionurl) {
+      window.location.href = res.data.sessionurl;
     }
-  };
+  } catch (error) {
+    toast.error("Something went wrong during subscription.");
+  }
+};
+
 
   useEffect(() => {
     async function fetchTrainer() {
@@ -108,6 +131,7 @@ const TrainerProfile = () => {
         (s) => s.trainerId === trainer._id
       );
       setSubscription(currentTrainerSubscriptions);
+      // console.log(currentTrainerSubscriptions);
     }
 
     getSubscriptions();
@@ -306,7 +330,6 @@ const TrainerProfile = () => {
                 </button>
                 <button
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                  disabled={!date || !time || !type || !duration}
                   onClick={handleBooking}
                 >
                   Confirm & Pay
@@ -316,7 +339,7 @@ const TrainerProfile = () => {
           </div>
         </div>
       )}
-
+     
       <Footer />
     </div>
   );
