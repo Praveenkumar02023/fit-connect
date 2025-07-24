@@ -81,19 +81,11 @@ const MyEvents = () => {
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto px-4 py-8">
-        {/* Hero Image */}
-        <div className="rounded-2xl overflow-hidden mb-6">
-          <img
-            src="/fitness.png"
-            alt="Event Header"
-            className="w-full h-64 object-cover"
-          />
-        </div>
 
         {/* Title */}
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-gray-800">🏋‍♂ My Events</h1>
-          <p className="text-gray-500 mt-2">
+          <h1 className="text-3xl font-bold text-black">My Events</h1>
+          <p className="text-black mt-2">
              View and manage your registered fitness events
           </p>
         </div>
@@ -106,7 +98,7 @@ const MyEvents = () => {
             placeholder="Search by type or location..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 h-12 w-full rounded-xl border border-blue-300 shadow-md bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all duration-200"
+            className="pl-10 h-12 w-full rounded-xl border border-gray-300 shadow-md bg-transparent backdrop-blur-sm focus:ring-2 focus:ring-gray-400 focus:outline-none transition-all duration-200"
           />
         </div>
 
@@ -116,7 +108,7 @@ const MyEvents = () => {
   filteredEvents.map((e) => (
     <div
       key={e._id}
-      className="relative bg-white h-[430px] rounded-2xl shadow-md border border-gray-200 p-4 flex flex-col justify-between"
+      className="relative bg-white h-[430px] max-w-[300px] rounded-2xl shadow-md border border-gray-200 p-4 flex flex-col justify-between"
     >
       <img
         src={e.avatar || "https://i.imgur.com/7s4U6vF.png"}

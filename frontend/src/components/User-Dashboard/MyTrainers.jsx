@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { StoreContext } from '../../Context/StoreContext';
 import { useNavigate } from 'react-router-dom';
+import Footer from '../LandingPage/Footer';
 
 const MyTrainers = () => {
   const { token, url } = useContext(StoreContext);
@@ -43,7 +44,7 @@ const MyTrainers = () => {
         {trainers.length === 0 ? (
           <p className="text-center text-gray-500">You haven't subscribed to any trainers yet.</p>
         ) : (
-          <div className="space-y-4 max-w-4xl mx-auto">
+          <div className="min-h-screen space-y-4 max-w-4xl mx-auto">
             {trainers.map((trainer) => (
               <div
                 key={trainer._id}
@@ -94,11 +95,8 @@ const MyTrainers = () => {
             ))}
           </div>
         )}
-
-        <footer className="relative text-xs text-gray-400 text-center py-6 z-10 mt-8">
-          © 2025 FitConnect. All rights reserved.
-        </footer>
       </div>
+      <Footer/>
     </div>
   );
 };

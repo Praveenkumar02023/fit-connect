@@ -26,6 +26,7 @@ import {
   Cell,
   Tooltip
 } from "recharts";
+import Footer from "../../components/LandingPage/Footer";
 
 
 const Dashboard = () => {
@@ -143,7 +144,7 @@ useEffect(() => {
   }
 
   return (
-    <div className=" relative min-h-screen w-full bg-gradient-to-br from-blue-50 via-white to-blue-100 py-10 px-4 sm:px-12">
+    <div className=" relative min-h-screen w-full bg-gradient-to-br from-blue-50 via-white to-blue-100 pt-5 ">
       {/* Blurred bubbles */}
       <div className="absolute inset-0 overflow-hidden z-10 pointer-events-none">
         {[
@@ -161,9 +162,9 @@ useEffect(() => {
       </div>
 
       {/* Welcome */}
-      <div className="relative z-20 bg-blue-600 text-white rounded-xl p-6 mb-10 shadow-md w-full max-w-7xl mx-auto">
-        <h1 className="text-2xl font-bold">Welcome back, {user.name}!</h1>
-        <p className="text-sm mt-1">Ready to crush your fitness goals today?</p>
+      <div className="relative z-20 text-center text-black p-6 mb-10  w-full max-w-7xl mx-auto">
+        <h1 className="text-4xl font-bold">Welcome back, {user.name}!</h1>
+        <p className="text-md mt-1">Ready to crush your fitness goals today?</p>
       </div>
 
       {/* Stats */}
@@ -270,6 +271,9 @@ useEffect(() => {
         <SessionList title="Upcoming Sessions" sessions={upcomingSessions} color="blue" />
         <SessionList title="Completed Sessions" sessions={completedSessions} color="green" />
       </div>
+      <div className="relative z-10">
+        <Footer/>
+      </div>
     </div>
   );
 };
@@ -321,6 +325,7 @@ const SessionList = ({ title, sessions, color }) => (
         ))}
       </ul>
     )}
+    
   </div>
 );
 

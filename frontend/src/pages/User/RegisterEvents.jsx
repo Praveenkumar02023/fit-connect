@@ -100,8 +100,8 @@ const RegisterEvents = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="text-center mt-[-5rem]">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">
-            🏆 Register for Upcoming Events
+          <h1 className="text-3xl sm:text-3xl font-bold text-black">
+            Register for Upcoming Events
           </h1>
           <p className="mt-2 text-muted-foreground text-sm sm:text-base">
             Compete, train, and win exciting rewards!

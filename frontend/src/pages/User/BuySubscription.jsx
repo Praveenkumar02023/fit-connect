@@ -163,7 +163,7 @@ const BuySubscription = () => {
 
       {/* Confirmation Modal */}
       {isModalOpen && selectedTrainer && (
-        <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex justify-center items-center px-4">
+        <div className="fixed h-auto inset-0 z-50 bg-black/30 backdrop-blur-sm flex justify-center items-center px-4">
           <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-bold mb-4 text-blue-700 text-center">
               Confirm Subscription
@@ -172,7 +172,7 @@ const BuySubscription = () => {
             <img
               src={selectedTrainer.avatar || "https://i.imgur.com/fmYr5lP.png"}
               alt="trainer"
-              className="h-44 w-full object-cover rounded-lg mb-4"
+              className="h-auto w-full object-cover rounded-lg mb-4"
             />
 
             <div className="space-y-2 text-sm text-gray-700">

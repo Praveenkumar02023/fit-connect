@@ -131,7 +131,7 @@ const Payment = () => {
       <div className="px-4 relative z-10 max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-10 text-center">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">💵 Payment History</h1>
+          <h1 className="text-3xl font-bold text-black mb-2">Payment History</h1>
           <p className="text-gray-600">
             Track all your session, event, and subscription payments
           </p>

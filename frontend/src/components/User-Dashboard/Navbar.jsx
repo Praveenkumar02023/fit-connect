@@ -68,7 +68,7 @@ const Navbar = () => {
           <div className="flex items-center gap-3">
             {/* Desktop Profile */}
             <div className="hidden sm:flex items-center gap-2">
-              <span className="text-md font-semibold">{user?.name}</span>
+              <span className="text-md font-semibold capitalize">{user?.name}</span>
               <img
                 src={
                   user?.avatar?.trim()
