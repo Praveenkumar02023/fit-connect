@@ -13,8 +13,6 @@ const signupValidator = z.object({
     email : z.string().email(),
     password : z.string(),
 
-    pricing_perSession : z.coerce.number(),
-    pricing_perMonth: z.coerce.number()
 });
 
 const signinValidator = z.object({
@@ -37,7 +35,7 @@ export const Signup = async (req: Request, res: Response): Promise<any> => {
 
 
 
-  const { firstName, lastName, email, password  , pricing_perMonth , pricing_perSession } = parsed.data;
+  const { firstName, lastName, email, password} = parsed.data;
 
 
   try {
@@ -56,8 +54,7 @@ export const Signup = async (req: Request, res: Response): Promise<any> => {
       lastName,
       email,
       password: hashedPassword,
-      pricing_perMonth,
-      pricing_perSession,
+
     });
 
     const token = jwt.sign({ userId: newTrainer._id }, process.env.JWT_SECRET!, { expiresIn: "1d" });

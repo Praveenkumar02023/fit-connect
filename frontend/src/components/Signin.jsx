@@ -6,7 +6,8 @@ import axios from "axios"
 import toast from "react-hot-toast"
 import { useRef, useContext  } from 'react';
 import {StoreContext} from '../Context/StoreContext';
-
+import SigninNavbar from './signinNavbar';
+import Footer from './LandingPage/Footer';
 
 
 const Signin = () => {
@@ -70,8 +71,9 @@ const Signin = () => {
 
 
   return (
-    <div className="relative h-screen w-screen flex items-center justify-center bg-gradient-to-br from-violet-100 via-cyan-50 to-blue-50">
+    <div className="relative min-h-screen w-screen flex flex-col items-center justify-center bg-gradient-to-br from-violet-100 via-cyan-50 to-blue-50">
       {/* Animated Background */}
+      <SigninNavbar />
       <div className="h-full w-full absolute inset-0">
         <div className="absolute bottom-40 right-20 h-24 w-24 rounded-full bg-violet-300 blur-2xl animate-pulse"></div>
         <div className="absolute bottom-40 left-40 h-48 w-48 rounded-full bg-cyan-200 blur-2xl animate-pulse"></div>
@@ -80,7 +82,7 @@ const Signin = () => {
       </div>
 
       {/* Login Box */}
-      <div className="relative bg-white shadow-lg rounded-2xl w-[90%] max-w-sm flex flex-col items-center justify-start py-6 px-4 z-10">
+      <div className="relative bg-white shadow-lg rounded-2xl w-[90%] max-w-sm flex flex-col items-center justify-start py-6 px-4 z-10 mt-10">
         {/* Role Toggle */}
         <div className="flex justify-center mb-4 gap-4">
           <button
@@ -146,6 +148,7 @@ const Signin = () => {
           </Link>
         </p>
       </div>
+      <Footer />
     </div>
   );
 };

@@ -42,11 +42,9 @@ const trainerSchema = new Schema<TrainerTypes>({
     },
     pricing_perSession : {
         type : Number,
-        required : true,
     },
     pricing_perMonth : {
         type:Number,
-        required : true,
     },
     rating : {
         type : Number,

@@ -1,253 +1,194 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { FaCalendarAlt, FaClock, FaUser } from 'react-icons/fa';
-import { StoreContext } from '../../Context/StoreContext';
-import axios from 'axios';
+import React, { useContext, useState } from "react";
+import axios from "axios";
+import { StoreContext } from "../../Context/StoreContext";
+import { CalendarDays, Clock, Dumbbell, Timer } from "lucide-react";
 
-const BookSessions = () => {
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [type, setType] = useState("");
-  const [duration, setDuration] = useState("");
-  const [trainer, setTrainer] = useState("");
-  const [trainers, setTrainers] = useState([]);
+const durationMultipliers = {
+  "30 mins": 0.5,
+  "45 mins": 0.75,
+  "1 hour": 1,
+};
 
+const availableTimeSlots = [
+  "06:00", "07:00", "08:00", "09:00",
+  "10:00", "11:00", "12:00", "14:00",
+  "15:00", "16:00", "17:00", "18:00",
+  "19:00", "20:00",
+];
+
+const BookSession = ({ trainer , setShowBookingModal }) => {
   const { url, token } = useContext(StoreContext);
 
-  const durationMultipliers = {
-    "30 min": 1,
-    "45 min": 1.25,
-    "1 hr": 1.5,
-  };
-
-  const durationToMinutes = {
-    "30 min": 30,
-    "45 min": 45,
-    "1 hr": 60,
-  };
-
-  useEffect(() => {
-    const fetchTrainers = async () => {
-      try {
-        const res = await axios.get(`${url}/api/v1/trainer/`);
-        setTrainers(res.data.trainers || []);
-      } catch (err) {
-        console.error("Failed to load trainers", err);
-      }
-    };
-    fetchTrainers();
-  }, []);
-
- 
-  const filteredTrainers = type
-    ? trainers.filter(t => t.speciality?.includes(type))
-    : trainers;
-
-  
-  useEffect(() => {
-    const selectedTrainer = trainers.find(t => t._id === trainer);
-    if (selectedTrainer && !selectedTrainer.speciality.includes(type)) {
-      setTrainer("");
-      alert("Selected trainer does not offer this session type.");
-    }
-  }, [type, trainer, trainers]);
+  const [bookingData, setBookingData] = useState({
+    date: "",
+    time: "",
+    sessionType: "",
+    duration: "",
+  });
 
   const getTotal = () => {
-    if (!trainer || !duration) return 0;
-    const selectedTrainer = trainers.find(t => t._id === trainer);
-    const base = selectedTrainer?.pricing_perSession || 0;
-    const multiplier = durationMultipliers[duration] || 1;
+    if (!trainer || !bookingData.duration) return 0;
+    const base = trainer?.pricing_perSession || 0;
+    const multiplier = durationMultipliers[bookingData.duration] || 1;
     return base * multiplier;
   };
 
   const handleBooking = async () => {
-    const scheduledAt = new Date(`${date} ${time}`);
-    const fee = getTotal();
-
-    const payload = {
-      type,
-      scheduledAt: scheduledAt.toISOString(), 
-      duration: durationToMinutes[duration] || 30,
-      trainerId: trainer,
-      fee,
-    };
-    console.log("Payload:", payload);
-
-     try {
-    const res = await axios.post(`${url}/api/v1/session/createstripesession`, payload, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (res.data.success && res.data.sessionurl) {
-      window.location.href = res.data.sessionurl; 
-    } else {
-
-      alert("Payment session creation failed");
+    const { date, time, sessionType, duration } = bookingData;
+    if (!date || !time || !sessionType || !duration) {
+      alert("Please fill in all fields.");
+      return;
     }
-  } catch (err) {
-    console.error(err);
-    alert("Something went wrong!");
-  }
-};
 
-  const total = getTotal();
+    const scheduledAt = new Date(`${date}T${time}`);
+    const payload = {
+      type: sessionType,
+      scheduledAt: scheduledAt.toISOString(),
+      duration: durationMultipliers[duration] * 60,
+      trainerId: trainer._id,
+      fee: getTotal(),
+    };
+
+    try {
+      const res = await axios.post(
+        `${url}/api/v1/session/createstripesession`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.data?.sessionurl) {
+        window.location.href = res.data.sessionurl;
+      } else {
+        alert("Failed to create session");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong while booking the session.");
+    }
+  };
 
   return (
-    <div className="bg-gray-50 px-6 pt-8 pb-10 overflow-auto" style={{ height: '100vh' }}>
-      <main>
-        <h2 className="text-4xl font-bold text-center text-gray-900 mb-4">Book a Session</h2>
-        <p className="text-center text-gray-600 text-lg mb-10">
-          Schedule your workout by selecting your preferences below.
-        </p>
+      <div className="relative bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 rounded-xl p-6 shadow-lg w-full h-[420px] ">
+      {/* Decorative Bubbles */}
+      <div className="absolute top-10 left-10 w-24 h-24 bg-blue-300 rounded-full opacity-30 blur-3xl animate-pulse z-0" />
+      <div className="absolute bottom-10 right-10 w-28 h-28 bg-purple-400 rounded-full opacity-30 blur-3xl animate-pulse z-0" />
+      <div className="absolute top-[30%] right-[30%] w-16 h-16 bg-pink-300 rounded-full opacity-20 blur-2xl animate-pulse z-0" />
+      <div className="absolute bottom-[25%] left-[25%] w-14 h-14 bg-indigo-300 rounded-full opacity-20 blur-2xl animate-pulse z-0" />
+      <div className="absolute top-[45%] left-[55%] w-20 h-20 bg-green-200 rounded-full opacity-20 blur-2xl animate-pulse z-0" />
+      <button
+        className="absolute top-3 right-4 text-2xl font-bold text-gray-600 hover:text-black z-10"
+        onClick={() => setShowBookingModal(false)}
+      >
+        &times;
+      </button>
+      {/* 🔹 Booking Form Content */}
+      <div className="relative z-10">
+        <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800 dark:text-white">
+          Book a Session with {trainer.firstName} {trainer.lastName}
+        </h2>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1.7fr_1.8fr] gap-8">
-          {/* Left Column */}
-          <div className="space-y-8">
-            {/* Date & Time */}
-            <div className="bg-white rounded-lg p-6 shadow">
-              <div className="flex items-center mb-4 space-x-2">
-                <FaCalendarAlt className="text-blue-500" />
-                <h3 className="text-xl font-semibold">Select Date & Time</h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
-                  <input
-                    type="date"
-                    className="border border-gray-300 p-3 rounded-md w-full"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Time</label>
-                  <select
-                    className="border border-gray-300 p-3 rounded-md w-full"
-                    value={time}
-                    onChange={(e) => setTime(e.target.value)}
-                  >
-                    <option value="">Select time</option>
-                    {["06", "07", "08", "09", "10", "11", "12"].map(h => (
-                      <option key={h + "AM"} value={`${h}:00 AM`}>{`${h}:00 AM`}</option>
-                    ))}
-                    {["01", "02", "03", "04", "05", "06", "07", "08"].map(h => (
-                      <option key={h + "PM"} value={`${h}:00 PM`}>{`${h}:00 PM`}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* Session Details */}
-            <div className="bg-white rounded-lg p-6 shadow">
-              <div className="flex items-center mb-4 space-x-2">
-                <FaClock className="text-blue-500" />
-                <h3 className="text-xl font-semibold">Session Details</h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Session Type</label>
-                  <select
-                    className="border border-gray-300 p-3 rounded-md w-full"
-                    value={type}
-                    onChange={(e) => setType(e.target.value)}
-                  >
-                    <option value="">Choose Session Type</option>
-                    <option value="Yoga">Yoga</option>
-                    <option value="Cardio">Cardio</option>
-                    <option value="Zumba">Zumba</option>
-                    <option value="Crossfit">CrossFit</option>
-                    <option value="Boxing">Boxing</option>
-                    <option value="HIIT">HIIT</option>
-                    <option value="Pilates">Pilates</option>
-                    <option value="Strength Training">Strength Training</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Duration</label>
-                  <select
-                    className="border border-gray-300 p-3 rounded-md w-full"
-                    value={duration}
-                    onChange={(e) => setDuration(e.target.value)}
-                  >
-                    <option value="">Select Duration</option>
-                    <option value="30 min">30 min</option>
-                    <option value="45 min">45 min</option>
-                    <option value="1 hr">1 hr</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* Trainer */}
-            <div className="bg-white rounded-lg p-6 shadow">
-              <div className="flex items-center mb-4 space-x-2">
-                <FaUser className="text-blue-500" />
-                <h3 className="text-xl font-semibold">Trainer</h3>
-              </div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Select your Trainer</label>
-              <select
-                className="border border-gray-300 p-3 rounded-md w-full"
-                value={trainer}
-                onChange={(e) => setTrainer(e.target.value)}
-              >
-                <option value="">Choose Trainer</option>
-                {filteredTrainers.length === 0 ? (
-                  <option disabled>No trainer available</option>
-                ) : (
-                  filteredTrainers.map(t => (
-                    <option key={t._id} value={t._id}>
-                      {t.firstName} {t.lastName} - {t.speciality?.join(", ")}
-                    </option>
-                  ))
-                )}
-              </select>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Date */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mt-3">
+              <CalendarDays className="inline-block w-4 h-4 mr-2" />
+              Date
+            </label>
+            <input
+              type="date"
+              value={bookingData.date}
+              onChange={(e) =>
+                setBookingData({ ...bookingData, date: e.target.value })
+              }
+              className="mt-1 block w-full border rounded-md p-2"
+            />
           </div>
 
-          {/* Right Column - Summary */}
-          <div className="bg-white p-6 rounded-lg shadow h-fit">
-            <h2 className="text-lg font-semibold text-blue-700 mb-4">Booking Summary</h2>
-            <div className="space-y-2 text-gray-800 text-base">
-              <div className="flex justify-between">
-                <span className="font-medium">Date:</span>
-                <span>{date || "Not selected"}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-medium">Time:</span>
-                <span>{time || "Not selected"}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-medium">Session:</span>
-                <span>{type || "Not selected"}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-medium">Duration:</span>
-                <span>{duration || "Not selected"}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-medium">Trainer:</span>
-                <span>{trainers.find(t => t._id === trainer)?.firstName || "Not selected"}</span>
-              </div>
-            </div>
-            <hr className="my-4" />
-            <div className="text-xl font-bold text-blue-600">
-              Total: ₹{total}
-            </div>
-            <button
-              className="w-full bg-blue-600 text-white py-2 rounded disabled:bg-blue-300"
-              disabled={!date || !time || !type || !duration || !trainer}
-              onClick={handleBooking}
+          {/* Time */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mt-3">
+              <Clock className="inline-block w-4 h-4 mr-2" />
+              Time
+            </label>
+            <select
+              value={bookingData.time}
+              onChange={(e) =>
+                setBookingData({ ...bookingData, time: e.target.value })
+              }
+              className="mt-1 block w-full border rounded-md p-2"
             >
-              Confirm Booking
-            </button>
-            <p className="text-sm text-gray-500 text-center mt-2">
-              You can cancel or reschedule up to 24 hours before your session.
-            </p>
+              <option value="">Select Time</option>
+              {availableTimeSlots.map((time) => (
+                <option key={time} value={time}>
+                  {time}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Duration */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mt-4">
+              <Timer className="inline-block w-4 h-4 mr-2" />
+              Duration
+            </label>
+            <select
+              value={bookingData.duration}
+              onChange={(e) =>
+                setBookingData({ ...bookingData, duration: e.target.value })
+              }
+              className="mt-1 block w-full border rounded-md p-2"
+            >
+              <option value="">Select Duration</option>
+              {Object.keys(durationMultipliers).map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Session Type */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mt-4">
+              <Dumbbell className="inline-block w-4 h-4 mr-2" />
+              Session Type
+            </label>
+            <select
+              value={bookingData.sessionType}
+              onChange={(e) =>
+                setBookingData({ ...bookingData, sessionType: e.target.value })
+              }
+              className="mt-1 block w-full border rounded-md p-2"
+            >
+              <option value="">Select Type</option>
+              {trainer?.speciality?.map((spec) => (
+                <option key={spec} value={spec}>
+                  {spec}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
-      </main>
+
+        {/* Total */}
+        <div className="mt-8 text-lg font-semibold text-black text-center ">
+          Total: ₹{getTotal()}
+        </div>
+
+        <button
+          onClick={handleBooking}
+          className="mt-6 block mx-auto px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Book Now
+        </button>
+      </div>
     </div>
   );
 };
 
-export default BookSessions;
+export default BookSession;

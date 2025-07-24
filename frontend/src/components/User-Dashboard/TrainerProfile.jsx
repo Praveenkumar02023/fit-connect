@@ -3,6 +3,8 @@ import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { Dot, Star } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import BookSession from "../../pages/User/BookSessions";
 
 const TrainerProfile = () => {
   const { id } = useParams();
@@ -10,6 +12,7 @@ const TrainerProfile = () => {
   const { url, token } = useContext(StoreContext);
   const [trainer, setTrainer] = useState();
   const [subscription, setSubscription] = useState([]);
+  const [showBookingModal, setShowBookingModal] = useState(false); // ✅ Added
 
   useEffect(() => {
     async function getTrainer() {
@@ -19,9 +22,7 @@ const TrainerProfile = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        if (res.status != 200) return;
-
+        if (res.status !== 200) return;
         setTrainer(res.data.trainer);
       } catch (error) {
         console.log(error);
@@ -158,7 +159,6 @@ const TrainerProfile = () => {
 
           {/* Right Panel */}
           <div className="p-6 h-full w-full lg:w-[70%] bg-white border rounded-xl border-gray-200 shadow flex flex-col justify-between">
-            {/* Top Section */}
             <div className="flex flex-col gap-y-6">
               <div>
                 <h1 className="font-semibold text-xl mb-2 text-gray-800 border-b pb-1 border-gray-300 w-fit">
@@ -188,7 +188,7 @@ const TrainerProfile = () => {
               )}
             </div>
 
-            {/* Bottom Section: Pricing */}
+            {/* Pricing */}
             <div className="mt-6">
               <div className="rounded-md border border-gray-200 p-4 shadow-inner bg-white">
                 <h2 className="text-lg font-semibold text-center mb-4 text-gray-800">
@@ -204,7 +204,7 @@ const TrainerProfile = () => {
                       </span>
                     </div>
                     <button
-                      onClick={() => navigate("/user/bookSessions")}
+                      onClick={() => setShowBookingModal(true)} // ✅ Modal Trigger
                       className="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition-all"
                     >
                       Book Session
@@ -235,6 +235,35 @@ const TrainerProfile = () => {
           © 2025 FitConnect. All rights reserved.
         </footer>
       </div>
+
+      {/* ✅ Modal with Framer Motion */}
+      <AnimatePresence>
+        {showBookingModal && (
+          <motion.div
+            className="fixed inset-0 z-50 bg-black/50 flex items-end md:items-center justify-center p-4"
+            initial={{ y: "100%", opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: "100%", opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.div
+              className="bg-white dark:bg-gray-900 rounded-lg max-w-3xl w-full relative p-4 overflow-y-auto max-h-[90vh] h-[460px]"
+              initial={{ y: 100 }}
+              animate={{ y: 0 }}
+              exit={{ y: 100 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              <button
+                className="absolute top-2 right-4 text-2xl font-bold text-gray-600 hover:text-black dark:text-gray-300 dark:hover:text-white"
+                onClick={() => setShowBookingModal(false)}
+              >
+                &times;
+              </button>
+              <BookSession trainer={trainer}  setShowBookingModal={setShowBookingModal}/>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

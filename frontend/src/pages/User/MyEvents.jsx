@@ -81,20 +81,11 @@ const MyEvents = () => {
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto px-4 py-8">
-        {/* Hero Image */}
-        <div className="rounded-2xl overflow-hidden mb-6">
-          <img
-            src="/fitness.png"
-            alt="Event Header"
-            className="w-full h-64 object-cover"
-          />
-        </div>
-
         {/* Title */}
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-gray-800">🏋‍♂ My Events</h1>
+          <h1 className="text-4xl font-bold text-black mt-4">My Events</h1>
           <p className="text-gray-500 mt-2">
-             View and manage your registered fitness events
+            View and manage your registered fitness events
           </p>
         </div>
 
@@ -113,59 +104,60 @@ const MyEvents = () => {
         {/* Event Cards */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredEvents.length > 0 ? (
-  filteredEvents.map((e) => (
-    <div
-      key={e._id}
-      className="relative bg-white h-[430px] rounded-2xl shadow-md border border-gray-200 p-4 flex flex-col justify-between"
-    >
-      <img
-        src={e.avatar || "https://i.imgur.com/7s4U6vF.png"}
-        alt={e.title}
-        className="h-42 w-full object-cover rounded-lg"
-      />
-      <h3 className="text-blue-700 font-semibold text-lg mt-3 text-center">
-        {e.title}
-      </h3>
-      <p className="text-sm text-gray-600 mt-1 line-clamp-2 text-center">
-        {e.description}
-      </p>
+            filteredEvents.map((e) => (
+              <div
+                key={e._id}
+                className="relative bg-white h-[430px] rounded-2xl shadow-md border border-gray-200 p-4 flex flex-col justify-between"
+              >
+                <img
+                  src={e.avatar || "https://i.imgur.com/7s4U6vF.png"}
+                  alt={e.title}
+                  className="h-42 w-full object-cover rounded-lg"
+                />
+                <h3 className="text-blue-700 font-semibold text-lg mt-3 text-center">
+                  {e.title}
+                </h3>
+                <p className="text-sm text-gray-600 mt-1 line-clamp-2 text-center">
+                  {e.description}
+                </p>
 
-      <div className="mt-2 text-sm text-gray-700 space-y-1">
-        <div className="flex items-center">
-          <MapPin className="h-4 w-4 mr-2 text-gray-500" />
-          <span className="truncate">{e.location}</span>
-        </div>
-        <div className="flex items-center">
-          <Clock className="h-4 w-4 mr-2 text-gray-500" />
-          <span>{formatDate(e.date)}</span>
-        </div>
-        <div className="flex items-center">
-          <Trophy className="h-4 w-4 mr-2 text-gray-500" />
-          <span>Prize: ₹{e.prizePool}</span>
-        </div>
-        <div className="flex items-center">
-          <IndianRupee className="h-4 w-4 mr-2 text-gray-500" />
-          <span>Fee: ₹{e.registrationFee}</span>
+                <div className="mt-2 text-sm text-gray-700 space-y-1">
+                  <div className="flex items-center">
+                    <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                    <span className="truncate">{e.location}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Clock className="h-4 w-4 mr-2 text-gray-500" />
+                    <span>{formatDate(e.date)}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Trophy className="h-4 w-4 mr-2 text-gray-500" />
+                    <span>Prize: ₹{e.prizePool}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <IndianRupee className="h-4 w-4 mr-2 text-gray-500" />
+                    <span>Fee: ₹{e.registrationFee}</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => cancelRegistration(e._id)}
+                  className="w-full h-9 mt-3 text-white bg-red-500 hover:bg-red-600 transition-all duration-300 rounded-md flex items-center justify-center gap-2 text-sm font-medium"
+                >
+                  <X className="h-4 w-4" />
+                  Cancel Registration
+                </button>
+              </div>
+            ))
+          ) : (
+            <p className="col-span-full text-center text-gray-500 py-16">
+              No events found.
+            </p>
+          )}
         </div>
       </div>
 
-      <button
-        onClick={() => cancelRegistration(e._id)}
-        className="w-full h-9 mt-3 text-white bg-red-500 hover:bg-red-600 transition-all duration-300 rounded-md flex items-center justify-center gap-2 text-sm font-medium"
-      >
-        <X className="h-4 w-4" />
-        Cancel Registration
-      </button>
-    </div>
-  ))
-) : (
-  <p className="col-span-full text-center text-gray-500 py-16">
-    No events found.
-  </p>
-)}
-        </div>
-      </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 };
