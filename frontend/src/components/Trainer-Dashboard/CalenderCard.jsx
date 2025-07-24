@@ -5,7 +5,7 @@ import { CalendarDays } from "lucide-react";
 
 const CalenderCard = ({ onClick }) => {
   return (
-    <div className="bg-white rounded-2xl shadow-md p-6 w-full flex items-center justify-between border hover:shadow-lg transition-all h-30">
+    <div className="bg-gray-50 border border-gray-300 rounded-2xl shadow-md p-6 w-full flex items-center justify-between  hover:shadow-lg transition-all h-30">
       {/* Left section: icon + text */}
       <div className="flex items-start gap-3">
         {/* Icon */}
