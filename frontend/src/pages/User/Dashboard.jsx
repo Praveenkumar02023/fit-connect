@@ -161,8 +161,10 @@ useEffect(() => {
       </div>
 
       {/* Welcome */}
-      <div className="relative z-20 bg-blue-600 text-white rounded-xl p-6 mb-10 shadow-md w-full max-w-7xl mx-auto">
-        <h1 className="text-2xl font-bold">Welcome back, {user.name}!</h1>
+      <div className="text-center text-black p-6 mb-8">
+        <h1 className="text-3xl font-bold">
+        Welcome back, {user.name}!
+        </h1>
         <p className="text-sm mt-1">Ready to crush your fitness goals today?</p>
       </div>
 
