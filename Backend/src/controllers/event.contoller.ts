@@ -182,6 +182,11 @@ export const updateEvent = async(req : Request , res : Response) : Promise<any> 
   const eventId = parsed.data.eventId;
 
   try {
+
+    if (req.file?.path) {
+    (parsed.data as any).avatar = req.file.path;
+    }
+
     const updatedEvent = await eventModel.findByIdAndUpdate(
       eventId,
       parsed.data,
@@ -191,6 +196,8 @@ export const updateEvent = async(req : Request , res : Response) : Promise<any> 
     if (!updatedEvent) {
       return res.status(404).json({ message: "Event not found" });
     }
+
+    
 
     res.status(200).json({
       message: "Event updated successfully",

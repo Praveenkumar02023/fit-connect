@@ -1,240 +1,323 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { StoreContext } from "../../Context/StoreContext";
 import { useNavigate, useParams } from "react-router-dom";
-import { Dot, Star } from "lucide-react";
+import { StoreContext } from "../../Context/StoreContext";
+import {
+  Star,
+  Mail,
+  Calendar,
+  IndianRupee,
+  X
+} from "lucide-react";
+import Footer from "../LandingPage/Footer";
 
 const TrainerProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { url, token } = useContext(StoreContext);
-  const [trainer, setTrainer] = useState();
+  const [trainer, setTrainer] = useState(null);
   const [subscription, setSubscription] = useState([]);
+  const [showBookingPopup, setShowBookingPopup] = useState(false);
 
-  useEffect(() => {
-    async function getTrainer() {
-      try {
-        const res = await axios.get(`${url}/api/v1/trainer/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [type, setType] = useState("");
+  const [duration, setDuration] = useState("");
 
-        if (res.status != 200) return;
+  const durationMultipliers = {
+    "30 min": 1,
+    "45 min": 1.25,
+    "1 hr": 1.5,
+  };
 
-        setTrainer(res.data.trainer);
-      } catch (error) {
-        console.log(error);
-      }
-    }
+  const durationToMinutes = {
+    "30 min": 30,
+    "45 min": 45,
+    "1 hr": 60,
+  };
 
-    getTrainer();
-  }, []);
+  const getTotal = () => {
+    if (!trainer || !duration) return 0;
+    const base = trainer?.pricing_perSession || 0;
+    const multiplier = durationMultipliers[duration] || 1;
+    return base * multiplier;
+  };
 
-  useEffect(() => {
-    if (!trainer) return;
+  const handleBooking = async () => {
+    const scheduledAt = new Date(`${date} ${time}`);
+    const fee = getTotal();
 
-    async function getSubscription() {
-      try {
-        const res = await axios.get(`${url}/api/v1/subscription/all`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+    const payload = {
+      type,
+      scheduledAt: scheduledAt.toISOString(),
+      duration: durationToMinutes[duration] || 30,
+      trainerId: trainer._id,
+      fee,
+    };
 
-        const all = res.data?.Allsubscription ?? [];
-        const currentTrainerSubscriptions = all.filter(
-          (s) => s.trainerId === trainer._id
-        );
-        setSubscription(currentTrainerSubscriptions);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
-    getSubscription();
-  }, [trainer]);
-
-  const handleSubscribe = async (trainer) => {
     try {
       const res = await axios.post(
-        `${url}/api/v1/subscription/checkout-stripe-session`,
-        { trainerId: trainer._id },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        `${url}/api/v1/session/createstripesession`,
+        payload,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
       if (res.data.success && res.data.sessionurl) {
         window.location.href = res.data.sessionurl;
       } else {
         alert("Payment session creation failed");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong!");
+    }
+  };
+
+  const handleSubscribe = async () => {
+    try {
+      const res = await axios.post(
+        `${url}/api/v1/subscription/checkout-stripe-session`,
+        { trainerId: trainer._id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.data.success && res.data.sessionurl) {
+        window.location.href = res.data.sessionurl;
       }
     } catch (error) {
       alert("Something went wrong");
     }
   };
 
-  if (!trainer || !subscription) return <div>Loading...</div>;
+  useEffect(() => {
+    async function fetchTrainer() {
+      const res = await axios.get(`${url}/api/v1/trainer/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setTrainer(res.data.trainer);
+    }
+    fetchTrainer();
+  }, []);
+
+  useEffect(() => {
+    if (!trainer) return;
+
+    async function getSubscriptions() {
+      const res = await axios.get(`${url}/api/v1/subscription/all`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const currentTrainerSubscriptions = res.data.Allsubscription.filter(
+        (s) => s.trainerId === trainer._id
+      );
+      setSubscription(currentTrainerSubscriptions);
+    }
+
+    getSubscriptions();
+  }, [trainer]);
+
+  if (!trainer) return <div className="text-center py-10">Loading...</div>;
 
   return (
-    <div className="relative bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 min-h-screen w-full overflow-hidden">
-      {/* Decorative Bubbles */}
-      <div className="absolute top-10 left-10 w-32 h-32 bg-blue-300 rounded-full opacity-30 blur-3xl animate-pulse z-10" />
-      <div className="absolute bottom-10 right-10 w-40 h-40 bg-purple-400 rounded-full opacity-30 blur-3xl animate-pulse z-0" />
-      <div className="absolute top-[20%] right-[30%] w-24 h-24 bg-pink-300 rounded-full opacity-20 blur-2xl animate-pulse z-0" />
-      <div className="absolute bottom-[30%] left-[20%] w-20 h-20 bg-indigo-300 rounded-full opacity-20 blur-2xl animate-pulse z-0" />
-      <div className="absolute top-[40%] left-[50%] w-28 h-28 bg-green-200 rounded-full opacity-20 blur-2xl animate-pulse z-0" />
-
-      <div className="relative z-10 px-6 md:px-12 lg:px-[8rem] py-8 flex flex-col items-center justify-center">
-        <div className="w-full bg-white/50 backdrop-blur-sm flex flex-col lg:flex-row gap-4 rounded-xl shadow-lg p-4">
-          {/* Left Panel */}
-          <div className="p-4 flex flex-col w-full lg:w-[30%] bg-white border rounded-xl border-gray-200 shadow">
-            <div className="w-full flex justify-center">
-              <img
-                src={
-                  trainer.avatar ||
-                  "https://i.pinimg.com/474x/2c/47/d5/2c47d5dd5b532f83bb55c4cd6f5bd1ef.jpg?nii=t"
-                }
-                alt="trainer profile"
-                className="h-32 w-32 rounded-full border-2 border-black object-cover"
-              />
-            </div>
-
-            <div className="pt-4 text-center">
-              <h2 className="font-semibold text-lg">
+    <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-violet-50 pt-2 md:pt-4">
+      <div className="max-w-6xl mx-auto bg-white border border-gray-300 rounded-xl shadow-lg p-6 space-y-6">
+        {/* Trainer Info Section */}
+        <div className="flex flex-col items-center text-center space-y-3">
+          <div className="flex items-center justify-center">
+            <img
+              src={trainer.avatar || "/default-avatar.png"}
+              alt="trainer"
+              className="w-24 h-24 rounded-full border-2 border-black object-cover"
+            />
+            <div className="ml-4 flex flex-col">
+              <h1 className="text-xl font-bold capitalize">
                 {trainer.firstName} {trainer.lastName}
-              </h2>
-              <div className="text-sm text-gray-500 font-semibold mt-1">
-                {subscription?.length || 0} subscribers
-              </div>
-            </div>
-
-            <div className="border border-dashed p-2 border-black w-full justify-center mt-3 text-sm font-semibold flex flex-wrap text-center">
-              {trainer.speciality?.length > 0
-                ? trainer.speciality.map((s, i) => (
-                    <div key={i} className="underline px-1 flex">
-                      {s}
-                    </div>
-                  ))
-                : "No speciality found"}
-            </div>
-
-            <div className="mt-3 flex items-center justify-center gap-x-1">
-              <h3>Rating:</h3>
-              <div className="flex items-center gap-x-1 text-center">
-                <Star className="text-yellow-400 fill-yellow-300 size-5" />
-                {trainer.rating || "-"}
-              </div>
-            </div>
-
-            <div className="px-4 mt-4 text-center">
-              <h1 className="font-semibold text-lg">Experience</h1>
-              <p className="text-gray-600 mt-2 text-md">
-                {trainer.experience || "No experience"}
+              </h1>
+              <p className="text-gray-500">{subscription.length} Subscribers</p>
+              <p className="flex items-center gap-1 text-yellow-500 justify-center">
+                <Star className="w-4 h-4" /> {trainer.rating || "-"}
               </p>
             </div>
-
-            <div className="mt-4 text-center">
-              <h1 className="font-semibold text-lg">Reach Out</h1>
-              <div className="flex justify-center gap-x-2 text-sm">
-                <span>Mail:</span>
-                <a
-                  href={`mailto:${trainer.email}`}
-                  className="text-blue-700 hover:underline"
-                >
-                  {trainer.email}
-                </a>
-              </div>
-            </div>
-
-            <div className="mt-5 flex gap-x-2 justify-center text-sm">
-              <span className="font-semibold">Joined on:</span>
-              <span className="font-semibold">
-                {new Date(trainer.createdAt).toISOString().split("T")[0]}
+          </div>
+          <div className="flex flex-wrap gap-2 justify-center">
+            {trainer.speciality?.map((item, i) => (
+              <span
+                key={i}
+                className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
+              >
+                {item}
               </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Left Column */}
+          <div className="md:col-span-2 space-y-4">
+            <div className="bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm">
+              <h2 className="text-lg font-semibold mb-2">About Me</h2>
+              <p className="text-sm text-gray-700">{trainer.about}</p>
+            </div>
+            <div className="bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm">
+              <h2 className="text-lg font-semibold mb-2">Experience</h2>
+              <p className="text-sm text-gray-700">{trainer.experience}</p>
+            </div>
+            <div className="bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm">
+              <h2 className="text-lg font-semibold mb-2">Achievements</h2>
+              <ul className="list-disc ml-5 mt-2 text-sm text-gray-700 space-y-1">
+                {trainer.Achievements?.split("\\n").map(
+                  (a, i) => a.trim() && <li key={i}>{a.trim()}</li>
+                )}
+              </ul>
             </div>
           </div>
 
-          {/* Right Panel */}
-          <div className="p-6 h-full w-full lg:w-[70%] bg-white border rounded-xl border-gray-200 shadow flex flex-col justify-between">
-            {/* Top Section */}
-            <div className="flex flex-col gap-y-6">
-              <div>
-                <h1 className="font-semibold text-xl mb-2 text-gray-800 border-b pb-1 border-gray-300 w-fit">
-                  About Me
-                </h1>
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  {trainer.about || "Nothing found"}
-                </p>
-              </div>
-
-              {trainer.Achievements && (
-                <div>
-                  <h1 className="font-semibold text-xl mb-2 text-gray-800 border-b pb-1 border-gray-300 w-fit">
-                    Achievements
-                  </h1>
-                  <div className="text-gray-700 text-sm mt-2 space-y-2">
-                    {trainer.Achievements.split(".").map((e, i) =>
-                      e.trim() ? (
-                        <div key={i} className="flex items-start gap-x-2">
-                          <Dot className="text-blue-500 mt-[2px]" />
-                          <span>{e.trim()}.</span>
-                        </div>
-                      ) : null
-                    )}
-                  </div>
+          {/* Right Column */}
+          <div className="space-y-4 flex flex-col h-full justify-between">
+            <div className="bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <IndianRupee className="w-4 h-4 text-green-600" /> Pricing
+              </h2>
+              <div className="mt-2 space-y-3">
+                <div className="p-3 rounded bg-green-100 border border-green-300">
+                  <p className="text-sm text-gray-700 text-center">Per Session</p>
+                  <p className="text-xl font-bold text-center text-green-700">
+                    ₹{trainer.pricing_perSession}
+                  </p>
+                  <button
+                    onClick={() => setShowBookingPopup(true)}
+                    className="mt-2 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md"
+                  >
+                    Book Session
+                  </button>
                 </div>
-              )}
+
+                <div className="p-3 rounded bg-purple-100 border border-purple-300">
+                  <p className="text-sm text-gray-700 text-center">Per Month</p>
+                  <p className="text-xl font-bold text-center text-purple-700">
+                    ₹{trainer.pricing_perMonth}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1 text-center">
+                    Save 25% with monthly plan
+                  </p>
+                  <button
+                    onClick={handleSubscribe}
+                    className="mt-2 w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-md"
+                  >
+                    Subscribe Monthly
+                  </button>
+                </div>
+              </div>
             </div>
 
-            {/* Bottom Section: Pricing */}
-            <div className="mt-6">
-              <div className="rounded-md border border-gray-200 p-4 shadow-inner bg-white">
-                <h2 className="text-lg font-semibold text-center mb-4 text-gray-800">
-                  💰 Pricing
-                </h2>
+            <div className="bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm">
+              <h2 className="text-lg font-semibold mb-2">Contact Info</h2>
+              <p className="flex items-center gap-2 text-sm text-blue-600">
+                <Mail className="w-4 h-4" /> {trainer.email}
+              </p>
+              <p className="flex items-center gap-2 text-sm text-gray-600 mt-1">
+                <Calendar className="w-4 h-4" /> Joined{" "}
+                {trainer.createdAt?.split("T")[0]}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-                <div className="flex flex-col gap-y-4">
-                  <div className="border border-dashed border-gray-500 rounded p-4">
-                    <div className="flex gap-x-2">
-                      <span className="text-gray-600 text-sm">Per Session:</span>
-                      <span className="text-black text-lg font-semibold">
-                        ₹{trainer.pricing_perSession}
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => navigate("/user/bookSessions")}
-                      className="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition-all"
-                    >
-                      Book Session
-                    </button>
-                  </div>
+      {/* Booking Popup */}
+      {showBookingPopup && (
+        <div className="fixed inset-0 bg-black/40 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg w-full max-w-lg relative shadow-xl border border-gray-300">
+            <button
+              onClick={() => setShowBookingPopup(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <h3 className="text-xl font-semibold mb-4 text-center">Book a Session</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Select Date</label>
+                <input
+                  type="date"
+                  className="border border-gray-300 p-2 rounded-md w-full"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Select Time</label>
+                <select
+                  className="border border-gray-300 p-2 rounded-md w-full"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                >
+                  <option value="">Select Time</option>
+                  {["06", "07", "08", "09", "10", "11", "12"].map(h => (
+                    <option key={h + "AM"} value={`${h}:00 AM`}>{`${h}:00 AM`}</option>
+                  ))}
+                  {["01", "02", "03", "04", "05", "06", "07", "08"].map(h => (
+                    <option key={h + "PM"} value={`${h}:00 PM`}>{`${h}:00 PM`}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Session Type</label>
+                <select
+                  className="border border-gray-300 p-2 rounded-md w-full"
+                  value={type}
+                  onChange={(e) => setType(e.target.value)}
+                >
+                  <option value="">Select Type</option>
+                  {trainer?.speciality?.map((spec, index) => (
+                    <option key={index} value={spec}>{spec}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
+                <select
+                  className="border border-gray-300 p-2 rounded-md w-full"
+                  value={duration}
+                  onChange={(e) => setDuration(e.target.value)}
+                >
+                  <option value="">Select Duration</option>
+                  <option value="30 min">30 min</option>
+                  <option value="45 min">45 min</option>
+                  <option value="1 hr">1 hr</option>
+                </select>
+              </div>
 
-                  <div className="border border-dashed border-gray-500 rounded p-4">
-                    <div className="flex gap-x-2">
-                      <span className="text-gray-600 text-sm">Per Month:</span>
-                      <span className="text-black text-lg font-semibold">
-                        ₹{trainer.pricing_perMonth}
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => handleSubscribe(trainer)}
-                      className="mt-3 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md transition-all"
-                    >
-                      Subscribe Monthly
-                    </button>
-                  </div>
-                </div>
+              {/* Summary Card */}
+              <div className="pt-4 border-t bg-gray-100 rounded-md p-4 space-y-1 text-sm text-gray-700">
+                <p><strong>Date:</strong> {date || "Not selected"}</p>
+                <p><strong>Time:</strong> {time || "Not selected"}</p>
+                <p><strong>Trainer:</strong> {trainer.firstName}</p>
+                <p><strong>Session Type:</strong> {type || "Not selected"}</p>
+                <p><strong>Duration:</strong> {duration || "Not selected"}</p>
+                <p className="text-lg font-semibold text-gray-900 mt-2">Total: ₹{getTotal()}</p>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-4 mt-4">
+                <button
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                  onClick={() => setShowBookingPopup(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  disabled={!date || !time || !type || !duration}
+                  onClick={handleBooking}
+                >
+                  Confirm & Pay
+                </button>
               </div>
             </div>
           </div>
         </div>
+      )}
 
-        <footer className="text-xs text-gray-400 text-center py-4 mt-8 z-10">
-          © 2025 FitConnect. All rights reserved.
-        </footer>
-      </div>
+      <Footer />
     </div>
   );
 };

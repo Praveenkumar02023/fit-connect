@@ -8,7 +8,7 @@ export const eventRouter = Router();
 //related to events
 eventRouter.post('/create',authMiddlware,upload.single("image"),createEvent);
 eventRouter.get('/all',getAllEvents);
-eventRouter.patch('/update',authMiddlware,updateEvent);
+eventRouter.patch('/update',authMiddlware,upload.single("image"),updateEvent);
 eventRouter.post('/delete',authMiddlware,deleteEvent);
 
 //related to event participants.
