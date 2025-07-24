@@ -200,10 +200,10 @@ setTodaySession(enrichedSessions);
       <main className="relative z-10 flex-1 pt-6 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Welcome */}
         <div className="text-center text-black p-6 mb-8">
-          <h1 className="text-2xl font-bold">
+          <h1 className="text-3xl font-bold">
             Welcome back, Coach {trainer?.firstName || "Loading..."}!
           </h1>
-          <p className="text-sm opacity-90">
+          <p className="text-md opacity-90">
             Ready to inspire your clients today?
           </p>
         </div>
