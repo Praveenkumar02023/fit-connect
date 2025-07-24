@@ -60,9 +60,6 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="trainers/:id" element={<TrainerProfile />} />
             <Route path="chat/:id" element={<Chat />} />
-            <Route path="contact" element={<Contact />} />
-            <Route path="policy" element={<Policy />} />
-            <Route path="terms" element={<Terms />} />
             <Route path="bookSessions" element={<BookSessions />} />
             <Route path="subscriptions" element={<ViewSubscriptions />} />
             <Route path="about" element={<AboutUs />} />
@@ -80,6 +77,9 @@ function App() {
           <Route path="/subscription-success" element={<SubscriptionSuccess />} />
           <Route path="/session-success" element={<SessionSuccess />} />
           <Route path="/event-success" element={<EventSuccess />} />
+            <Route path="/policy" element={<Policy />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/terms" element={<Terms />} />
 
           {/* Trainer Routes with Layout */}
           <Route path="/trainer" element={<TrainerLayout />}>
