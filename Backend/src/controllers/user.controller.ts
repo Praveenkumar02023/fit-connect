@@ -122,44 +122,56 @@ const updateProfileValidator = z.object({
   password : z.string().optional()
 });
 
-export const updateUserProfile = async(req : Request , res : Response) : Promise<any> =>{
-
+export const updateUserProfile = async (req: Request, res: Response): Promise<any> => {
   const userId = (req as any).userId as string;
 
+  // Zod validation
   const parsed = updateProfileValidator.safeParse(req.body);
+  console.log("Parsed Data:", parsed.data);
 
-  if(!parsed.success){
-
-    return res.status(400).json({message : "Invalid inputs :("});
-
+  if (!parsed.success) {
+    return res.status(400).json({ message: "Invalid inputs :(" });
   }
 
   try {
-    
-    const {password} = parsed.data;
+    const { password } = parsed.data;
 
-    if(password){
-
-      const hashedPassword = await bcrypt.hash(password,10);
+    // Hash password if provided
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
       parsed.data.password = hashedPassword;
+    }
+
+    // Handle avatar if file was uploaded
+    if (req.file) {
+      const filePath = req.file.path || req.file.filename;
+      console.log("Uploaded file:", filePath);
+
+     (parsed.data as any).avatar = filePath;
 
     }
 
-    const updatedUser = await userModel.updateOne({_id : userId},parsed.data);
+    // Update the user and return updated document
+    const updatedUser = await userModel.findByIdAndUpdate(
+      userId,
+      { $set: parsed.data },
+      { new: true } // returns updated document
+    );
 
-    if(!updatedUser){
-      throw new Error("User not found");
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
     }
-    
-    res.status(200).json({message : "User details updated!",updatedUser});
+
+    return res.status(200).json({
+      message: "User details updated!",
+      user: updatedUser,
+    });
 
   } catch (e) {
-
-    res.status(500).json({message : (e as Error).message});
-
+    console.error(e);
+    return res.status(500).json({ message: (e as Error).message });
   }
-
-}
+};
 
 export const deleteUser = async(req : Request , res : Response) => {
 

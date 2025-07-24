@@ -10,8 +10,23 @@ import {
   UserPlus,
   Ban,
   Wallet,
+  MessageCircle,
 } from "lucide-react";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+// ADD THIS TO THE TOP OF YOUR FILE
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip
+} from "recharts";
+
 
 const Dashboard = () => {
   const { token, url } = useContext(StoreContext);
@@ -21,35 +36,83 @@ const Dashboard = () => {
   const [subscriptions, setSubscriptions] = useState([]);
   const navigate = useNavigate();
 
-  const fetchUserData = async () => {
-    try {
-      const userRes = await axios.get(`${url}/api/v1/user/profile`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setUser(userRes.data.user);
+  const [monthlySpendData, setMonthlySpendData] = useState([]);
 
-      const sessionsRes = await axios.get(`${url}/api/v1/user/sessions`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setSessions(sessionsRes.data.allSessions || []);
+useEffect(() => {
+  const processSpendingData = () => {
+    const spendMap = {};
 
-      const eventsRes = await axios.post(
-        `${url}/api/v1/event/UserRegisteredEvents`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setTotalEvents(eventsRes.data.events || []);
+    const addAmount = (dateStr, amount, type) => {
+      const date = new Date(dateStr);
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+      if (!spendMap[key]) {
+        spendMap[key] = { month: key, Sessions: 0, Subscriptions: 0, Events: 0 };
+      }
+      spendMap[key][type] += amount;
+    };
 
-      const subsRes = await axios.get(`${url}/api/v1/subscription/all`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setSubscriptions(subsRes.data.subscriptions || []);
-    } catch (err) {
-      console.error("Failed to load dashboard data:", err.message);
-    }
+    // Sessions
+    sessions.forEach((s) => {
+      if (s.paymentStatus === "success") {
+        addAmount(s.createdAt, s.fee, "Sessions");
+      }
+    });
+
+    // Subscriptions
+    subscriptions.forEach((s) => {
+      addAmount(s.createdAt, s.amount, "Subscriptions");
+    });
+
+    // Events
+    totalEvents.forEach((e) => {
+      if (e.registrationFee) {
+        addAmount(e.createdAt, e.registrationFee, "Events");
+      }
+    });
+
+    // Convert to array
+    const monthlyData = Object.values(spendMap).sort((a, b) =>
+      a.month.localeCompare(b.month)
+    );
+
+    setMonthlySpendData(monthlyData);
   };
 
+  processSpendingData();
+}, [sessions, subscriptions, totalEvents]);
+
+
   useEffect(() => {
+    async function fetchUserData() {
+      try {
+        const userRes = await axios.get(`${url}/api/v1/user/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUser(userRes.data.user);
+
+        const sessionsRes = await axios.get(`${url}/api/v1/user/sessions`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setSessions(sessionsRes.data.allSessions || []);
+
+        const eventsRes = await axios.post(
+          `${url}/api/v1/event/UserRegisteredEvents`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setTotalEvents(eventsRes.data.events || []);
+
+        const subsRes = await axios.get(`${url}/api/v1/subscription/all`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setSubscriptions(subsRes.data.Allsubscription || []);
+        console.log(subsRes.data);
+        
+      } catch (err) {
+        console.error("Dashboard load error:", err.message);
+      }
+    }
+
     fetchUserData();
   }, []);
 
@@ -57,163 +120,135 @@ const Dashboard = () => {
     () => sessions.filter((s) => s.status === "confirmed"),
     [sessions]
   );
-
   const completedSessions = useMemo(
     () => sessions.filter((s) => s.status === "completed"),
     [sessions]
   );
 
   const pieData = useMemo(() => {
-    const cancelledCount =
-      sessions.length - (upcomingSessions.length + completedSessions.length);
+    const cancelled = sessions.length - (upcomingSessions.length + completedSessions.length);
     return [
       { name: "Upcoming", value: upcomingSessions.length },
       { name: "Completed", value: completedSessions.length },
-      { name: "Cancelled", value: cancelledCount },
+      { name: "Cancelled", value: cancelled },
     ];
-  }, [sessions.length, upcomingSessions.length, completedSessions.length]);
+  }, [sessions, upcomingSessions, completedSessions]);
 
   if (!user) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p className="text-blue-600 font-semibold text-lg">
-          Loading dashboard...
-        </p>
+      <div className="min-h-screen flex justify-center items-center">
+        <p className="text-blue-600 text-lg font-medium">Loading dashboard...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10 px-1 sm:px-6">
-      {/* Welcome */}
-      <div className="bg-blue-600 text-white rounded-xl p-6 mb-8 shadow-md flex justify-between items-center h-[120px]">
-        <div>
-          <h1 className="text-2xl font-bold">Welcome back, {user.name}!</h1>
-          <p className="text-sm opacity-90">
-            Ready to crush your fitness goals today?
-          </p>
-        </div>
-        <div className="h-12 w-12 rounded-full">
-          <img
-            src={user.avatar || "https://www.gravatar.com/avatar/?d=mp"}
-            alt="user"
-            className="h-12 w-12 rounded-full object-cover"
+    <div className=" relative min-h-screen w-full bg-gradient-to-br from-blue-50 via-white to-blue-100 py-10 px-4 sm:px-12">
+      {/* Blurred bubbles */}
+      <div className="absolute inset-0 overflow-hidden z-10 pointer-events-none">
+        {[
+          ["top-[5%]", "left-[5%]", "w-60", "h-60", "bg-pink-300", "opacity-50"],
+          ["top-[30%]", "right-[10%]", "w-72", "h-72", "bg-purple-400", "opacity-70"],
+          ["bottom-[20%]", "left-[30%]", "w-64", "h-64", "bg-blue-300", "opacity-60"],
+          ["bottom-[5%]", "right-[5%]", "w-56", "h-56", "bg-yellow-300", "opacity-50"],
+          ["top-[60%]", "left-[5%]", "w-72", "h-72", "bg-lime-300", "opacity-60"],
+        ].map((styles, i) => (
+          <div
+            key={i}
+            className={`absolute ${styles.join(" ")} rounded-full blur-[100px] animate-pulse z-10`}
           />
-        </div>
+        ))}
+      </div>
+
+      {/* Welcome */}
+      <div className="relative z-20 bg-blue-600 text-white rounded-xl p-6 mb-10 shadow-md w-full max-w-7xl mx-auto">
+        <h1 className="text-2xl font-bold">Welcome back, {user.name}!</h1>
+        <p className="text-sm mt-1">Ready to crush your fitness goals today?</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 mb-8">
-        <StatCard
-          icon={<Clock />}
-          title="Upcoming Sessions"
-          value={upcomingSessions.length}
-          description="Future Sessions."
-        />
-        <StatCard
-          icon={<CheckCircle />}
-          title="Completed Sessions"
-          value={completedSessions.length}
-          description="Sessions you've completed."
-        />
-        <StatCard
-          icon={<CreditCard />}
-          title="Subscriptions"
-          value={subscriptions.length}
-          description="Your active subscriptions."
-        />
-        <StatCard
-          icon={<Trophy />}
-          title="Events Joined"
-          value={totalEvents.length}
-          description="Group challenge events."
-        />
+      <div className="relative z-20 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 max-w-7xl mx-auto mb-10">
+        <StatCard icon={<Clock />} title="Upcoming" value={upcomingSessions.length} description="Future sessions" />
+        <StatCard icon={<CheckCircle />} title="Completed" value={completedSessions.length} description="Finished sessions" />
+        <StatCard icon={<CreditCard />} title="Subscriptions" value={subscriptions.length} description="Your plans" />
+        <StatCard icon={<Trophy />} title="Events Joined" value={totalEvents.length} description="Fitness events" />
       </div>
 
-      {/* Action Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 max-w-7xl mx-auto">
+      {/* Action Cards Row */}
+      <div className="relative z-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto mb-10">
         <ActionCard
           title="Buy Subscription"
-          description="Subscribe to your favorite trainer and access exclusive training plans for a full month. Boost your routine today!"
+          description="Subscribe to your favorite trainer for exclusive content."
           buttonText="Buy Now"
-          icon={<Wallet size={26} className="text-blue-600 ml-2" />}
+          icon={<Wallet className="text-blue-600 ml-2" />}
           onClick={() => navigate("/user/buySubscription")}
         />
         <ActionCard
           title="Cancel a Session"
-          description="Need to reschedule? Cancel your upcoming sessions with just a click. Flexible and easy."
+          description="Need flexibility? Cancel or reschedule easily."
           buttonText="Cancel Session"
-          icon={<Ban size={26} className="text-red-500 ml-2" />}
+          icon={<Ban className="text-red-500 ml-2" />}
           onClick={() => navigate("/user/MySessions")}
         />
-      </div>
-      <div className="mb-10 max-w-7xl mx-auto">
+        <ActionCard
+          title="Chat with Trainers"
+          description="Message your trainer and stay connected anytime."
+          buttonText="Open Chat"
+          icon={<MessageCircle className="text-green-600 ml-2" />}
+          onClick={() => navigate("/user/myTrainers")}
+        />
         <ActionCard
           title="Register for Events"
-          description={`Show your skills, compete with the best, and win amazing prizes.
-Don’t miss out on upcoming fitness challenges and events!
-Be bold, step up, and let your performance speak for itself.`}
+          description="Show your skills, compete and win exciting prizes."
           buttonText="Register Now"
-          icon={<UserPlus size={26} className="text-yellow-500 ml-2" />}
+          icon={<UserPlus className="text-yellow-500 ml-2" />}
           onClick={() => navigate("/user/registerEvents")}
-          fullHeight
         />
       </div>
 
+      {/* Monthly Spend Bar Chart */}
+{monthlySpendData.length > 0 && (
+  <div className="relative z-20 bg-gray-50 border border-gray-200 rounded-xl p-6 shadow max-w-7xl mx-auto mb-10">
+    <h2 className="text-lg font-bold text-blue-800 mb-4">Monthly Spending Overview</h2>
+    <div className="w-full h-[350px]">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={monthlySpendData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="month" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="Sessions" fill="#3B82F6" />
+          <Bar dataKey="Subscriptions" fill="#10B981" />
+          <Bar dataKey="Events" fill="#F59E0B" />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  </div>
+)}
+
+
       {/* Pie Chart */}
-      <div className="bg-white rounded-xl p-6 shadow mb-10 max-w-7xl mx-auto">
-        <h2 className="text-lg font-bold text-blue-800 mb-4">
-          Track Your Session Progress
-        </h2>
-        <div className=" w-full h-72">
+      <div className="relative z-20 bg-gray-50 border border-gray-200 rounded-xl p-6 shadow max-w-7xl mx-auto mb-10">
+        <h2 className="text-lg font-bold text-blue-800 mb-4">Track Your Session Progress</h2>
+        <div className="w-full h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
-            <PieChart
-              width={300}
-              height={300}
-              margin={{ top: 40, right: 100, bottom: 60, left: 100 }}
-            >
+            <PieChart>
               <Pie
                 data={pieData}
                 cx="50%"
                 cy="50%"
                 innerRadius={80}
-                outerRadius={125}
+                outerRadius={120}
                 labelLine={false}
                 dataKey="value"
-                label={({ name, value, percent, cx, cy, midAngle }) => {
-                  if (value === 0) return null;
-
-                  const RADIAN = Math.PI / 180;
-
-                  // Set default distance from center
-                  let labelDistance = 140;
-
-                  // Push "Cancelled" further away
-                  if (name === "Cancelled") {
-                    labelDistance = 170;
-                  }
-
-                  const angle = -midAngle;
-                  const x = cx + labelDistance * Math.cos(angle * RADIAN);
-                  const y = cy + labelDistance * Math.sin(angle * RADIAN);
-                  const isRightSide = angle >= -90 && angle <= 90;
-
-                  return (
-                    <text
-                      x={x}
-                      y={y}
-                      textAnchor={isRightSide ? "start" : "end"}
-                      dominantBaseline="middle"
-                      className="text-sm fill-gray-800"
-                    >
-                      {`${name} (${(percent * 100).toFixed(0)}%)`}
-                    </text>
-                  );
-                }}
+                label={({ name, value, percent }) =>
+                  value > 0 ? `${name} (${(percent * 100).toFixed(0)}%)` : ""
+                }
               >
-                {pieData.map((entry, index) => (
+                {pieData.map((entry, idx) => (
                   <Cell
-                    key={`cell-${index}`}
+                    key={`cell-${idx}`}
                     fill={
                       entry.name === "Completed"
                         ? "#10B981"
@@ -230,57 +265,36 @@ Be bold, step up, and let your performance speak for itself.`}
         </div>
       </div>
 
-      {/* Sessions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-7xl mx-auto">
-        <SessionList
-          title="Upcoming Sessions"
-          sessions={upcomingSessions}
-          color="blue"
-        />
-        <SessionList
-          title="Completed Sessions"
-          sessions={completedSessions}
-          color="green"
-        />
+      {/* Session Lists */}
+      <div className="relative z-20 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-7xl mx-auto pb-12">
+        <SessionList title="Upcoming Sessions" sessions={upcomingSessions} color="blue" />
+        <SessionList title="Completed Sessions" sessions={completedSessions} color="green" />
       </div>
     </div>
   );
 };
 
 const StatCard = ({ icon, title, value, description }) => (
-  <div className="bg-white rounded-xl p-4 shadow hover:shadow-md transition flex flex-col items-start">
-    <div className="flex items-center justify-between w-full mb-2">
+  <div className="relative bg-gray-50 border border-gray-200 rounded-xl p-4 shadow hover:shadow-md transition">
+    <div className="flex justify-between items-center mb-2">
       <h4 className="text-lg font-bold text-blue-900">{title}</h4>
-      <div className="text-blue-800 bg-blue-100 p-2 rounded-full">{icon}</div>
+      <div className="bg-blue-100 p-2 rounded-full text-blue-800">{icon}</div>
     </div>
-    <h2 className="text-2xl font-bold text-blue-900 mb-1">{value}</h2>
-    <p className="text-sm text-gray-600 leading-snug">{description}</p>
+    <h2 className="text-2xl font-bold text-blue-900">{value}</h2>
+    <p className="text-sm text-gray-600 mt-1">{description}</p>
   </div>
 );
 
-const ActionCard = ({
-  title,
-  description,
-  buttonText,
-  onClick,
-  icon,
-  fullHeight,
-}) => (
-  <div
-    className={`bg-white border border-blue-200 rounded-xl shadow hover:shadow-md transition w-full flex flex-col justify-between p-6 ${
-      fullHeight ? "min-h-[220px]" : "min-h-[220px]"
-    }`}
-  >
-    <div className="flex items-center justify-between mb-3">
+const ActionCard = ({ title, description, buttonText, onClick, icon }) => (
+  <div className="relative bg-gray-50 border border-gray-200 rounded-xl shadow p-6">
+    <div className="flex justify-between items-center mb-3">
       <h4 className="text-lg font-bold text-blue-900">{title}</h4>
       {icon}
     </div>
-    <p className="text-sm text-gray-600 mb-4 leading-relaxed flex-1">
-      {description}
-    </p>
+    <p className="text-sm text-gray-600 mb-4">{description}</p>
     <button
       onClick={onClick}
-      className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-lg transition"
+      className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-4 rounded-lg"
     >
       {buttonText}
     </button>
@@ -288,7 +302,7 @@ const ActionCard = ({
 );
 
 const SessionList = ({ title, sessions, color }) => (
-  <div className="bg-white rounded-xl p-5 shadow">
+  <div className="relative bg-gray-50 border border-gray-200 rounded-xl p-5 shadow">
     <h3 className={`text-lg font-semibold text-${color}-700 mb-3`}>{title}</h3>
     {sessions.length === 0 ? (
       <p className="text-sm text-gray-500">No {title.toLowerCase()}</p>
@@ -297,13 +311,10 @@ const SessionList = ({ title, sessions, color }) => (
         {sessions.map((s) => (
           <li
             key={s._id}
-            className={`p-4 bg-${color}-50 rounded-xl border-l-4 border-${color}-600 shadow-sm`}
+            className={`p-4 bg-${color}-50 border-l-4 border-${color}-600 rounded-lg`}
           >
-            <p className={`text-sm font-semibold text-${color}-800`}>
-              {s.type}
-            </p>
+            <p className={`text-sm font-semibold text-${color}-800`}>{s.type}</p>
             <p className="text-xs text-gray-600">
-              {color === "blue" ? "Scheduled" : "Completed"}:{" "}
               {new Date(s.scheduledAt).toLocaleString()}
             </p>
           </li>

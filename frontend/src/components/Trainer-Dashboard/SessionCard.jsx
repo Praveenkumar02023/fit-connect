@@ -61,7 +61,7 @@ const SessionCard = ({
   }, [scheduledAt, duration, hasMarkedComplete]);
 
   return (
-    <div className="relative transition-transform hover:scale-105 min-w-[300px] max-w-[330px] bg-white/80 backdrop-blur-md shadow-lg rounded-2xl overflow-hidden border border-gray-200 hover:border-blue-400">
+    <div className="relative transition-transform hover:scale-105 min-w-[300px] max-w-[330px] bg-white/80 backdrop-blur-md shadow-lg rounded-2xl overflow-hidden border border-gray-400 hover:border-blue-400">
       
       {/* Top Banner without Mark Complete */}
       <div className="bg-gradient-to-r from-blue-100 to-blue-50 p-3 flex justify-between items-center h-15">
@@ -117,7 +117,7 @@ const SessionCard = ({
 
       {meetingStatus === "not_started" && (
         <div className="text-center">
-          <p className="inline-block rounded-full bg-gray-100 text-black-800 text-sm px-6 py-2 shadow w-52 mb-2 cursor-not-allowed">
+          <p className="inline-block rounded-full border border-gray-400 bg-gray-300 text-black-800 text-sm px-6 py-2 shadow w-52 mb-2 cursor-not-allowed">
             Meeting not started.
           </p>
         </div>

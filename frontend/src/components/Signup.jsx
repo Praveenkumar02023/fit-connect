@@ -55,7 +55,7 @@ const Signup = () => {
           return;
         }
 
-        navigate("/user/feed");
+        navigate("/feed");
         toast.success("Sign up successfull :)");
       } catch (error) {
         console.log(error);
@@ -88,7 +88,7 @@ const Signup = () => {
           return;
         }
 
-        navigate("/Feed");
+        navigate("/trainer/dashboard");
         setToken(res.data.token);
         toast.success("Sign up successfull :)");
       } catch (error) {
