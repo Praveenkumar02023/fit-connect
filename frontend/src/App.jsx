@@ -40,20 +40,16 @@ import Earnings from './pages/Trainer/Earnings';
 import CreateEvent from './pages/Trainer/CreateEvent';
 import ViewEvents from './pages/Trainer/ViewEvents';
 import EditEventPage from './pages/Trainer/EditEventPage';
-import UserProfile from './pages/User/UserProfile';
+import ViewClientProfile from './pages/Trainer/ClientProfile';
 
 function App() {
   return (
     <>
       <Toaster position="top-center" reverseOrder={false} />
-
       <Router>
         <Routes>
-
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
-
-          {/* Auth Routes */}
           <Route path="/signup/:role" element={<Signup />} />
           <Route path="/signin/:role" element={<Signin />} />
           <Route path="/signup" element={<Navigate to="/signup/user" />} />
@@ -61,16 +57,16 @@ function App() {
 
           {/* User Routes */}
           <Route path="/user" element={<UserLayout />}>
+            <Route index element={<Dashboard />} />
             <Route path="trainers/:id" element={<TrainerProfile />} />
             <Route path="chat/:id" element={<Chat />} />
             <Route path="contact" element={<Contact />} />
             <Route path="policy" element={<Policy />} />
             <Route path="terms" element={<Terms />} />
-            <Route index element={<Dashboard />} />
             <Route path="bookSessions" element={<BookSessions />} />
             <Route path="subscriptions" element={<ViewSubscriptions />} />
             <Route path="about" element={<AboutUs />} />
-            <Route path="profile" element={<UserProfile />} />
+            <Route path="profile" element={<UpdateProfile />} />
             <Route path="payments" element={<Payment />} />
             <Route path="events" element={<MyEvents />} />
             <Route path="MyTrainers" element={<MyTrainers />} />
@@ -80,14 +76,16 @@ function App() {
             <Route path="registerEvents" element={<RegisterEvents />} />
           </Route>
 
+          {/* Payment Success Routes */}
           <Route path="/subscription-success" element={<SubscriptionSuccess />} />
           <Route path="/session-success" element={<SessionSuccess />} />
           <Route path="/event-success" element={<EventSuccess />} />
 
-          {/* Trainer Routes */}
+          {/* Trainer Routes with Layout */}
           <Route path="/trainer" element={<TrainerLayout />}>
             <Route index element={<TrainerDashboard />} />
             <Route path="sessions" element={<TrainerSessionsPage />} />
+            <Route path="client/:clientId" element={<ViewClientProfile />} />
             <Route path="subscribers" element={<Subscribers />} />
             <Route path="earnings" element={<Earnings />} />
             <Route path="createEvent" element={<CreateEvent />} />
@@ -95,9 +93,6 @@ function App() {
             <Route path="event/edit/:eventId" element={<EditEventPage />} />
             <Route path="profile" element={<UpdateTrainerProfile />} />
           </Route>
-
-          {/* Shared Routes */}
-
         </Routes>
       </Router>
     </>

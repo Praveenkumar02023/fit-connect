@@ -56,7 +56,7 @@ const Signin = () => {
         setToken(res.data.token)
        
         if(currentRole === "Trainer"){
-           navigate("/trainer");
+           navigate("/trainer/");
         }else{
            navigate("/user/feed");
         }

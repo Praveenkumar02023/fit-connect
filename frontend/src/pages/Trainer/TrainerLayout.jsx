@@ -1,17 +1,16 @@
-import React from 'react'
-import Sidebar from "../../components/Trainer-Dashboard/Sidebar"
+import React from 'react';
 import { Outlet } from 'react-router-dom';
+import TrainerNavbar from '../../components/Trainer-Dashboard/TrainerNavbar';
 
 const TrainerLayout = () => {
   return (
-    <div className="flex h-screen overflow-hidden">
-      <Sidebar />
-      <div className="flex-1 overflow-y-auto">
+    <div className="min-h-screen flex flex-col">
+      <TrainerNavbar />
+      <main className="flex-1 overflow-y-auto bg-background">
         <Outlet />
-      </div>
+      </main>
     </div>
   );
-  
-}
+};
 
-export default TrainerLayout
+export default TrainerLayout;
