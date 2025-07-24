@@ -7,14 +7,17 @@ import {
   MapPin,
   Trophy,
   Wallet,
-  FileText,
   BadgeCheck,
 } from "lucide-react";
 import "react-toastify/dist/ReactToastify.css";
+import Footer from "../../components/LandingPage/Footer";
 
 const RegisterEvents = () => {
   const { url, token } = useContext(StoreContext);
   const [events, setEvents] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(""); // 🔍 NEW
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -31,11 +34,21 @@ const RegisterEvents = () => {
     fetchEvents();
   }, [url]);
 
-  const handleClick = async (event) => {
+  const openModal = (event) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedEvent(null);
+    setIsModalOpen(false);
+  };
+
+  const handleConfirmRegister = async () => {
     try {
       const alreadyRegistered = await axios.post(
         `${url}/api/v1/event/register-check`,
-        { eventId: event._id },
+        { eventId: selectedEvent._id },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -43,12 +56,13 @@ const RegisterEvents = () => {
 
       if (alreadyRegistered.data.registered) {
         toast.info("You're already registered for this event.");
+        closeModal();
         return;
       }
 
       const res = await axios.post(
         `${url}/api/v1/event/checkout-stripe-session`,
-        { eventId: event._id },
+        { eventId: selectedEvent._id },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -64,87 +78,170 @@ const RegisterEvents = () => {
     }
   };
 
+  // 🔍 Filter logic
+  const filteredEvents = events.filter((event) =>
+    `${event.title} ${event.location}`.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#f0f4ff] to-[#ffffff] py-0">
+    <div className="relative min-h-screen bg-gradient-to-br from-indigo-50 via-pink-50 to-orange-50 pt-6 space-y-25">
       <ToastContainer />
 
-      {/* Header */}
-      <div className="bg-blue-600 py-6 px-4 sm:px-10 shadow-md">
-        <h1 className="text-3xl font-bold text-white text-center">
-          🏆 Register for Upcoming Events
-        </h1>
+      {/* Bubble Background */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden z-0">
+        <div className="absolute top-[-80px] left-[-80px] w-72 h-72 bg-pink-300 rounded-full blur-3xl opacity-40 animate-pulse" />
+        <div className="absolute top-[200px] right-[300px] w-96 h-96 bg-violet-300 rounded-full blur-3xl opacity-40 animate-pulse" />
+        <div className="absolute top-[50%] left-[20%] w-80 h-80 bg-orange-200 rounded-full blur-[120px] opacity-40 animate-pulse" />
+        <div className="absolute bottom-[300px] left-[-60px] w-72 h-72 bg-lime-200 rounded-full blur-[100px] opacity-40 animate-pulse" />
+        <div className="absolute bottom-[120px] left-[40%] w-96 h-96 bg-indigo-200 rounded-full blur-[120px] opacity-30 animate-pulse" />
       </div>
 
-      {/* Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-6 sm:px-12 py-10 place-items-center">
-        {events.map((event) => (
-          <div
-            key={event._id}
-            className="w-72 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 flex flex-col items-center p-4"
-          >
-            {/* Image */}
+      {/* Main Container */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Heading */}
+        <div className="text-center mt-[-5rem]">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800">
+            🏆 Register for Upcoming Events
+          </h1>
+          <p className="mt-2 text-muted-foreground text-sm sm:text-base">
+            Compete, train, and win exciting rewards!
+          </p>
+        </div>
+
+        {/* 🔍 Search Bar */}
+        <div className="mt-10 mb-8 max-w-md mx-auto">
+          <input
+            type="text"
+            placeholder="Search by title or location..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        {/* Event Cards */}
+        <div className="pt-[3rem] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredEvents.map((event) => (
+            <div
+              key={event._id}
+              className="bg-white rounded-2xl shadow-md border border-gray-200 p-4 flex flex-col justify-between h-[430px]"
+            >
+              {/* Image */}
+              <img
+                src={event.avatar || "https://i.imgur.com/7s4U6vF.png"}
+                alt={event.title}
+                className="h-36 w-full object-cover rounded-lg"
+              />
+
+              {/* Title */}
+              <h3 className="text-blue-700 font-semibold text-lg mt-3 flex items-center gap-2">
+                <BadgeCheck size={18} />
+                {event.title}
+              </h3>
+
+              {/* Description */}
+              {event.description && (
+                <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                  {event.description}
+                </p>
+              )}
+
+              {/* Info Section */}
+              <div className="mt-3 text-sm text-gray-700 space-y-1">
+                <div className="flex items-center">
+                  <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                  <span className="truncate">
+                    <strong>Location:</strong> {event.location}
+                  </span>
+                </div>
+                <div className="flex items-center">
+                  <CalendarDays className="h-4 w-4 mr-2 text-gray-500" />
+                  <span>
+                    <strong>Date:</strong>{" "}
+                    {new Date(event.date).toLocaleDateString()}
+                  </span>
+                </div>
+                <div className="flex items-center">
+                  <Trophy className="h-4 w-4 mr-2 text-gray-500" />
+                  <span>
+                    <strong>Prize:</strong> ₹{event.prizePool || 0}
+                  </span>
+                </div>
+                <div className="flex items-center">
+                  <Wallet className="h-4 w-4 mr-2 text-gray-500" />
+                  <span>
+                    <strong>Fee:</strong> ₹{event.registrationFee || 0}
+                  </span>
+                </div>
+              </div>
+
+              {/* Button */}
+              <button
+                onClick={() => openModal(event)}
+                className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm font-medium transition-all"
+              >
+                Register Now
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Confirmation Modal */}
+      {isModalOpen && selectedEvent && (
+        <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm flex justify-center items-center px-4">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4 text-blue-700 text-center">
+              Confirm Registration
+            </h2>
+
             <img
-              src={
-                event.avatar ||
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0ZcnsKC3iF9pB8_po80WXkn7h_3fd2bNx-Rq9T6B_mCx3IDZsdPjG8qNYt0pPC_YhJEA&usqp=CAU"
-              }
-              alt={event.title}
-              className="border-neutral-600 border w-48 h-48 object-cover rounded-xl mb-4"
+              src={selectedEvent.avatar || "https://i.imgur.com/7s4U6vF.png"}
+              alt="event"
+              className="h-44 w-full object-cover rounded-lg mb-4"
             />
 
-            {/* Title */}
-            <div className="flex items-center gap-2 text-blue-700 font-semibold text-md mb-2">
-              <BadgeCheck className="h-5 w-5 bg-blue-100 p-1 rounded-full" />
-              {event.title}
+            <div className="space-y-2 text-sm text-gray-700">
+              <p>
+                <strong>Title:</strong> {selectedEvent.title}
+              </p>
+              <p>
+                <strong>Description:</strong> {selectedEvent.description}
+              </p>
+              <p>
+                <strong>Location:</strong> {selectedEvent.location}
+              </p>
+              <p>
+                <strong>Date:</strong>{" "}
+                {new Date(selectedEvent.date).toLocaleDateString()}
+              </p>
+              <p>
+                <strong>Prize Pool:</strong> ₹{selectedEvent.prizePool}
+              </p>
+              <p>
+                <strong>Fee:</strong> ₹{selectedEvent.registrationFee}
+              </p>
             </div>
 
-            {/* Description */}
-            {event.description && (
-              <div className="flex items-center text-gray-600 text-sm mb-2 text-center">
-                <FileText className="h-4 w-4 mr-2 text-gray-500" />
-                <span>{event.description}</span>
-              </div>
-            )}
-
-            {/* Info */}
-            <div className="text-gray-600 text-sm space-y-2 w-full">
-              <div className="flex items-center">
-                <MapPin className="h-4 w-4 mr-2 text-gray-500" />
-                <span>
-                  <strong>Location:</strong> {event.location}
-                </span>
-              </div>
-              <div className="flex items-center">
-                <CalendarDays className="h-4 w-4 mr-2 text-gray-500" />
-                <span>
-                  <strong>Date:</strong>{" "}
-                  {new Date(event.date).toLocaleDateString()}
-                </span>
-              </div>
-              <div className="flex items-center">
-                <Trophy className="h-4 w-4 mr-2 text-gray-500" />
-                <span>
-                  <strong>Prize Pool:</strong> ₹{event.prizePool || 0}
-                </span>
-              </div>
-              <div className="flex items-center">
-                <Wallet className="h-4 w-4 mr-2 text-gray-500" />
-                <span>
-                  <strong>Fee:</strong> ₹{event.registrationFee || 0}
-                </span>
-              </div>
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={closeModal}
+                className="w-full px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmRegister}
+                className="w-full px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700"
+              >
+                Confirm Registration
+              </button>
             </div>
-
-            {/* Button */}
-            <button
-              onClick={() => handleClick(event)}
-              className="mt-4 w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white py-2 rounded-xl text-sm font-semibold shadow-sm transition-all"
-            >
-              Register Now
-            </button>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
+
+      <Footer />
     </div>
   );
 };

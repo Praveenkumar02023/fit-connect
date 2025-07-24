@@ -7,6 +7,7 @@ import { Calendar, CreditCard, User, Trophy } from 'lucide-react';
 import CalendarCard from '../../components/Trainer-Dashboard/CalenderCard';
 import CalendarModal from '../../components/Trainer-Dashboard/CalenderModel';
 import EarningsChart from '../../components/Trainer-Dashboard/EarningChart';
+import Footer from '../../components/LandingPage/Footer';
 
 const TrainerDashboard = () => {
   const [subs, setTotalSubs] = useState(0);
@@ -14,14 +15,8 @@ const TrainerDashboard = () => {
   const [events, setEvents] = useState(0);
   const [sessionDates, setSessionDates] = useState([]);
   const [trainer, setTrainer] = useState(null);
-  const { earnings, loading , monthlyEarnings} = useTrainerEarnings();
+  const { earnings, monthlyEarnings } = useTrainerEarnings();
   const [showCalendar, setShowCalendar] = useState(false);
-  const currentMonth = new Date().toLocaleString('default', { month: 'short', year: 'numeric' });
-
-
-const monthlyChartData = monthlyEarnings;
-
- 
 
   const { url, token } = useContext(StoreContext);
   const navigate = useNavigate();
@@ -40,12 +35,9 @@ const monthlyChartData = monthlyEarnings;
       const sessionRes = await axios.get(`${url}/api/v1/trainer/sessions`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const confirmedSessions = sessionRes.data.allSessions.filter(
-        (s) => s.status === 'confirmed'
-      );
-      setUpcomingSessions(confirmedSessions.length);
-      const allDates = sessionRes.data.allSessions.map((s) => s.scheduledAt);
-      setSessionDates(allDates);
+      const confirmed = sessionRes.data.allSessions.filter((s) => s.status === 'confirmed');
+      setUpcomingSessions(confirmed.length);
+      setSessionDates(sessionRes.data.allSessions.map((s) => s.scheduledAt));
 
       const eventRes = await axios.get(`${url}/api/v1/event/trainer`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -66,55 +58,65 @@ const monthlyChartData = monthlyEarnings;
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10 px-1 sm:px-6">
-      <div className="bg-blue-600 text-white rounded-xl p-6 mb-8 shadow-md flex justify-between items-center h-[120px]">
-        <div>
-          <h1 className="text-2xl font-bold">Welcome back, Coach {trainer.firstName}!</h1>
-          <p className="text-sm opacity-90">Ready to crush your fitness goals today?</p>
+    <div className="relative min-h-screen flex flex-col bg-gradient-to-br from-purple-100 via-blue-100 to-pink-100">
+      {/* Decorative Bubbles */}
+      <div className="absolute top-10 left-10 w-48 h-48 bg-purple-300 rounded-full blur-3xl opacity-30 z-0" />
+      <div className="absolute bottom-10 right-10 w-52 h-52 bg-pink-400 rounded-full blur-2xl opacity-40 z-0" />
+      <div className="absolute top-1/2 left-1/3 w-36 h-36 bg-blue-300 rounded-full blur-2xl opacity-30 z-0" />
+      <div className="absolute bottom-32 left-1/4 w-40 h-40 bg-indigo-300 rounded-full blur-3xl opacity-30 z-0" />
+      <div className="absolute top-24 right-1/4 w-36 h-36 bg-rose-300 rounded-full blur-2xl opacity-30 z-0" />
+
+      {/* Main Content */}
+      <main className="relative z-10 flex-1 pt-6 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Welcome */}
+        <div className="bg-blue-600 text-white rounded-xl p-6 mb-8 shadow-md flex justify-between items-center h-[120px]">
+          <div>
+            <h1 className="text-2xl font-bold">Welcome back, Coach {trainer.firstName}!</h1>
+            <p className="text-sm opacity-90">Ready to crush your fitness goals today?</p>
+          </div>
         </div>
-        <div className="h-12 w-12 rounded-full">
-          <img
-            src={trainer.avatar || "https://www.gravatar.com/avatar/?d=mp"}
-            alt="trainer"
-            className="h-12 w-12 rounded-full object-cover"
+
+        {/* Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+          <StatCard icon={<User />} title="Total Subscribers" value={subs} description="Active members." />
+          <StatCard icon={<CreditCard />} title="Total Earnings" value={`₹${earnings.total}`} description="Your earnings" />
+          <StatCard icon={<Calendar />} title="Upcoming Sessions" value={upcomingSessions} description="This month" />
+          <StatCard icon={<Trophy />} title="Events Created" value={events} description="Group challenge events." />
+        </div>
+
+        {/* Action Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <ActionCard
+            title="Update Your Profile"
+            description="Keep your trainer profile up to date so members know your expertise and availability."
+            buttonText="Update"
+            icon={<User size={26} className="text-green-600 ml-2" />}
+            onClick={() => navigate("/trainer/profile")}
+          />
+          <ActionCard
+            title="Create a New Event"
+            description="Engage your subscribers by hosting challenges or bootcamps."
+            buttonText="Create Event"
+            icon={<Calendar size={26} className="text-purple-600 ml-2" />}
+            onClick={() => navigate("/trainer/createEvent")}
           />
         </div>
-      </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 mb-8">
-        <StatCard icon={<User />} title="Total Subscribers" value={subs} description="Active members." />
-        <StatCard icon={<CreditCard />} title="Total earnings" value={`₹${earnings.total}`} description="Your Earnings" />
-        <StatCard icon={<Calendar />} title="Upcoming Sessions" value={upcomingSessions} description="This month" />
-        <StatCard icon={<Trophy />} title="Events Created" value={events} description="Group challenge events." />
-      </div>
+        {/* Calendar + Chart */}
+        <div className="space-y-6 mb-10">
+          <CalendarCard onClick={() => setShowCalendar(true)} />
+          <CalendarModal
+            isOpen={showCalendar}
+            onClose={() => setShowCalendar(false)}
+            sessionDates={sessionDates}
+          />
+          <EarningsChart data={monthlyEarnings} />
+        </div>
+      </main>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 max-w-7xl mx-auto">
-        <ActionCard
-          title="Update Your Profile"
-          description="Keep your trainer profile up to date so members know your expertise, availability, and certifications."
-          buttonText="Update"
-          icon={<User size={26} className="text-green-600 ml-2" />}
-          onClick={() => navigate("/trainer/profile")}
-        />
-        <ActionCard
-          title="Create a New Event"
-          description="Engage your subscribers by hosting events like challenges, bootcamps, or group workouts."
-          buttonText="Create Event"
-          icon={<Calendar size={26} className="text-purple-600 ml-2" />}
-          onClick={() => navigate("/trainer/event")}
-        />
-      </div>
-
-      <div className="space-y-6">
-        <CalendarCard onClick={() => setShowCalendar(true)} />
-        <CalendarModal isOpen={showCalendar} onClose={() => setShowCalendar(false)} sessionDates={sessionDates} />
-      </div>
-
-    <div className="mt-8">
-        <EarningsChart data={monthlyChartData} />
-      </div>
+      {/* Footer */}
+      <Footer />
     </div>
-    
   );
 };
 
@@ -124,13 +126,13 @@ const StatCard = ({ icon, title, value, description }) => (
       <h4 className="text-lg font-bold text-blue-900">{title}</h4>
       <div className="text-blue-800 bg-blue-100 p-2 rounded-full">{icon}</div>
     </div>
-    <h2 className="text-2xl font-bold text-blue-900 mb-1 items-center text-center">{value}</h2>
+    <h2 className="text-2xl font-bold text-blue-900 mb-1">{value}</h2>
     <p className="text-sm text-gray-600 leading-snug">{description}</p>
   </div>
 );
 
-const ActionCard = ({ title, description, buttonText, onClick, icon, fullHeight }) => (
-  <div className={`bg-white border border-blue-200 rounded-xl shadow hover:shadow-md transition w-full flex flex-col justify-between p-6 ${fullHeight ? 'min-h-[220px]' : 'min-h-[220px]'}`}>
+const ActionCard = ({ title, description, buttonText, onClick, icon }) => (
+  <div className="bg-white border border-blue-200 rounded-xl shadow hover:shadow-md transition w-full flex flex-col justify-between p-6 min-h-[220px]">
     <div className="flex items-center justify-between mb-3">
       <h4 className="text-lg font-bold text-blue-900">{title}</h4>
       {icon}

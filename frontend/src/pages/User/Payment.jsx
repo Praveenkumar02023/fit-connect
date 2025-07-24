@@ -3,6 +3,7 @@ import { Calendar, User, CreditCard, Search } from "lucide-react";
 import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext";
 import PaymentCard from "../../components/User-Dashboard/PaymentCard";
+import Footer from "../../components/LandingPage/Footer";
 
 const Payment = () => {
   const { token, url } = useContext(StoreContext);
@@ -89,11 +90,15 @@ const Payment = () => {
           })
         );
 
-        setPayments(enriched);
-        setTotalSpent(enriched.reduce((acc, curr) => acc + curr.amount, 0));
-        setSessionPayments(enriched.filter((p) => p.purpose === "Session"));
-        setEventPayments(enriched.filter((p) => p.purpose === "Event"));
-        setSubscriptionPayments(enriched.filter((p) => p.purpose === "Subscription"));
+        const sorted = enriched.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+
+        setPayments(sorted);
+        setTotalSpent(sorted.reduce((acc, curr) => acc + curr.amount, 0));
+        setSessionPayments(sorted.filter((p) => p.purpose === "Session"));
+        setEventPayments(sorted.filter((p) => p.purpose === "Event"));
+        setSubscriptionPayments(sorted.filter((p) => p.purpose === "Subscription"));
       } catch (error) {
         console.error("Failed to fetch payments:", error);
       }
@@ -117,12 +122,19 @@ const Payment = () => {
   );
 
   return (
-    <div className="min-h-screen px-6 py-10 bg-gray-50">
-      <div className="max-w-6xl mx-auto">
+    <div className="relative min-h-screen bg-gradient-to-br from-indigo-100 via-white to-blue-100 pt-6  overflow-hidden">
+      {/* Decorative Bubbles */}
+      <div className="absolute top-10 left-10 w-48 h-48 bg-purple-300/40 rounded-full blur-3xl z-0" />
+      <div className="absolute bottom-20 right-10 w-60 h-60 bg-pink-300/40 rounded-full blur-3xl z-0" />
+      <div className="absolute top-1/2 left-1/3 w-40 h-40 bg-blue-200/40 rounded-full blur-2xl z-0" />
+
+      <div className="px-4 relative z-10 max-w-6xl mx-auto">
         {/* Header */}
-        <div className="mb-10">
-          <h1 className="text-3xl font-bold text-black mb-2">Payment History</h1>
-          <p className="text-gray-600">Track all your session, event, and subscription payments</p>
+        <div className="mb-10 text-center">
+          <h1 className="text-4xl font-bold text-gray-800 mb-2">💵 Payment History</h1>
+          <p className="text-gray-600">
+            Track all your session, event, and subscription payments
+          </p>
         </div>
 
         {/* Summary Cards */}
@@ -139,7 +151,8 @@ const Payment = () => {
             <div>
               <p className="text-sm text-gray-600">Sessions</p>
               <h2 className="text-xl font-semibold text-blue-800">
-                {sessionPayments.length} | ₹{sessionPayments.reduce((a, b) => a + b.amount, 0)}
+                {sessionPayments.length} | ₹
+                {sessionPayments.reduce((a, b) => a + b.amount, 0)}
               </h2>
             </div>
           </div>
@@ -148,7 +161,8 @@ const Payment = () => {
             <div>
               <p className="text-sm text-gray-600">Events</p>
               <h2 className="text-xl font-semibold text-orange-800">
-                {eventPayments.length} | ₹{eventPayments.reduce((a, b) => a + b.amount, 0)}
+                {eventPayments.length} | ₹
+                {eventPayments.reduce((a, b) => a + b.amount, 0)}
               </h2>
             </div>
           </div>
@@ -157,7 +171,8 @@ const Payment = () => {
             <div>
               <p className="text-sm text-gray-600">Subscriptions</p>
               <h2 className="text-xl font-semibold text-purple-800">
-                {subscriptionPayments.length} | ₹{subscriptionPayments.reduce((a, b) => a + b.amount, 0)}
+                {subscriptionPayments.length} | ₹
+                {subscriptionPayments.reduce((a, b) => a + b.amount, 0)}
               </h2>
             </div>
           </div>
@@ -176,10 +191,10 @@ const Payment = () => {
         </div>
 
         {/* Sectioned Payment Lists */}
-        <section className="space-y-10">
+        <section className="space-y-12">
           {/* Sessions */}
-          <div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Session Payments</h2>
+          <div className="bg-gray-50 border border-gray-300 rounded-xl p-6 shadow-sm">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">🧑‍🏫 Session Payments</h2>
             <div className="grid gap-6">
               {filteredSessions.map((p) => (
                 <PaymentCard
@@ -195,8 +210,8 @@ const Payment = () => {
           </div>
 
           {/* Events */}
-          <div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Event Payments</h2>
+          <div className="bg-gray-50 border border-gray-300 rounded-xl p-6 shadow-sm">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">🎪 Event Payments</h2>
             <div className="grid gap-6">
               {filteredEvents.map((p) => (
                 <PaymentCard
@@ -212,8 +227,8 @@ const Payment = () => {
           </div>
 
           {/* Subscriptions */}
-          <div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Subscription Payments</h2>
+          <div className="bg-gray-50 border border-gray-300 rounded-xl p-6 shadow-sm">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">📦 Subscription Payments</h2>
             <div className="grid gap-6">
               {filteredSubscriptions.map((p) => (
                 <PaymentCard
@@ -229,6 +244,7 @@ const Payment = () => {
           </div>
         </section>
       </div>
+      <Footer/>
     </div>
   );
 };

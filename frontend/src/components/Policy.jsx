@@ -1,9 +1,20 @@
 import React from "react";
+import Footer from "./LandingPage/Footer";
 
 const Policy = () => {
   return (
-    <div className="min-h-screen bg-white text-gray-800 px-4 py-16 flex justify-center">
-      <div className="max-w-3xl w-full">
+    <div className="relative min-h-screen bg-gradient-to-br from-indigo-50 via-pink-50 to-orange-50 text-gray-800 flex flex-col items-center pt-12 pb-24 px-4">
+      {/* Bubble Background */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden z-0">
+        <div className="absolute top-[-80px] left-[-80px] w-72 h-72 bg-pink-300 rounded-full blur-3xl opacity-20 animate-pulse" />
+        <div className="absolute top-[200px] right-[300px] w-96 h-96 bg-violet-300 rounded-full blur-3xl opacity-20 animate-pulse" />
+        <div className="absolute top-[50%] left-[20%] w-80 h-80 bg-orange-200 rounded-full blur-[120px] opacity-20 animate-pulse" />
+        <div className="absolute bottom-[300px] left-[-60px] w-72 h-72 bg-lime-200 rounded-full blur-[100px] opacity-20 animate-pulse" />
+        <div className="absolute bottom-[120px] left-[40%] w-96 h-96 bg-indigo-200 rounded-full blur-[120px] opacity-20 animate-pulse" />
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10 max-w-3xl w-full">
         <h1 className="text-4xl font-bold mb-6 text-center text-gray-900">
           Privacy Policy
         </h1>
@@ -46,6 +57,9 @@ const Policy = () => {
           If you have any questions or concerns regarding this policy, feel free to contact us through our <span className="text-blue-600 font-medium">Contact Us</span> page.
         </p>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
