@@ -72,13 +72,8 @@ const BookSession = ({ trainer , setShowBookingModal }) => {
   };
 
   return (
-      <div className="relative bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 rounded-xl p-6 shadow-lg w-full h-[420px] ">
+      <div className="relative bg-gray-50 rounded-xl p-6 shadow-lg w-full h-[420px] ">
       {/* Decorative Bubbles */}
-      <div className="absolute top-10 left-10 w-24 h-24 bg-blue-300 rounded-full opacity-30 blur-3xl animate-pulse z-0" />
-      <div className="absolute bottom-10 right-10 w-28 h-28 bg-purple-400 rounded-full opacity-30 blur-3xl animate-pulse z-0" />
-      <div className="absolute top-[30%] right-[30%] w-16 h-16 bg-pink-300 rounded-full opacity-20 blur-2xl animate-pulse z-0" />
-      <div className="absolute bottom-[25%] left-[25%] w-14 h-14 bg-indigo-300 rounded-full opacity-20 blur-2xl animate-pulse z-0" />
-      <div className="absolute top-[45%] left-[55%] w-20 h-20 bg-green-200 rounded-full opacity-20 blur-2xl animate-pulse z-0" />
       <button
         className="absolute top-3 right-4 text-2xl font-bold text-gray-600 hover:text-black z-10"
         onClick={() => setShowBookingModal(false)}
@@ -104,7 +99,9 @@ const BookSession = ({ trainer , setShowBookingModal }) => {
               onChange={(e) =>
                 setBookingData({ ...bookingData, date: e.target.value })
               }
-              className="mt-1 block w-full border rounded-md p-2"
+             className="mt-1 block w-full rounded-xl border border-gray-300 bg-white/30 backdrop-blur-md px-4 py-2 text-gray-800 dark:text-white shadow-md transition-all duration-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+
+
             />
           </div>
 
@@ -119,15 +116,21 @@ const BookSession = ({ trainer , setShowBookingModal }) => {
               onChange={(e) =>
                 setBookingData({ ...bookingData, time: e.target.value })
               }
-              className="mt-1 block w-full border rounded-md p-2"
+              className="mt-1 block w-full rounded-xl border border-gray-300 bg-white/30 backdrop-blur-md px-4 py-2 text-gray-800 dark:text-white shadow-md transition-all duration-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+
             >
               <option value="">Select Time</option>
-              {availableTimeSlots.map((time) => (
-                <option key={time} value={time}>
-                  {time}
-                </option>
-              ))}
-            </select>
+    {["06", "07", "08", "09", "10", "11", "12"].map((h) => (
+      <option key={`${h}AM`} value={`${h}:00 AM`}>
+        {`${h}:00 AM`}
+      </option>
+    ))}
+    {["01", "02", "03", "04", "05", "06", "07", "08"].map((h) => (
+      <option key={`${h}PM`} value={`${h}:00 PM`}>
+        {`${h}:00 PM`}
+      </option>
+    ))}
+  </select>
           </div>
 
           {/* Duration */}
@@ -141,7 +144,8 @@ const BookSession = ({ trainer , setShowBookingModal }) => {
               onChange={(e) =>
                 setBookingData({ ...bookingData, duration: e.target.value })
               }
-              className="mt-1 block w-full border rounded-md p-2"
+             className="mt-1 block w-full rounded-xl border border-gray-300 bg-white/30 backdrop-blur-md px-4 py-2 text-gray-800 dark:text-white shadow-md transition-all duration-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+
             >
               <option value="">Select Duration</option>
               {Object.keys(durationMultipliers).map((d) => (
@@ -163,7 +167,8 @@ const BookSession = ({ trainer , setShowBookingModal }) => {
               onChange={(e) =>
                 setBookingData({ ...bookingData, sessionType: e.target.value })
               }
-              className="mt-1 block w-full border rounded-md p-2"
+              className="mt-1 block w-full rounded-xl border border-gray-300 bg-white/30 backdrop-blur-md px-4 py-2 text-gray-800 dark:text-white shadow-md transition-all duration-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+
             >
               <option value="">Select Type</option>
               {trainer?.speciality?.map((spec) => (
