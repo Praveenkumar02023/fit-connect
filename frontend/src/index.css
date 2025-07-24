@@ -124,3 +124,14 @@
 body {
   overflow-x: hidden;
 }
+
+.fc-daygrid-day.fc-day-today {
+  background-color: inherit !important;
+}
+
+.fc-event.custom-blue-bg {
+  background-color: #7ceed0 !important;
+  border: none !important;
+  height: 100% !important;
+  top: 0 !important;
+}
