@@ -99,6 +99,8 @@ const Feed = () => {
     );
   };
 
+
+
   return (
     <div className="relative min-h-screen w-full flex flex-col bg-gradient-to-br from-neutral-50 via-blue-50 to-blue-50">
       <div className="pointer-events-none absolute inset-0 overflow-hidden z-0">
@@ -177,7 +179,8 @@ const Feed = () => {
                   </h3>
 
                   <div className="flex items-start gap-2 text-xs sm:text-sm text-muted-foreground mb-1">
-                    <Dumbbell size={20} className="text-blue-500" />
+                    <Dumbbell className="text-blue-500 w-4 h-4 flex-shrink-0 mt-[2px]" />
+
                     <div className="flex flex-wrap gap-1">
                       {Array.isArray(trainer.speciality)
                         ? trainer.speciality.map((skill, idx) => (
@@ -193,8 +196,9 @@ const Feed = () => {
                   </div>
 
                   <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                    <Clock size={20} className="text-yellow-600" />
-                    <span>{trainer.experience}</span>
+                    <Clock className="text-yellow-600 w-4 h-4 flex-shrink-0 mt-[2px]" />
+
+                    <span className="line-clamp-2 overflow-hidden">{trainer.experience}</span>
                   </div>
                   <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                     <Star
