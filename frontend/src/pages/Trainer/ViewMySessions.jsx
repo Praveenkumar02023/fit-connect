@@ -3,12 +3,14 @@ import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext";
 import { Search } from "lucide-react";
 import Footer from "../../components/LandingPage/Footer";
+import LogoLoader from "../../components/LogoLoader";
 
 const TrainerSessionsPage = () => {
   const { token, url } = useContext(StoreContext);
   const [sessions, setSessions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [meetingStatuses, setMeetingStatuses] = useState({});
+  const[loading , setLoading] = useState(true);
 
   useEffect(() => {
     fetchTrainerSessions();
@@ -34,39 +36,42 @@ const TrainerSessionsPage = () => {
     setMeetingStatuses(updatedStatuses);
   };
 
-  const fetchTrainerSessions = async () => {
-    try {
-      const res = await axios.get(`${url}/api/v1/trainer/sessions`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+ const fetchTrainerSessions = async () => {
+  try {
+    const res = await axios.get(`${url}/api/v1/trainer/sessions`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-      const sessionsWithClient = await Promise.all(
-        res.data.allSessions.map(async (session) => {
-          try {
-            const userRes = await axios.get(`${url}/api/v1/user/${session.clientId}`, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-            const user = userRes.data.user;
-            return {
-              ...session,
-              clientName: user.name,
-              clientImage: user.avatar,
-            };
-          } catch {
-            return {
-              ...session,
-              clientName: "Unknown Client",
-              clientImage: null,
-            };
-          }
-        })
-      );
+    const sessionsWithClient = await Promise.all(
+      res.data.allSessions.map(async (session) => {
+        try {
+          const userRes = await axios.get(`${url}/api/v1/user/${session.clientId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const user = userRes.data.user;
+          return {
+            ...session,
+            clientName: user.name,
+            clientImage: user.avatar,
+          };
+        } catch {
+          return {
+            ...session,
+            clientName: "Unknown Client",
+            clientImage: null,
+          };
+        }
+      })
+    );
 
-      setSessions(sessionsWithClient);
-    } catch (error) {
-      console.error("Error fetching sessions", error);
-    }
-  };
+    setSessions(sessionsWithClient);
+  } catch (error) {
+    console.error("Error fetching sessions", error);
+  } finally {
+    setLoading(false); // ✅ Loader stops after data is set
+  }
+};
+
 
   const renderCard = (session) => {
     const status = meetingStatuses[session._id];
@@ -150,6 +155,8 @@ const TrainerSessionsPage = () => {
   const past = filtered.filter(
     (s) => s.status === "cancelled" || s.status === "completed"
   );
+
+  if(loading) return <LogoLoader/>
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-100 via-white to-blue-100">

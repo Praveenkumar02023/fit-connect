@@ -4,6 +4,7 @@ import { StoreContext } from "../../Context/StoreContext";
 import toast, { Toaster } from "react-hot-toast";
 import { MapPin, Clock, Trophy, IndianRupee, X, Search } from "lucide-react";
 import Footer from "../../components/LandingPage/Footer";
+import LogoLoader from "../../components/LogoLoader";
 
 const MyEvents = () => {
   const { token, url } = useContext(StoreContext);
@@ -12,6 +13,7 @@ const MyEvents = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState(null);
   const [selectedEventTitle, setSelectedEventTitle] = useState("");
+  const [loading , setLoading] = useState(true)
 
   const fetchRegisteredEvents = async () => {
     try {
@@ -22,7 +24,14 @@ const MyEvents = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
+      if(res.status != 200){
+        console.log(res);
+        return;
+      }
+
       setEvents(res.data.events);
+      setLoading(false);
     } catch (err) {
       console.log("Failed to fetch events", err);
     }
@@ -70,6 +79,8 @@ const MyEvents = () => {
       day: "numeric",
     });
   };
+
+  if(loading) return <LogoLoader/>
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-neutral-50 via-blue-50 to-blue-100 relative overflow-hidden">

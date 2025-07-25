@@ -4,6 +4,7 @@ import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext";
 import PaymentCard from "../../components/User-Dashboard/PaymentCard";
 import Footer from "../../components/LandingPage/Footer";
+import LogoLoader from "../../components/LogoLoader";
 
 const Payment = () => {
   const { token, url } = useContext(StoreContext);
@@ -13,6 +14,7 @@ const Payment = () => {
   const [sessionPayments, setSessionPayments] = useState([]);
   const [eventPayments, setEventPayments] = useState([]);
   const [subscriptionPayments, setSubscriptionPayments] = useState([]);
+  const [loading, setLoading] = useState(true); // NEW
 
   useEffect(() => {
     const fetchUserPayments = async () => {
@@ -31,10 +33,9 @@ const Payment = () => {
                   headers: { Authorization: `Bearer ${token}` },
                 });
                 const session = sessionRes.data.session;
-
                 const trainerId = session?.trainerId;
-                let trainerName = "Unknown Trainer";
 
+                let trainerName = "Unknown Trainer";
                 if (trainerId) {
                   try {
                     const trainerRes = await axios.get(`${url}/api/v1/trainer/${trainerId}`, {
@@ -99,13 +100,15 @@ const Payment = () => {
         setSessionPayments(sorted.filter((p) => p.purpose === "Session"));
         setEventPayments(sorted.filter((p) => p.purpose === "Event"));
         setSubscriptionPayments(sorted.filter((p) => p.purpose === "Subscription"));
+        setLoading(false); // ✅ Set loading to false after data fetch
       } catch (error) {
         console.error("Failed to fetch payments:", error);
+        setLoading(false);
       }
     };
 
     fetchUserPayments();
-  }, []);
+  }, [token, url]);
 
   const filterText = searchText.toLowerCase();
 
@@ -121,14 +124,16 @@ const Payment = () => {
     p.subscriptionTrainerName?.toLowerCase().includes(filterText)
   );
 
+  if (loading) return <LogoLoader />; // ✅ Loader displayed here
+
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-indigo-100 via-white to-blue-100 pt-6  overflow-hidden">
+    <div className="relative min-h-screen bg-gradient-to-br from-indigo-100 via-white to-blue-100 pt-6 overflow-hidden flex flex-col justify-between">
       {/* Decorative Bubbles */}
       <div className="absolute top-10 left-10 w-48 h-48 bg-purple-300/40 rounded-full blur-3xl z-0" />
       <div className="absolute bottom-20 right-10 w-60 h-60 bg-pink-300/40 rounded-full blur-3xl z-0" />
       <div className="absolute top-1/2 left-1/3 w-40 h-40 bg-blue-200/40 rounded-full blur-2xl z-0" />
 
-      <div className="px-4 relative z-10 max-w-6xl mx-auto">
+      <div className="px-4 relative z-10 max-w-6xl mx-auto flex-grow">
         {/* Header */}
         <div className="mb-10 text-center">
           <h1 className="text-3xl font-bold text-black mb-2">Payment History</h1>
@@ -244,7 +249,8 @@ const Payment = () => {
           </div>
         </section>
       </div>
-      <Footer/>
+              
+      <Footer />
     </div>
   );
 };

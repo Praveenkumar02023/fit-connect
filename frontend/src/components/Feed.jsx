@@ -17,6 +17,7 @@ import Button from "./ui/Button.jsx";
 import Footer from "./LandingPage/Footer.jsx";
 
 import { toast } from "react-hot-toast";
+import LogoLoader from "./LogoLoader.jsx";
 
 
 const Feed = () => {
@@ -26,7 +27,8 @@ const Feed = () => {
   const { url, token } = useContext(StoreContext);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-
+  const [loading, setLoading] = useState(true);
+  
   const navigate = useNavigate();
 
   const handleRegisterConfirm = async () => {
@@ -86,8 +88,9 @@ const Feed = () => {
       }
     }
 
-    getEvents();
-    getTrainers();
+    Promise.all([getEvents(), getTrainers()]).then(() => {
+  setLoading(false);
+});
   }, []);
 
   const isToday = (someDate) => {
@@ -99,7 +102,7 @@ const Feed = () => {
     );
   };
 
-
+  if(loading) return <LogoLoader/>
 
   return (
     <div className="relative min-h-screen w-full flex flex-col bg-gradient-to-br from-neutral-50 via-blue-50 to-blue-50">

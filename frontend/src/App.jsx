@@ -62,7 +62,6 @@ function App() {
             <Route path="chat/:id" element={<Chat />} />
             <Route path="bookSessions" element={<BookSessions />} />
             <Route path="subscriptions" element={<ViewSubscriptions />} />
-            <Route path="about" element={<AboutUs />} />
             <Route path="profile" element={<UpdateProfile />} />
             <Route path="payments" element={<Payment />} />
             <Route path="events" element={<MyEvents />} />
@@ -80,6 +79,7 @@ function App() {
             <Route path="/policy" element={<Policy />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/about" element={<AboutUs />} />
 
           {/* Trainer Routes with Layout */}
           <Route path="/trainer" element={<TrainerLayout />}>
@@ -92,6 +92,7 @@ function App() {
             <Route path="events" element={<ViewEvents />} />
             <Route path="event/edit/:eventId" element={<EditEventPage />} />
             <Route path="profile" element={<UpdateTrainerProfile />} />
+            <Route path="chat/:id" element={<Chat />} />
           </Route>
         </Routes>
       </Router>

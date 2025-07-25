@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "../../components/ui/Button";
 import { Dumbbell, Clock, Star } from "lucide-react";
 import Footer from "../../components/LandingPage/Footer";
+import LogoLoader from "../../components/LogoLoader";
 
 const BuySubscription = () => {
   const { token, url } = useContext(StoreContext);
@@ -12,13 +13,18 @@ const BuySubscription = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedTrainer, setSelectedTrainer] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading,setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTrainers = async () => {
       try {
         const res = await axios.get(`${url}/api/v1/trainer`);
+
+        if(res.status != 200) return;
+
         setTrainers(res.data.trainers || []);
+        setLoading(false);
       } catch (err) {
         console.error("Failed to fetch trainers", err);
       }
@@ -60,6 +66,8 @@ const BuySubscription = () => {
   const filteredTrainers = trainers.filter((trainer) =>
     `${trainer.firstName} ${trainer.lastName} ${trainer.speciality?.join(" ")}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if(loading) return <LogoLoader/>
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-indigo-50 via-pink-50 to-orange-50 pt-6">

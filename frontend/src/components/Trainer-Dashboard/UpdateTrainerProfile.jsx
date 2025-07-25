@@ -6,13 +6,13 @@ import {
   Star,
   Mail,
   Calendar,
-  Trophy,
-  Users,
   IndianRupee,
   X,
+  Loader2,
 } from "lucide-react";
 import Button from "../ui/Button";
-import Footer from "../LandingPage/Footer"
+import Footer from "../LandingPage/Footer";
+import LogoLoader from "../LogoLoader"; // ✅ Import loader
 
 const UpdateTrainerProfile = () => {
   const { url, token } = useContext(StoreContext);
@@ -20,7 +20,9 @@ const UpdateTrainerProfile = () => {
   const [subscription, setSubscription] = useState([]);
   const [editMode, setEditMode] = useState(false);
   const [imageFile, setImageFile] = useState(null);
-  const [specialityInput, setSpecialityInput] = useState(""); // NEW STATE
+  const [specialityInput, setSpecialityInput] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -34,10 +36,16 @@ const UpdateTrainerProfile = () => {
 
   useEffect(() => {
     async function fetchTrainer() {
-      const res = await axios.get(`${url}/api/v1/trainer/profile`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setTrainer(res.data.trainer);
+      try {
+        const res = await axios.get(`${url}/api/v1/trainer/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setTrainer(res.data.trainer);
+        setLoading(false); // ✅ Fix
+      } catch (error) {
+        console.error("Error fetching trainer:", error);
+        setLoading(false);
+      }
     }
 
     fetchTrainer();
@@ -55,16 +63,20 @@ const UpdateTrainerProfile = () => {
       Achievements: trainer.Achievements || "",
     });
 
-    setSpecialityInput((trainer.speciality || []).join(", ")); // INITIALIZE INPUT
+    setSpecialityInput((trainer.speciality || []).join(", "));
 
     async function getSubscriptions() {
-      const res = await axios.get(`${url}/api/v1/subscription/all`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const currentTrainerSubscriptions = res.data.Allsubscription.filter(
-        (s) => s.trainerId === trainer._id
-      );
-      setSubscription(currentTrainerSubscriptions);
+      try {
+        const res = await axios.get(`${url}/api/v1/subscription/all`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const currentTrainerSubscriptions = res.data.Allsubscription.filter(
+          (s) => s.trainerId === trainer._id
+        );
+        setSubscription(currentTrainerSubscriptions);
+      } catch (error) {
+        console.error("Error fetching subscriptions:", error);
+      }
     }
 
     getSubscriptions();
@@ -72,6 +84,8 @@ const UpdateTrainerProfile = () => {
 
   const handleSaveChanges = async () => {
     try {
+      setUpdating(true);
+
       const form = new FormData();
       Object.entries(formData).forEach(([key, value]) =>
         form.append(key, Array.isArray(value) ? JSON.stringify(value) : value)
@@ -91,15 +105,17 @@ const UpdateTrainerProfile = () => {
         setImageFile(null);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Update failed:", err);
+    } finally {
+      setUpdating(false);
     }
   };
 
-  if (!trainer) return <div className="text-center py-10">Loading...</div>;
+  if (loading) return <LogoLoader />; // ✅ Only on first load
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-violet-50 pt-2 md:pt-4">
-      <div className=" max-w-6xl mx-auto bg-white border border-gray-300 rounded-xl shadow-lg p-6 space-y-6">
+      <div className="max-w-6xl mx-auto bg-white border border-gray-300 rounded-xl shadow-lg p-6 space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row gap-6 items-start justify-between">
           <div className="flex flex-col items-center md:flex-row gap-4 w-full md:w-auto">
@@ -137,7 +153,7 @@ const UpdateTrainerProfile = () => {
               )}
             </div>
             <div>
-              <h1 className="text-xl font-bold  capitalize">
+              <h1 className="text-xl font-bold capitalize">
                 {trainer.firstName} {trainer.lastName}
               </h1>
               <p className="text-gray-500">{subscription.length} Subscribers</p>
@@ -150,10 +166,19 @@ const UpdateTrainerProfile = () => {
           <div className="flex flex-wrap gap-3">
             {editMode ? (
               <>
-                <Button className="bg-red-600 text-white" onClick={() => setEditMode(false)}>
+                <Button
+                  className="bg-red-600 text-white"
+                  onClick={() => setEditMode(false)}
+                  disabled={updating}
+                >
                   Cancel
                 </Button>
-                <Button className="bg-blue-600 text-white" onClick={handleSaveChanges}>
+                <Button
+                  className="bg-blue-600 text-white flex items-center gap-2"
+                  onClick={handleSaveChanges}
+                  disabled={updating}
+                >
+                  {updating && <Loader2 className="animate-spin w-4 h-4" />}
                   Save Changes
                 </Button>
               </>
