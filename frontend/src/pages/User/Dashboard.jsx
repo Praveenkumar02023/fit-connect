@@ -26,6 +26,7 @@ import {
   Tooltip,
 } from "recharts";
 import Footer from "../../components/LandingPage/Footer";
+import LogoLoader from "../../components/LogoLoader";
 
 const Dashboard = () => {
   const { token, url } = useContext(StoreContext);
@@ -129,7 +130,7 @@ const Dashboard = () => {
   if (!user) {
     return (
       <div className="min-h-screen flex justify-center items-center">
-        <p className="text-blue-600 text-lg font-medium">Loading dashboard...</p>
+       <LogoLoader/>
       </div>
     );
   }
