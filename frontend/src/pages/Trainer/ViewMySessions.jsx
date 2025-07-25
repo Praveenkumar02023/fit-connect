@@ -152,56 +152,58 @@ const TrainerSessionsPage = () => {
   );
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-indigo-100 via-white to-blue-100 pt-6 overflow-hidden">
-      {/* Decorative Bubbles */}
-      <div className="absolute top-10 left-10 w-48 h-48 bg-purple-500/40 rounded-full blur-3xl z-0" />
-      <div className="absolute bottom-20 right-10 w-60 h-60 bg-pink-500/30 rounded-full blur-3xl z-0" />
-      <div className="absolute top-1/2 left-1/3 w-40 h-40 bg-blue-500/50 rounded-full blur-2xl z-0" />
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-100 via-white to-blue-100">
+      <div className="flex-grow relative pt-6 overflow-hidden">
+        {/* Decorative Bubbles */}
+        <div className="absolute top-10 left-10 w-48 h-48 bg-purple-500/40 rounded-full blur-3xl z-0" />
+        <div className="absolute bottom-20 right-10 w-60 h-60 bg-pink-500/30 rounded-full blur-3xl z-0" />
+        <div className="absolute top-1/2 left-1/3 w-40 h-40 bg-blue-500/50 rounded-full blur-2xl z-0" />
 
-      <div className="px-4 relative z-10 max-w-7xl mx-auto">
-        <div className="text-center mb-10">
-          <h1 className="pt-8 text-4xl font-bold text-gray-800"> Trainer Sessions</h1>
-          <p className="text-gray-600 mt-2">
-            View and manage your confirmed, completed and cancelled sessions
-          </p>
-        </div>
-
-        {/* Search Bar */}
-        <div className="mb-10 flex justify-center">
-          <div className="relative w-full max-w-md">
-            <Search className="absolute left-3 top-2.5 text-gray-400" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by client name or session type"
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+        <div className="px-4 relative z-10 max-w-7xl mx-auto">
+          <div className="text-center mb-10">
+            <h1 className="pt-8 text-4xl font-bold text-gray-800">Trainer Sessions</h1>
+            <p className="text-gray-600 mt-2">
+              View and manage your confirmed, completed and cancelled sessions
+            </p>
           </div>
-        </div>
 
-        {/* Upcoming */}
-        <h2 className="text-lg font-semibold mb-4 text-gray-700">
-          Upcoming / Ongoing Sessions
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {upcoming.length === 0 ? (
-            <p className="text-gray-600">No upcoming sessions.</p>
-          ) : (
-            upcoming.map(renderCard)
-          )}
-        </div>
+          {/* Search Bar */}
+          <div className="mb-10 flex justify-center">
+            <div className="relative w-full max-w-md">
+              <Search className="absolute left-3 top-2.5 text-gray-400" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by client name or session type"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
 
-        {/* Past */}
-        <h2 className="text-lg font-semibold mt-10 mb-4 text-gray-700">
-          Completed / Cancelled Sessions
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {past.length === 0 ? (
-            <p className="text-gray-600">No past sessions.</p>
-          ) : (
-            past.map(renderCard)
-          )}
+          {/* Upcoming */}
+          <h2 className="text-lg font-semibold mb-4 text-gray-700">
+            Upcoming / Ongoing Sessions
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {upcoming.length === 0 ? (
+              <p className="text-gray-600">No upcoming sessions.</p>
+            ) : (
+              upcoming.map(renderCard)
+            )}
+          </div>
+
+          {/* Past */}
+          <h2 className="text-lg font-semibold mt-10 mb-4 text-gray-700">
+            Completed / Cancelled Sessions
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {past.length === 0 ? (
+              <p className="text-gray-600">No past sessions.</p>
+            ) : (
+              past.map(renderCard)
+            )}
+          </div>
         </div>
       </div>
 

@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext";
+import Footer from "../../components/LandingPage/Footer";
 
 const UserProfile = () => {
   const { token, url } = useContext(StoreContext);
@@ -100,7 +101,8 @@ const UserProfile = () => {
     );
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center bg-gradient-to-br from-blue-50 via-white to-blue-100 pt-10 px-4 overflow-hidden">
+    <div>
+      <div className="relative min-h-screen flex flex-col items-center bg-gradient-to-br from-blue-50 p-4 via-white to-blue-100 pt-10  overflow-hidden">
       {/* Background bubbles */}
       <div className="absolute z-0 inset-0 overflow-hidden">
         <div className="absolute top-10 left-0 w-40 h-40 bg-blue-400 opacity-50 rounded-full blur-3xl animate-pulse"></div>
@@ -109,7 +111,7 @@ const UserProfile = () => {
       </div>
 
       {/* Profile Card */}
-      <div className="relative w-full max-w-md sm:max-w-lg md:max-w-xl p-6 sm:p-8 rounded-xl border border-gray-300 bg-gray-50 shadow flex flex-col items-center space-y-4 z-10">
+      <div className="relative w-full max-h-screen max-w-md sm:max-w-lg md:max-w-xl p-6 sm:p-8 rounded-xl border border-gray-300 bg-gray-50 shadow flex flex-col items-center space-y-4 z-10">
         {/* Avatar */}
         <img
           src={preview}
@@ -228,10 +230,8 @@ const UserProfile = () => {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="relative text-xs text-gray-400 text-center py-4 z-10">
-        © 2025 FitConnect. All rights reserved.
-      </footer>
+    </div>
+    <Footer/>
     </div>
   );
 };

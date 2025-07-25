@@ -13,10 +13,11 @@ import {
   IndianRupee,
 } from "lucide-react";
 
-import NavbarLink from "./LandingPage/TextComponent.jsx";
 import Button from "./ui/Button.jsx";
 import Footer from "./LandingPage/Footer.jsx";
-import Navbar from "./User-Dashboard/Navbar.jsx";
+
+import { toast } from "react-hot-toast";
+
 
 const Feed = () => {
   const [user, setUser] = useState(null);
@@ -29,40 +30,40 @@ const Feed = () => {
   const navigate = useNavigate();
 
   const handleRegisterConfirm = async () => {
-    try {
-      const alreadyRegistered = await axios.post(
-        `${url}/api/v1/event/register-check`,
-        { eventId: selectedEvent._id },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      if (alreadyRegistered.data.registered) {
-        toast.info("You're already registered for this event.");
-        setShowConfirmModal(false);
-        return;
+  try {
+    const alreadyRegistered = await axios.post(
+      `${url}/api/v1/event/register-check`,
+      { eventId: selectedEvent._id },
+      {
+        headers: { Authorization: `Bearer ${token}` },
       }
+    );
 
-      const res = await axios.post(
-        `${url}/api/v1/event/checkout-stripe-session`,
-        { eventId: selectedEvent._id },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      if (res.data.success && res.data.sessionurl) {
-        window.location.href = res.data.sessionurl;
-      } else {
-        toast.error("Payment session creation failed.");
-      }
-    } catch (error) {
-      toast.error("Something went wrong. Please try again.");
-    } finally {
+    if (alreadyRegistered.data.registered) {
       setShowConfirmModal(false);
+      toast.success("You're already registered for this event.");
+      return;
     }
-  };
+
+    const res = await axios.post(
+      `${url}/api/v1/event/checkout-stripe-session`,
+      { eventId: selectedEvent._id },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+
+    if (res.data.success && res.data.sessionurl) {
+      window.location.href = res.data.sessionurl;
+    } else {
+      toast.error("Payment session creation failed.");
+    }
+  } catch (error) {
+    toast.error("Something went wrong. Please try again.");
+  } finally {
+    setShowConfirmModal(false);
+  }
+};
 
   useEffect(() => {
     async function getEvents() {
@@ -96,39 +97,6 @@ const Feed = () => {
       someDate.getMonth() === today.getMonth() &&
       someDate.getFullYear() === today.getFullYear()
     );
-  };
-
-  const handleClick = async (event) => {
-    try {
-      const alreadyRegistered = await axios.post(
-        `${url}/api/v1/event/register-check`,
-        { eventId: event._id },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      if (alreadyRegistered.data.registered) {
-        toast.info("You're already registered for this event.");
-        return;
-      }
-
-      const res = await axios.post(
-        `${url}/api/v1/event/checkout-stripe-session`,
-        { eventId: event._id },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      if (res.data.success && res.data.sessionurl) {
-        window.location.href = res.data.sessionurl;
-      } else {
-        toast.error("Payment session creation failed.");
-      }
-    } catch (error) {
-      toast.error("Something went wrong. Please try again.");
-    }
   };
 
   return (

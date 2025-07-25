@@ -212,7 +212,7 @@ const ViewSessions = () => {
 
       <div className="px-4 relative z-10 max-w-7xl mx-auto">
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-gray-800">💪 My Sessions</h1>
+          <h1 className="text-4xl font-bold text-black">My Sessions</h1>
           <p className="text-gray-600 mt-2">
             View and manage your booked fitness sessions
           </p>

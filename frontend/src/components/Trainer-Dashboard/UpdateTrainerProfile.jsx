@@ -1,16 +1,28 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { StoreContext } from "../../Context/StoreContext";
-import { Star } from "lucide-react";
-import Button from "../ui/Button";
 import { useNavigate } from "react-router-dom";
-
+import { StoreContext } from "../../Context/StoreContext";
+import {
+  Star,
+  Mail,
+  Calendar,
+  Trophy,
+  Users,
+  IndianRupee,
+  X,
+} from "lucide-react";
+import Button from "../ui/Button";
+import Footer from "../LandingPage/Footer"
 
 const UpdateTrainerProfile = () => {
   const { url, token } = useContext(StoreContext);
-  const [trainer, setTrainer] = useState();
+  const [trainer, setTrainer] = useState(null);
   const [subscription, setSubscription] = useState([]);
   const [editMode, setEditMode] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
+  const [specialityInput, setSpecialityInput] = useState(""); // NEW STATE
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     experience: "",
     pricing_perSession: "",
@@ -20,24 +32,20 @@ const UpdateTrainerProfile = () => {
     Achievements: "",
   });
 
-  const navigate = useNavigate();
-
   useEffect(() => {
-    async function getTrainer() {
-      try {
-        const res = await axios.get(`${url}/api/v1/trainer/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setTrainer(res.data.trainer);
-      } catch (error) {
-        console.log(error);
-      }
+    async function fetchTrainer() {
+      const res = await axios.get(`${url}/api/v1/trainer/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setTrainer(res.data.trainer);
     }
-    getTrainer();
+
+    fetchTrainer();
   }, []);
 
   useEffect(() => {
     if (!trainer) return;
+
     setFormData({
       experience: trainer.experience || "",
       pricing_perSession: trainer.pricing_perSession || "",
@@ -46,233 +54,259 @@ const UpdateTrainerProfile = () => {
       about: trainer.about || "",
       Achievements: trainer.Achievements || "",
     });
-    console.log(trainer.experience);
 
-    // console.log(formData);
+    setSpecialityInput((trainer.speciality || []).join(", ")); // INITIALIZE INPUT
 
-    async function getSubscription() {
-      try {
-        const res = await axios.get(`${url}/api/v1/subscription/all`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const currentTrainerSubscriptions = res.data.Allsubscription.filter(
-          (s) => s.trainerId === trainer._id
-        );
-        setSubscription(currentTrainerSubscriptions);
-      } catch (error) {
-        console.log(error);
-      }
+    async function getSubscriptions() {
+      const res = await axios.get(`${url}/api/v1/subscription/all`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const currentTrainerSubscriptions = res.data.Allsubscription.filter(
+        (s) => s.trainerId === trainer._id
+      );
+      setSubscription(currentTrainerSubscriptions);
     }
-    getSubscription();
+
+    getSubscriptions();
   }, [trainer]);
 
   const handleSaveChanges = async () => {
     try {
-      const res = await axios.patch(`${url}/api/v1/trainer/update`, formData, {
+      const form = new FormData();
+      Object.entries(formData).forEach(([key, value]) =>
+        form.append(key, Array.isArray(value) ? JSON.stringify(value) : value)
+      );
+      if (imageFile) form.append("image", imageFile);
+
+      const res = await axios.patch(`${url}/api/v1/trainer/update`, form, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       if (res.status === 200) {
-        // console.log(res.data.updatedTrainer);
-        const trainerRes = await axios.get(`${url}/api/v1/trainer/profile`, {
+        const updatedRes = await axios.get(`${url}/api/v1/trainer/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setTrainer(trainerRes.data.trainer);
+        setTrainer(updatedRes.data.trainer);
         setEditMode(false);
+        setImageFile(null);
       }
     } catch (err) {
-      console.error("Failed to update trainer", err);
+      console.error(err);
     }
   };
 
-  if (!trainer) return <div>Loading...</div>;
+  if (!trainer) return <div className="text-center py-10">Loading...</div>;
 
   return (
-    <div className="bg-gray-100/50 min-h-screen w-full flex items-center justify-center py-10">
-      <div className="flex w-[90%] max-w-6xl bg-white border rounded-xl shadow overflow-hidden">
-        {/* Left Panel */}
-        <div className="w-[30%] border-r border-gray-200 p-6 flex flex-col items-center gap-4">
-          <img
-            src={trainer.avatar || "/default-avatar.png"}
-            alt="trainer"
-            className="h-32 w-32 rounded-full border-2 border-black"
-          />
-          <div className="text-center">
-            <h2 className="text-lg font-semibold">
-              {trainer.firstName} {trainer.lastName}
-            </h2>
-            <p className="text-sm text-gray-500">
-              {subscription.length} subscribers
-            </p>
-          </div>
-
-          <div className="w-full text-sm">
-            <h3 className="font-semibold">Speciality</h3>
-            {editMode ? (
-              <input
-                className="w-full border p-1 mt-1"
-                value={formData.speciality.join(", ")}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    speciality: e.target.value.split(",").map((s) => s.trim()),
-                  })
+    <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-violet-50 pt-2 md:pt-4">
+      <div className=" max-w-6xl mx-auto bg-white border border-gray-300 rounded-xl shadow-lg p-6 space-y-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row gap-6 items-start justify-between">
+          <div className="flex flex-col items-center md:flex-row gap-4 w-full md:w-auto">
+            <div className="relative">
+              <img
+                src={
+                  imageFile
+                    ? URL.createObjectURL(imageFile)
+                    : trainer.avatar || "/default-avatar.png"
                 }
+                alt="trainer"
+                className="w-24 h-24 rounded-full border-2 border-black object-cover"
               />
-            ) : (
-              <p className="text-gray-600 mt-1">
-                {formData.speciality.join(", ")}
+              {editMode && (
+                <div className="flex flex-col mt-2 gap-2 items-center">
+                  <label className="cursor-pointer px-4 py-1 text-xs border border-blue-500 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition">
+                    Upload Image
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => setImageFile(e.target.files[0])}
+                      className="sr-only"
+                    />
+                  </label>
+                  {imageFile && (
+                    <button
+                      onClick={() => setImageFile(null)}
+                      type="button"
+                      className="text-xs px-3 py-1 border border-red-500 bg-red-100 text-red-600 rounded hover:bg-red-200 transition flex items-center gap-1"
+                    >
+                      <X className="w-4 h-4" /> Clear
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+            <div>
+              <h1 className="text-xl font-bold  capitalize">
+                {trainer.firstName} {trainer.lastName}
+              </h1>
+              <p className="text-gray-500">{subscription.length} Subscribers</p>
+              <p className="flex items-center gap-1 text-yellow-500">
+                <Star className="w-4 h-4" /> {trainer.rating || "-"}
               </p>
-            )}
+            </div>
           </div>
 
-          <div className="w-full text-sm">
-            <h3 className="font-semibold">Experience</h3>
+          <div className="flex flex-wrap gap-3">
             {editMode ? (
-              <input
-                className="w-full border p-1 mt-1"
-                value={formData.experience}
-                onChange={(e) =>
-                  setFormData({ ...formData, experience: e.target.value })
-                }
-              />
+              <>
+                <Button className="bg-red-600 text-white" onClick={() => setEditMode(false)}>
+                  Cancel
+                </Button>
+                <Button className="bg-blue-600 text-white" onClick={handleSaveChanges}>
+                  Save Changes
+                </Button>
+              </>
             ) : (
-              <p className="text-gray-600 mt-1">{formData.experience}</p>
-            )}
-          </div>
-
-          <div className="text-sm">
-            <h3 className="font-semibold">Rating</h3>
-            <p className="flex items-center gap-1 text-yellow-500">
-              <Star className="size-4" /> {trainer.rating || "-"}
-            </p>
-          </div>
-
-          <div className="text-sm">
-            <h3 className="font-semibold">Email</h3>
-            <a
-              href={`mailto:${trainer.email}`}
-              className="text-blue-600 hover:underline"
-            >
-              {trainer.email}
-            </a>
-          </div>
-
-          <div className="text-sm">
-            <h3 className="font-semibold">Joined</h3>
-            <p>
-              {trainer.createdAt && !isNaN(new Date(trainer.createdAt))
-                ? new Date(trainer.createdAt).toISOString().split("T")[0]
-                : "N/A"}
-            </p>
-          </div>
-
-          <div className="mt-4">
-            <Button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 text-sm" onClick={() => setEditMode(!editMode)}>
-              {editMode ? "Cancel" : "Edit Profile"}
-            </Button>
-            {editMode && (
-              <Button className="ml-2 bg-green-600" onClick={handleSaveChanges}>
-                Save Changes
+              <Button
+                className="bg-blue-600 hover:bg-blue-700 rounded text-white"
+                onClick={() => setEditMode(true)}
+              >
+                Edit Profile
               </Button>
             )}
-            {
-              editMode == false && (
-                <button onClick={
-              () => {
-                localStorage.removeItem("token");
-                navigate("/signin/trainer")
-              }
-            } className="mt-2 w-full rounded-xl bg-red-600 text-white py-2 hover:bg-red-700 text-sm" >Logout</button>
-              )
-            }
           </div>
         </div>
 
-        {/* Right Panel */}
-        <div className="w-[70%] flex flex-col items-center justify-center p-8 gap-6">
-          <div className="w-full max-w-2xl">
-            <h3 className="font-semibold text-lg text-center mb-2">About Me</h3>
-            {editMode ? (
-              <textarea
-                className="w-full border p-2"
-                value={formData.about}
-                onChange={(e) =>
-                  setFormData({ ...formData, about: e.target.value })
-                }
-              />
-            ) : (
-              <p className="text-sm text-gray-700 text-center">
-                {formData.about}
+        {/* Specialities */}
+        <div className="flex flex-wrap gap-2">
+          {formData.speciality.map((item, i) => (
+            <span key={i} className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+              {item}
+            </span>
+          ))}
+        </div>
+        {editMode && (
+          <input
+            className="w-full border p-2 rounded mt-2"
+            placeholder="Enter specialities separated by commas"
+            value={specialityInput}
+            onChange={(e) => {
+              const raw = e.target.value;
+              setSpecialityInput(raw);
+              const items = raw.includes(",")
+                ? raw.split(",").map((s) => s.trim()).filter(Boolean)
+                : [raw.trim()];
+              setFormData({ ...formData, speciality: items });
+            }}
+          />
+        )}
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2 space-y-4">
+            <div className="bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm">
+              <h2 className="text-lg font-semibold mb-2">About Me</h2>
+              {editMode ? (
+                <textarea
+                  className="w-full border p-2 rounded"
+                  value={formData.about}
+                  onChange={(e) => setFormData({ ...formData, about: e.target.value })}
+                />
+              ) : (
+                <p className="text-sm text-gray-700 whitespace-pre-line">{formData.about}</p>
+              )}
+            </div>
+
+            <div className="bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm">
+              <h2 className="text-lg font-semibold mb-2">Experience</h2>
+              {editMode ? (
+                <input
+                  className="w-full border p-2 rounded"
+                  value={formData.experience}
+                  onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
+                />
+              ) : (
+                <p className="text-sm text-gray-700 whitespace-pre-line">{formData.experience}</p>
+              )}
+            </div>
+
+            <div className="bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm">
+              <h2 className="text-lg font-semibold flex items-center gap-2">Achievements</h2>
+              {editMode ? (
+                <textarea
+                  className="w-full border p-2 rounded mt-2"
+                  value={formData.Achievements}
+                  onChange={(e) => setFormData({ ...formData, Achievements: e.target.value })}
+                />
+              ) : (
+                <ul className="list-disc ml-5 mt-2 text-sm text-gray-700 space-y-1">
+                  {formData.Achievements.split("\\n").map(
+                    (a, i) => a.trim() && <li key={i}>{a.trim()}</li>
+                  )}
+                </ul>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-4 flex flex-col h-full justify-between">
+            <div className="bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <IndianRupee className="w-4 h-4 text-green-600" /> Pricing
+              </h2>
+              <div className="mt-2 space-y-3">
+                <div className="p-3 rounded bg-green-100 border border-green-300">
+                  <p className="text-sm text-gray-700 text-center">Per Session</p>
+                  {editMode ? (
+                    <input
+                      type="number"
+                      className="w-full border p-1 rounded mt-1"
+                      value={formData.pricing_perSession}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          pricing_perSession: Number(e.target.value),
+                        })
+                      }
+                    />
+                  ) : (
+                    <p className="text-xl font-bold text-center text-green-700">
+                      ₹{formData.pricing_perSession}
+                    </p>
+                  )}
+                </div>
+
+                <div className="p-3 rounded bg-purple-100 border border-purple-300">
+                  <p className="text-sm text-gray-700 text-center">Per Month</p>
+                  {editMode ? (
+                    <input
+                      type="number"
+                      className="w-full border p-1 rounded mt-1"
+                      value={formData.pricing_perMonth}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          pricing_perMonth: Number(e.target.value),
+                        })
+                      }
+                    />
+                  ) : (
+                    <>
+                      <p className="text-xl font-bold text-center text-purple-700">
+                        ₹{formData.pricing_perMonth}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1 text-center">
+                        Save 25% with monthly plan
+                      </p>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm">
+              <h2 className="text-lg font-semibold mb-2">Contact Info</h2>
+              <p className="flex items-center gap-2 text-sm text-blue-600">
+                <Mail className="w-4 h-4" /> {trainer.email}
               </p>
-            )}
-          </div>
-
-          <div className="w-full max-w-2xl">
-            <h3 className="font-semibold text-lg text-center mb-2">
-              Achievements
-            </h3>
-            {editMode ? (
-              <textarea
-                className="w-full border p-2"
-                value={formData.Achievements}
-                onChange={(e) =>
-                  setFormData({ ...formData, Achievements: e.target.value })
-                }
-              />
-            ) : (
-              <ul className="text-sm text-gray-700 list-disc px-5">
-                {formData.Achievements.split(".").map(
-                  (a, i) => a.trim() && <li key={i}>{a.trim()}.</li>
-                )}
-              </ul>
-            )}
-          </div>
-
-          <div className="w-full max-w-2xl">
-            <h3 className="font-semibold text-lg text-center mb-2">
-              💰 Pricing
-            </h3>
-            <div className="text-center text-sm text-gray-700 space-y-2">
-              <div>
-                Per Session: ₹{" "}
-                {editMode ? (
-                  <input
-                    type="number"
-                    className="border px-2 py-1 w-24"
-                    value={formData.pricing_perSession}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        pricing_perSession: Number(e.target.value),
-                      })
-                    }
-                  />
-                ) : (
-                  formData.pricing_perSession
-                )}
-              </div>
-              <div>
-                Per Month: ₹{" "}
-                {editMode ? (
-                  <input
-                    type="number"
-                    className="border px-2 py-1 w-24"
-                    value={formData.pricing_perMonth}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        pricing_perMonth: Number(e.target.value),
-                      })
-                    }
-                  />
-                ) : (
-                  formData.pricing_perMonth
-                )}
-              </div>
+              <p className="flex items-center gap-2 text-sm text-gray-600 mt-1">
+                <Calendar className="w-4 h-4" /> Joined {trainer.createdAt?.split("T")[0]}
+              </p>
             </div>
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

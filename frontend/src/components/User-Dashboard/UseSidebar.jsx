@@ -89,7 +89,7 @@ const UserSidebar = ({ isOpen, onClose, user }) => {
                     <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-800 truncate">{user.name}</h3>
+                    <h3 className="font-semibold text-gray-800 truncate capitalize">{user.name}</h3>
                     <p className="text-sm text-gray-500 truncate">{user.email}</p>
                   </div>
                 </div>

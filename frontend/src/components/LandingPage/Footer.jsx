@@ -39,13 +39,6 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="w-full border-t border-gray-800 py-4 text-white text-center text-sm">
-        <p className="flex items-center justify-center">
-          Built with <Heart className="mx-2 size-5 text-red-500 fill-red-500" />
-          by <span className="ml-1 font-medium">Team 31</span>.
-        </p>
-      </div>
     </div>
   );
 };

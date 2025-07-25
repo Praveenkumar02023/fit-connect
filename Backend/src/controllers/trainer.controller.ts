@@ -12,9 +12,6 @@ const signupValidator = z.object({
     lastName : z.string(),
     email : z.string().email(),
     password : z.string(),
-
-    pricing_perSession : z.coerce.number(),
-    pricing_perMonth: z.coerce.number()
 });
 
 const signinValidator = z.object({
@@ -37,7 +34,7 @@ export const Signup = async (req: Request, res: Response): Promise<any> => {
 
 
 
-  const { firstName, lastName, email, password  , pricing_perMonth , pricing_perSession } = parsed.data;
+  const { firstName, lastName, email, password  } = parsed.data;
 
 
   try {
@@ -56,8 +53,8 @@ export const Signup = async (req: Request, res: Response): Promise<any> => {
       lastName,
       email,
       password: hashedPassword,
-      pricing_perMonth,
-      pricing_perSession,
+      pricing_perMonth : 0,
+      pricing_perSession : 0,
     });
 
     const token = jwt.sign({ userId: newTrainer._id }, process.env.JWT_SECRET!, { expiresIn: "1d" });
@@ -143,54 +140,59 @@ const updateTrainerValidator = z.object({
   Achievements : z.string().optional()
 });
 
-export const updateTrainerProfile = async(req : Request,res : Response) : Promise<any> =>{
-
+export const updateTrainerProfile = async (req: Request, res: Response): Promise<any> => {
   const trainerId = (req as any).userId as string;
 
-  const parsed = updateTrainerValidator.safeParse(req.body);
-
-  if(!parsed.success){
-
-    return res.status(500).json({message : "Invalid inputs"});
-
+  // 🔧 Convert req.body types before Zod
+  if (typeof req.body.pricing_perSession === "string") {
+    req.body.pricing_perSession = Number(req.body.pricing_perSession);
   }
 
-  const {password} = parsed.data;
+  if (typeof req.body.pricing_perMonth === "string") {
+    req.body.pricing_perMonth = Number(req.body.pricing_perMonth);
+  }
 
-  if(req.file?.path){
+  if (typeof req.body.speciality === "string") {
+    try {
+      req.body.speciality = JSON.parse(req.body.speciality);
+    } catch (e) {
+      req.body.speciality = req.body.speciality.split(",").map((s : string) => s.trim());
+    }
+  }
 
+  const parsed = updateTrainerValidator.safeParse(req.body);
+  if (!parsed.success) {
+    console.error(parsed.error.format()); // helpful for debugging
+    return res.status(500).json({ message: "Invalid inputs" });
+  }
+
+  const { password } = parsed.data;
+
+  if (req.file?.path) {
     (parsed.data as any).avatar = req.file.path;
-
   }
 
   try {
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      parsed.data.password = hashedPassword;
+    }
 
-    if(password){
+    const acknowledge = await Trainer.updateOne({ _id: trainerId }, parsed.data);
 
-    const hashedPassword = await bcrypt.hash(password,10);  
-    parsed.data.password = hashedPassword;
-
-  }
-    console.log(parsed.data);
-    
-    const acknowledge = await Trainer.updateOne({_id : trainerId },parsed.data);
-
-    if(!acknowledge.matchedCount){
+    if (!acknowledge.matchedCount) {
       throw new Error("Trainer not found");
-    } 
+    }
 
-    const updatedTrainer = await Trainer.find({_id : trainerId});
-
-    res.status(200).json({message : "Trainer details updated!",acknowledge,updatedTrainer});
+    const updatedTrainer = await Trainer.find({ _id: trainerId });
+    res.status(200).json({ message: "Trainer details updated!", acknowledge, updatedTrainer });
 
   } catch (error) {
-
-      res.status(400).json({message : (error as Error).message || "Something went wrong"});
-
+    res.status(400).json({ message: (error as Error).message || "Something went wrong" });
   }
+};
 
 
-}
 export const getAllTrainers = async (req: Request, res: Response): Promise<any> => {
   try {
     const trainers = await Trainer.find().select("-password"); 

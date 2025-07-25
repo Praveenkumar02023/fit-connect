@@ -2,11 +2,16 @@ import React, { useState, useEffect, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext";
-import {
-  FaUser, FaImage, FaMoneyBill, FaTrophy,
-  FaMapMarkerAlt, FaCalendarAlt
-} from "react-icons/fa";
 import { toast } from "react-toastify";
+import {
+  FaUser,
+  FaMapMarkerAlt,
+  FaCalendarAlt,
+  FaImage,
+  FaTrophy,
+  FaMoneyBill,
+} from "react-icons/fa";
+import Footer from "../../components/LandingPage/Footer";
 
 const EditEventPage = () => {
   const { eventId } = useParams();
@@ -21,8 +26,9 @@ const EditEventPage = () => {
     prizePool: "",
     registrationFee: "",
     date: "",
-    eventId: eventId,
   });
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [image, setImage] = useState(null);
 
   useEffect(() => {
     const fetchFormData = async () => {
@@ -39,8 +45,8 @@ const EditEventPage = () => {
           prizePool: Number(event.prizePool),
           registrationFee: Number(event.registrationFee),
           date: event.date.split("T")[0],
-          eventId: eventId,
         });
+        setSelectedImage(event.image);
       } catch (err) {
         console.error("Failed to fetch event data");
       }
@@ -52,27 +58,54 @@ const EditEventPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(URL.createObjectURL(file));
+      setImage(file);
+    }
+  };
+
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await axios.patch(`${url}/api/v1/event/update`, formData, {
+      const formPayload = new FormData();
+      Object.entries(formData).forEach(([key, val]) =>
+        formPayload.append(
+          key,
+          key === "prizePool" || key === "registrationFee" ? Number(val) : val
+        )
+      );
+      formPayload.append("eventId", eventId);
+      if (image) formPayload.append("image", image);
+
+      await axios.patch(`${url}/api/v1/event/update`, formPayload, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       toast.success("Event updated successfully!");
-      setTimeout(() => {
-        navigate("/trainer/events");
-      }, 2500);
+      setTimeout(() => navigate("/trainer/events"), 2000);
     } catch (err) {
-      console.log("Failed to update event", err);
+      console.error("Failed to update event", err);
+      toast.error("Error updating event");
     }
   };
 
   return (
-    <div className="px-4 py-10 flex justify-center bg-gray-50">
-      <div className="w-full max-w-2xl bg-white p-6 rounded-xl shadow-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-blue-900">Edit Event</h2>
+    <div className="min-h-screen relative flex flex-col justify-between overflow-hidden bg-gradient-to-br from-purple-100 via-white to-blue-100">
+      <div className="absolute top-10 left-10 w-56 h-56 bg-purple-300/50 rounded-full blur-3xl z-0" />
+      <div className="absolute bottom-20 right-12 w-72 h-72 bg-pink-400/50 rounded-full blur-3xl z-0" />
+      <div className="absolute top-1/3 left-1/2 w-48 h-48 bg-blue-300/50 rounded-full blur-2xl z-0" />
+      <div className="absolute top-[60%] right-1/4 w-40 h-40 bg-yellow-300/50 rounded-full blur-2xl z-0" />
+      <div className="absolute top-[80%] left-[10%] w-32 h-32 bg-green-300/50 rounded-full blur-2xl z-0" />
 
-        <form onSubmit={handleUpdate} className="space-y-5">
+      <div className="relative z-10 max-w-3xl w-full mx-auto px-4 py-10">
+        <h2 className="text-3xl font-bold text-black text-center mb-8">Edit Event</h2>
+
+        <form
+          onSubmit={handleUpdate}
+          className="bg-gray-50 border border-gray-300 p-6 md:p-8 rounded-xl shadow-lg space-y-6"
+        >
           <div>
             <label className="text-sm font-semibold flex items-center gap-2 text-gray-700 mb-1">
               <FaUser /> Event Title
@@ -82,7 +115,7 @@ const EditEventPage = () => {
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className="w-full bg-blue-50 p-3 rounded-md focus:outline-none"
+              className="w-full bg-white border border-gray-300 p-3 rounded-md"
               required
             />
           </div>
@@ -95,7 +128,7 @@ const EditEventPage = () => {
               onChange={handleChange}
               rows={4}
               maxLength={300}
-              className="w-full bg-blue-50 p-3 rounded-md focus:outline-none"
+              className="w-full bg-white border border-gray-300 p-3 rounded-md"
               required
             />
             <p className="text-right text-sm text-gray-400">
@@ -109,10 +142,10 @@ const EditEventPage = () => {
               name="type"
               value={formData.type}
               onChange={handleChange}
-              className="w-full bg-blue-50 p-3 rounded-md"
+              className="w-full bg-white border border-gray-300 p-3 rounded-md"
               required
             >
-              <option value="">Select Type</option>
+              <option value="">Select event type</option>
               <option value="Cardio">Cardio</option>
               <option value="Strength">Strength</option>
               <option value="Yoga">Yoga</option>
@@ -130,7 +163,7 @@ const EditEventPage = () => {
               name="location"
               value={formData.location}
               onChange={handleChange}
-              className="w-full bg-blue-50 p-3 rounded-md"
+              className="w-full bg-white border border-gray-300 p-3 rounded-md"
               required
             />
           </div>
@@ -144,20 +177,20 @@ const EditEventPage = () => {
               name="prizePool"
               value={formData.prizePool}
               onChange={handleChange}
-              className="w-full bg-blue-50 p-3 rounded-md"
+              className="w-full bg-white border border-gray-300 p-3 rounded-md"
             />
           </div>
 
           <div>
             <label className="text-sm font-semibold flex items-center gap-2 text-gray-700 mb-1">
-              <FaMoneyBill /> Registeration Fee (₹)
+              <FaMoneyBill /> Registration Fee (₹)
             </label>
             <input
               type="number"
               name="registrationFee"
               value={formData.registrationFee}
               onChange={handleChange}
-              className="w-full bg-blue-50 p-3 rounded-md"
+              className="w-full bg-white border border-gray-300 p-3 rounded-md"
               required
             />
           </div>
@@ -171,21 +204,35 @@ const EditEventPage = () => {
               name="date"
               value={formData.date}
               onChange={handleChange}
-              className="w-full bg-blue-50 p-3 rounded-md"
+              className="w-full bg-white border border-gray-300 p-3 rounded-md"
               required
             />
           </div>
 
-          <div className="space-y-1">
+          <div>
             <label className="text-sm font-semibold flex items-center gap-2 text-gray-700 mb-1">
               <FaImage /> Banner Image
             </label>
-            <div className="w-full h-48 bg-gray-100 rounded-md flex items-center justify-center text-gray-500 text-sm border border-dashed border-gray-300">
-              Image cannot be updated
+            <div className="relative bg-white border border-dashed border-gray-400 h-[150px] rounded-md overflow-hidden flex items-center justify-center hover:bg-gray-50 cursor-pointer transition">
+              {selectedImage ? (
+                <img
+                  src={selectedImage}
+                  alt="Preview"
+                  className="object-cover w-full h-full"
+                />
+              ) : (
+                <span className="text-gray-500">Click to upload an image</span>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+              />
             </div>
           </div>
 
-          <div className="flex justify-center pt-2">
+          <div className="pt-4 flex justify-center">
             <button
               type="submit"
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-semibold"
@@ -195,6 +242,7 @@ const EditEventPage = () => {
           </div>
         </form>
       </div>
+      <Footer/>
     </div>
   );
 };

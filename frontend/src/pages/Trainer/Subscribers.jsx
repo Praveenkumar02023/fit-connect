@@ -55,8 +55,8 @@ const Subscribers = () => {
       <div className="relative z-10 max-w-6xl mx-auto">
         {/* Hero */}
         <div className="mb-10 text-center">
-          <h2 className="text-4xl font-semibold text-gray-900 tracking-wide">
-            🏋️‍♂️ My Clients
+          <h2 className="text-4xl font-bold text-black tracking-wide">
+             My Clients
           </h2>
         </div>
 
