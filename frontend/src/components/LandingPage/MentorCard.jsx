@@ -1,26 +1,18 @@
-const MentorCard = ({ name, role, image, rating }) => (
+import React from "react";
 
-  <div className="transition-transform hover:scale-105 hover:border hover:border-black min-w-[260px] max-w-[280px] bg-white shadow rounded-xl overflow-hidden border">
-    {/* Top Banner */}
-    <div className="bg-violet-100 p-3 relative flex justify-between items-start">
-      <span className="bg-blue-900 text-white text-xs px-2 py-1 rounded-full">Available</span>
+const MentorCard = ({ name, image, role, rating }) => {
+  return (
+    <div className="min-w-[250px] sm:min-w-[220px] md:min-w-[270px] max-w-xs bg-white rounded-xl shadow-md p-4 flex flex-col items-center text-center">
+      <img
+        src={image}
+        alt={name}
+        className="w-24 h-24 rounded-full object-cover mb-3"
+      />
+      <h3 className="text-base font-semibold text-gray-800">{name}</h3>
+      <p className="text-sm text-gray-500 mb-2">{role}</p>
+      <div className="text-sm font-semibold text-yellow-500">⭐ {rating}</div>
     </div>
+  );
+};
 
-    {/* Profile Image */}
-    <div className="flex justify-center items-center -mt-10">
-      <img src={image} alt={name} className=" relative h-20 w-20 rounded-full border-4 border-white shadow" />
-    </div>
-
-    {/* Info Section */}
-    <div className="p-4 text-center">
-      <h3 className="font-semibold text-lg">{name} <span className="text-yellow-500">⭐ {rating}</span></h3>
-      <p className="text-sm text-gray-600 mt-1">{role}</p>
-
-      <button className="mt-4 px-4 py-1.5 text-sm rounded-full border hover:bg-blue-100 hover:border-blue-400 hover:text-blue-400 cursor-pointer">
-        View Profile
-      </button>
-    </div>
-  </div>
-);
-
-export default MentorCard
+export default MentorCard;

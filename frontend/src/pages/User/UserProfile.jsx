@@ -101,7 +101,8 @@ const UserProfile = () => {
     );
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center bg-gradient-to-br from-blue-50 via-white to-blue-100 pt-10  overflow-hidden">
+    <div>
+      <div className="relative min-h-screen flex flex-col items-center bg-gradient-to-br from-blue-50 p-4 via-white to-blue-100 pt-10  overflow-hidden">
       {/* Background bubbles */}
       <div className="absolute z-0 inset-0 overflow-hidden">
         <div className="absolute top-10 left-0 w-40 h-40 bg-blue-400 opacity-50 rounded-full blur-3xl animate-pulse"></div>
@@ -229,8 +230,8 @@ const UserProfile = () => {
         </div>
       </div>
 
-      {/* Footer */}
-      <Footer/>
+    </div>
+    <Footer/>
     </div>
   );
 };

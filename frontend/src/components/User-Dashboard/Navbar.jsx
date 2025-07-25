@@ -1,15 +1,15 @@
-import { Shell, Menu } from "lucide-react";
+import { Shell, Menu, X } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import NavbarLink from "../LandingPage/TextComponent.jsx";
 import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "../../Context/StoreContext.jsx";
 import axios from "axios";
-
 import UserSidebar from "../User-Dashboard/UseSidebar.jsx";
 
 const Navbar = ({ place }) => {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
   const { token, url } = useContext(StoreContext);
 
@@ -32,7 +32,7 @@ const Navbar = ({ place }) => {
   }, [token, url, isAuthPage]);
 
   useEffect(() => {
-    if (sidebarOpen) {
+    if (sidebarOpen || mobileMenuOpen) {
       document.body.classList.add("overflow-hidden");
     } else {
       document.body.classList.remove("overflow-hidden");
@@ -40,7 +40,7 @@ const Navbar = ({ place }) => {
     return () => {
       document.body.classList.remove("overflow-hidden");
     };
-  }, [sidebarOpen]);
+  }, [sidebarOpen, mobileMenuOpen]);
 
   return (
     <div className="sticky top-0 z-50 bg-card/95 backdrop-blur-xl border-b border-border w-full">
@@ -59,46 +59,43 @@ const Navbar = ({ place }) => {
             </h1>
           </div>
 
-          {/* Links */}
+          {/* Auth Page */}
           {isAuthPage ? (
-            <div className="flex items-center space-x-6">
-              <Link to="/" className="py-1 px-2 hover:bg-gray-200/90 rounded-xl text-sm text-black  font-semibold">
-                Home
-              </Link>
-              <Link to="/signup" className="py-1 px-2 hover:bg-gray-200/90 rounded-xl text-sm text-black   font-semibold">
-                Sign Up
-              </Link>
-              <Link to="/contact" className=" py-1 px-2 hover:bg-gray-200/90 rounded-xl text-sm text-black   font-semibold">
-                Contact Us
-              </Link>
-            </div>
+            <>
+              <div className="hidden md:flex items-center space-x-6">
+                <Link to="/" className="py-1 px-2 hover:bg-gray-200/90 rounded-xl text-sm text-black font-semibold">Home</Link>
+                <Link to="/signup" className="py-1 px-2 hover:bg-gray-200/90 rounded-xl text-sm text-black font-semibold">Sign Up</Link>
+                <Link to="/contact" className="py-1 px-2 hover:bg-gray-200/90 rounded-xl text-sm text-black font-semibold">Contact Us</Link>
+              </div>
+              <button
+                className="flex md:hidden p-2 border rounded-md hover:bg-muted"
+                onClick={() => setMobileMenuOpen(true)}
+              >
+                <Menu className="h-6 w-6 text-black" />
+              </button>
+            </>
           ) : (
             <>
-              {/* Desktop Links */}
+              {/* Authenticated User Links */}
               <div className="hidden md:flex items-center space-x-6">
                 <NavbarLink text="Events" to="/user/registerEvents" />
                 <NavbarLink text="Trainers" to="/user/buySubscription" />
                 <NavbarLink text="Dashboard" to="/user/" />
               </div>
 
-              {/* Profile + Mobile Menu */}
               <div className="flex items-center gap-3">
-                {/* Desktop Profile */}
+                {/* Profile Image */}
                 <div className="hidden sm:flex items-center gap-2">
                   <span className="text-md font-semibold capitalize">{user?.name}</span>
                   <img
-                    src={
-                      user?.avatar?.trim()
-                        ? user.avatar
-                        : "https://www.gravatar.com/avatar/?d=mp"
-                    }
+                    src={user?.avatar?.trim() ? user.avatar : "https://www.gravatar.com/avatar/?d=mp"}
                     alt="profile"
                     className="w-9 h-9 rounded-full cursor-pointer ring-2 ring-primary hover:scale-105 transition-all"
                     onClick={() => setSidebarOpen(true)}
                   />
                 </div>
 
-                {/* Mobile Menu Button */}
+                {/* Mobile Sidebar Icon */}
                 <button
                   className="flex sm:hidden p-2 border rounded-md hover:bg-muted"
                   onClick={() => setSidebarOpen(true)}
@@ -118,6 +115,39 @@ const Navbar = ({ place }) => {
           onClose={() => setSidebarOpen(false)}
           user={user}
         />
+      )}
+
+      {/* Mobile Dropdown Menu for Auth Page */}
+      {mobileMenuOpen && isAuthPage && (
+        <div className="fixed top-16 left-0 w-full bg-white border-b border-gray-200 shadow-md px-6 py-4 z-50 flex flex-col gap-3 md:hidden">
+          <button
+            className="self-end -mt-2 -mr-2 p-2"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <X className="h-6 w-6 text-black" />
+          </button>
+          <Link
+            to="/"
+            onClick={() => setMobileMenuOpen(false)}
+            className="text-black font-semibold text-base hover:underline"
+          >
+            Home
+          </Link>
+          <Link
+            to="/signup"
+            onClick={() => setMobileMenuOpen(false)}
+            className="text-black font-semibold text-base hover:underline"
+          >
+            Sign Up
+          </Link>
+          <Link
+            to="/contact"
+            onClick={() => setMobileMenuOpen(false)}
+            className="text-black font-semibold text-base hover:underline"
+          >
+            Contact Us
+          </Link>
+        </div>
       )}
     </div>
   );

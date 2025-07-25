@@ -20,6 +20,7 @@ const UpdateTrainerProfile = () => {
   const [subscription, setSubscription] = useState([]);
   const [editMode, setEditMode] = useState(false);
   const [imageFile, setImageFile] = useState(null);
+  const [specialityInput, setSpecialityInput] = useState(""); // NEW STATE
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -53,6 +54,8 @@ const UpdateTrainerProfile = () => {
       about: trainer.about || "",
       Achievements: trainer.Achievements || "",
     });
+
+    setSpecialityInput((trainer.speciality || []).join(", ")); // INITIALIZE INPUT
 
     async function getSubscriptions() {
       const res = await axios.get(`${url}/api/v1/subscription/all`, {
@@ -112,7 +115,6 @@ const UpdateTrainerProfile = () => {
               />
               {editMode && (
                 <div className="flex flex-col mt-2 gap-2 items-center">
-                  {/* Upload Button */}
                   <label className="cursor-pointer px-4 py-1 text-xs border border-blue-500 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition">
                     Upload Image
                     <input
@@ -122,8 +124,6 @@ const UpdateTrainerProfile = () => {
                       className="sr-only"
                     />
                   </label>
-
-                  {/* Clear Button */}
                   {imageFile && (
                     <button
                       onClick={() => setImageFile(null)}
@@ -150,16 +150,10 @@ const UpdateTrainerProfile = () => {
           <div className="flex flex-wrap gap-3">
             {editMode ? (
               <>
-                <Button
-                  className="bg-red-600 text-white"
-                  onClick={() => setEditMode(false)}
-                >
+                <Button className="bg-red-600 text-white" onClick={() => setEditMode(false)}>
                   Cancel
                 </Button>
-                <Button
-                  className="bg-blue-600 text-white"
-                  onClick={handleSaveChanges}
-                >
+                <Button className="bg-blue-600 text-white" onClick={handleSaveChanges}>
                   Save Changes
                 </Button>
               </>
@@ -177,63 +171,63 @@ const UpdateTrainerProfile = () => {
         {/* Specialities */}
         <div className="flex flex-wrap gap-2">
           {formData.speciality.map((item, i) => (
-            <span
-              key={i}
-              className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
-            >
+            <span key={i} className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
               {item}
             </span>
           ))}
         </div>
+        {editMode && (
+          <input
+            className="w-full border p-2 rounded mt-2"
+            placeholder="Enter specialities separated by commas"
+            value={specialityInput}
+            onChange={(e) => {
+              const raw = e.target.value;
+              setSpecialityInput(raw);
+              const items = raw.includes(",")
+                ? raw.split(",").map((s) => s.trim()).filter(Boolean)
+                : [raw.trim()];
+              setFormData({ ...formData, speciality: items });
+            }}
+          />
+        )}
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Left column */}
           <div className="md:col-span-2 space-y-4">
-            {/* About Me */}
             <div className="bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm">
               <h2 className="text-lg font-semibold mb-2">About Me</h2>
               {editMode ? (
                 <textarea
                   className="w-full border p-2 rounded"
                   value={formData.about}
-                  onChange={(e) =>
-                    setFormData({ ...formData, about: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, about: e.target.value })}
                 />
               ) : (
-                <p className="text-sm text-gray-700">{formData.about}</p>
+                <p className="text-sm text-gray-700 whitespace-pre-line">{formData.about}</p>
               )}
             </div>
 
-            {/* Experience */}
             <div className="bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm">
               <h2 className="text-lg font-semibold mb-2">Experience</h2>
               {editMode ? (
                 <input
                   className="w-full border p-2 rounded"
                   value={formData.experience}
-                  onChange={(e) =>
-                    setFormData({ ...formData, experience: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
                 />
               ) : (
-                <p className="text-sm text-gray-700">{formData.experience}</p>
+                <p className="text-sm text-gray-700 whitespace-pre-line">{formData.experience}</p>
               )}
             </div>
 
-            {/* Achievements */}
             <div className="bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                 Achievements
-              </h2>
+              <h2 className="text-lg font-semibold flex items-center gap-2">Achievements</h2>
               {editMode ? (
                 <textarea
                   className="w-full border p-2 rounded mt-2"
                   value={formData.Achievements}
-                  onChange={(e) =>
-                    setFormData({ ...formData, Achievements: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, Achievements: e.target.value })}
                 />
               ) : (
                 <ul className="list-disc ml-5 mt-2 text-sm text-gray-700 space-y-1">
@@ -245,19 +239,14 @@ const UpdateTrainerProfile = () => {
             </div>
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-4 flex flex-col h-full justify-between">
-            {/* Pricing */}
             <div className="bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm">
               <h2 className="text-lg font-semibold flex items-center gap-2">
                 <IndianRupee className="w-4 h-4 text-green-600" /> Pricing
               </h2>
               <div className="mt-2 space-y-3">
-                {/* Per Session */}
                 <div className="p-3 rounded bg-green-100 border border-green-300">
-                  <p className="text-sm text-gray-700 text-center">
-                    Per Session
-                  </p>
+                  <p className="text-sm text-gray-700 text-center">Per Session</p>
                   {editMode ? (
                     <input
                       type="number"
@@ -271,15 +260,12 @@ const UpdateTrainerProfile = () => {
                       }
                     />
                   ) : (
-                    <>
-                      <p className="text-xl font-bold text-center text-green-700">
-                        ₹{formData.pricing_perSession}
-                      </p>
-                    </>
+                    <p className="text-xl font-bold text-center text-green-700">
+                      ₹{formData.pricing_perSession}
+                    </p>
                   )}
                 </div>
 
-                {/* Per Month */}
                 <div className="p-3 rounded bg-purple-100 border border-purple-300">
                   <p className="text-sm text-gray-700 text-center">Per Month</p>
                   {editMode ? (
@@ -302,28 +288,25 @@ const UpdateTrainerProfile = () => {
                       <p className="text-xs text-muted-foreground mt-1 text-center">
                         Save 25% with monthly plan
                       </p>
-                      
                     </>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* Contact */}
             <div className="bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm">
               <h2 className="text-lg font-semibold mb-2">Contact Info</h2>
               <p className="flex items-center gap-2 text-sm text-blue-600">
                 <Mail className="w-4 h-4" /> {trainer.email}
               </p>
               <p className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                <Calendar className="w-4 h-4" /> Joined{" "}
-                {trainer.createdAt?.split("T")[0]}
+                <Calendar className="w-4 h-4" /> Joined {trainer.createdAt?.split("T")[0]}
               </p>
             </div>
           </div>
         </div>
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 };

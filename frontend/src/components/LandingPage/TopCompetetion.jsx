@@ -24,7 +24,7 @@ const competitions = [
   {
     title: "Functional Fitness Throwdown",
     organizer: "Cult Fit",
-    applied: 31,
+    views: 3198,
     image: "/cult.png",
   },
   {
@@ -47,7 +47,7 @@ const competitions = [
   },
   {
     title: "Trail Run Challenge",
-    organizer: "Decathalon",
+    organizer: "Decathlon",
     views: 18243,
     image: "/dec.png",
   },
@@ -67,52 +67,47 @@ const TopCompetition = () => {
   };
 
   return (
-    <div className="relative pt-18 px-14 py-10 w-full">
-
-      <div className="inset-0 absolute" >
-         <div className=" absolute top-30 blur-3xl left-25 h-96 w-96 bg-green-100  rounded-full animate-pulse"></div>
-          <div className=" absolute  blur-3xl right-25 h-96 w-96 bg-violet-200  rounded-full animate-pulse"></div>
+    <div className="relative pt-24 px-4 md:px-14 py-10 w-full">
+      {/* Background Bubbles */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute top-10 blur-3xl left-10 h-60 w-60 md:h-96 md:w-96 bg-green-100 rounded-full animate-pulse"></div>
+        <div className="absolute bottom-5 blur-3xl right-10 h-60 w-60 md:h-96 md:w-96 bg-violet-200 rounded-full animate-pulse"></div>
       </div>
 
       {/* Header */}
-      <div className="flex justify-between items-center mb-6 w-full ">
-        <div className="flex flex-col items-center w-full">
-          <h2 className="text-4xl font-bold">
-            <span className="text-blue-700">Top</span> Competitions
-          </h2>
-          <p className="text-md text-gray-500">
-            Explore the Competitions that are creating a buzz among your peers!
-          </p>
-        </div>
+      <div className="flex flex-col items-center text-center w-full mb-6">
+        <h2 className="text-3xl md:text-4xl font-bold">
+          <span className="text-blue-700">Top</span> Competitions
+        </h2>
+        <p className="text-sm md:text-md text-gray-500 mt-2">
+          Explore the Competitions that are creating a buzz among your peers!
+        </p>
       </div>
 
-      {/* Arrow + Scroll Section */}
-      <div className="relative flex justify-center items-center">
-        {/* Left Arrow */}
-        <div className="px-12">
-          <ArrowLeft
-            onClick={() => scroll("left")}
-            className="relative border rounded-full cursor-pointer hover:border-gray-400 hover:bg-gray-100"
-          />
-        </div>
-
-        {/* Scrollable Cards */}
+      {/* Scrollable Competition Cards */}
+      <div className="flex justify-center items-center gap-2 md:gap-6">
+        <ArrowLeft
+          onClick={() => scroll("left")}
+          className="hidden sm:block border rounded-full cursor-pointer hover:border-gray-200 hover:bg-gray-100"
+        />
         <div
           ref={scrollRef}
-          className="py-4 relative flex overflow-x-auto scroll-smooth gap-4 no-scrollbar"
+          className="flex overflow-x-auto scroll-smooth gap-4 no-scrollbar px-2"
         >
           {competitions.map((comp, i) => (
-            <CompetitionCard key={i} {...comp} />
+            <CompetitionCard
+              key={i}
+              title={comp.title}
+              organizer={comp.organizer}
+              views={comp.views}
+              image={comp.image}
+            />
           ))}
         </div>
-
-        {/* Right Arrow */}
-        <div className="px-12">
-          <ArrowRight
-            onClick={() => scroll("right")}
-            className="relative border rounded-full cursor-pointer hover:border-gray-200 hover:bg-gray-100"
-          />
-        </div>
+        <ArrowRight
+          onClick={() => scroll("right")}
+          className="hidden sm:block border rounded-full cursor-pointer hover:border-gray-200 hover:bg-gray-100"
+        />
       </div>
     </div>
   );
