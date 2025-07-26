@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import "react-toastify/dist/ReactToastify.css";
 import Footer from "../../components/LandingPage/Footer";
+import LogoLoader from "../../components/LogoLoader";
 
 const RegisterEvents = () => {
   const { url, token } = useContext(StoreContext);
@@ -18,14 +19,18 @@ const RegisterEvents = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState(""); // 🔍 NEW
-
+  const [loading , setLoading] = useState(true);
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         const res = await axios.get(`${url}/api/v1/event/all`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        if(res.status != 200){
+          return;
+        }
         setEvents(res.data.allEvents);
+        setLoading(false);
       } catch (error) {
         console.log("Error in fetching the events");
       }
@@ -82,6 +87,8 @@ const RegisterEvents = () => {
   const filteredEvents = events.filter((event) =>
     `${event.title} ${event.location}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if(loading) return <LogoLoader/>
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-indigo-50 via-pink-50 to-orange-50 pt-6 space-y-25">

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext";
 import Footer from "../../components/LandingPage/Footer";
+import LogoLoader from "../../components/LogoLoader";
 
 const UserProfile = () => {
   const { token, url } = useContext(StoreContext);
@@ -95,11 +96,8 @@ const UserProfile = () => {
 
   if (!user)
     return (
-      <div className="h-screen flex items-center justify-center">
-        Loading...
-      </div>
+      <LogoLoader/>
     );
-
   return (
     <div>
       <div className="relative min-h-screen flex flex-col items-center bg-gradient-to-br from-blue-50 p-4 via-white to-blue-100 pt-10  overflow-hidden">

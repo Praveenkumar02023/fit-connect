@@ -27,6 +27,7 @@ import {
 } from "recharts";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
+import LogoLoader from "../../components/LogoLoader";
 
 const TrainerDashboard = () => {
   const [subs, setSubs] = useState([]);
@@ -38,6 +39,7 @@ const TrainerDashboard = () => {
   const [monthlyIncome, setMonthlyIncome] = useState([]);
   const [showCalendar, setShowCalendar] = useState(false);
   const [todaySession, setTodaySession] = useState([]); // was null
+  const [loading,setLoading] = useState(true);
 
   const { url, token } = useContext(StoreContext);
   const navigate = useNavigate();
@@ -115,7 +117,9 @@ setTodaySession(enrichedSessions);
   
     } catch (err) {
       console.error("Error fetching trainer dashboard data:", err);
-    }
+    } finally {
+    setLoading(false); // ✅ Ensure loader stops
+  }
   };
 
   const calculateMonthlyIncome = () => {
@@ -187,6 +191,7 @@ setTodaySession(enrichedSessions);
     );
   };
 
+  if(loading) return <LogoLoader/>
   return (
     <div className="relative min-h-screen flex flex-col bg-gradient-to-br from-purple-100 via-blue-100 to-pink-100">
       {/* Decorative Bubbles */}

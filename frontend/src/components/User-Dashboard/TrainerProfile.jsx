@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Footer from "../LandingPage/Footer";
 import { toast , Toaster} from "react-hot-toast";
+import LogoLoader from "../LogoLoader";
 
 
 
@@ -137,7 +138,7 @@ const TrainerProfile = () => {
     getSubscriptions();
   }, [trainer]);
 
-  if (!trainer) return <div className="text-center py-10">Loading...</div>;
+  if (!trainer) return <LogoLoader/>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-violet-50 pt-2 md:pt-4">

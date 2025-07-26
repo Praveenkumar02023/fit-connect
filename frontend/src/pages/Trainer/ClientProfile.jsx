@@ -2,12 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext";
 import { useParams } from "react-router-dom";
+import LogoLoader from "../../components/LogoLoader";
 
 const ViewClientProfile = () => {
   const { token, url } = useContext(StoreContext);
   const [user, setUser] = useState(null);
   const { clientId } = useParams();
-
+  
+  
   useEffect(() => {
     async function fetchClient() {
       try {
@@ -25,9 +27,7 @@ const ViewClientProfile = () => {
 
   if (!user)
     return (
-      <div className="h-screen flex items-center justify-center text-gray-500">
-        Loading client profile...
-      </div>
+      <LogoLoader/>
     );
 
   return (

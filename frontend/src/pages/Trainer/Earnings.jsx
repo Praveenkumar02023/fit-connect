@@ -5,6 +5,7 @@ import { StoreContext } from "../../Context/StoreContext";
 import TrainerPaymentCard from "../../components/Trainer-Dashboard/TrainerPaymentCard";
 
 import Footer from "../../components/LandingPage/Footer";
+import LogoLoader from "../../components/LogoLoader";
 
 const Earnings = () => {
   const { token, url } = useContext(StoreContext);
@@ -13,7 +14,7 @@ const Earnings = () => {
   const [subscriptionPayments, setSubscriptionPayments] = useState([]);
   const [totalEarned, setTotalEarned] = useState(0);
   const [searchText, setSearchText] = useState("");
-
+  const [loading,setLoading] = useState(true);
   useEffect(() => {
     const fetchPayments = async () => {
       try {
@@ -146,6 +147,8 @@ const Earnings = () => {
         setTotalEarned(total);
       } catch (err) {
         console.error("Error fetching trainer earnings:", err);
+      }finally{
+        setLoading(false);
       }
     };
 
@@ -163,6 +166,8 @@ const Earnings = () => {
   const filteredSubscriptions = subscriptionPayments.filter((p) =>
     p.clientName.toLowerCase().includes(filterText)
   );
+
+  if(loading) return <LogoLoader/>
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-neutral-100 via-violet-50 to-blue-100 pt-6  overflow-hidden">

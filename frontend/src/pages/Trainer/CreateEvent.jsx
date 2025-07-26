@@ -12,6 +12,7 @@ import {
   FaMoneyBill,
 } from 'react-icons/fa';
 import Footer from '../../components/LandingPage/Footer';
+import LogoLoader from '../../components/LogoLoader';
 
 const CreateEvent = () => {
   const { url, token } = useContext(StoreContext);
@@ -29,6 +30,7 @@ const CreateEvent = () => {
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [image, setImage] = useState(null);
+  
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -66,6 +68,8 @@ const CreateEvent = () => {
       toast.error('Error creating event');
     }
   };
+
+
 
   return (
     <div className="min-h-screen relative flex flex-col justify-between overflow-hidden bg-gradient-to-br from-purple-100 via-white to-blue-100">

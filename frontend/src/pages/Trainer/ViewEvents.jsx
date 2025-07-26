@@ -11,10 +11,12 @@ import {
   Check,
 } from "lucide-react";
 import Footer from "../../components/LandingPage/Footer";
+import LogoLoader from "../../components/LogoLoader";
 
 const TrainerEvents = () => {
   const [events, setEvents] = useState([]);
   const { url, token } = useContext(StoreContext);
+  const [loading,setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,6 +31,8 @@ const TrainerEvents = () => {
       setEvents(res.data.events);
     } catch (error) {
       console.error("Error fetching events", error);
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -46,6 +50,8 @@ const TrainerEvents = () => {
       console.error("Error deleting event", error);
     }
   };
+
+  if(loading) return <LogoLoader/>
 
   return (
     <div className="relative min-h-screen flex flex-col bg-gradient-to-br from-indigo-100 via-white to-blue-100 overflow-hidden">

@@ -3,6 +3,7 @@ import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext";
 import { FaCalendarAlt, FaMoneyBill, FaReceipt } from "react-icons/fa";
 import Footer from "../../components/LandingPage/Footer";
+import LogoLoader from "../../components/LogoLoader";
 
 const ViewSubscriptions = () => {
   const { token, url } = useContext(StoreContext);
@@ -17,12 +18,13 @@ const ViewSubscriptions = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
+        console.log(res.data.Allsubscription);
+        
         const updatedSubscriptions = await Promise.all(
           res.data.Allsubscription.map(async (sub) => {
             const endDate = new Date(sub.endDate);
             const now = new Date();
 
-            // Auto-expire
             if (endDate < now && sub.isActive) {
               await axios.post(
                 `${url}/api/v1/subscription/cancel`,
@@ -32,7 +34,6 @@ const ViewSubscriptions = () => {
               sub.isActive = false;
             }
 
-            // Fetch trainer name and speciality
             const trainerRes = await axios.get(`${url}/api/v1/trainer/${sub.trainerId}`, {
               headers: { Authorization: `Bearer ${token}` },
             });
@@ -79,16 +80,16 @@ const ViewSubscriptions = () => {
 
   const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
 
-  if (loading) return <div className="text-center py-10">Loading...</div>;
+  if (loading) return <LogoLoader />;
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-indigo-100 via-white to-blue-100 pt-6 overflow-hidden">
-      {/* Decorative Blurred Bubbles */}
+    <div className="relative min-h-screen flex flex-col justify-between bg-gradient-to-br from-indigo-100 via-white to-blue-100 pt-6 overflow-hidden">
+      {/* Decorative Bubbles */}
       <div className="absolute top-10 left-10 w-48 h-48 bg-purple-300/20 rounded-full blur-3xl z-0" />
       <div className="absolute bottom-20 right-10 w-60 h-60 bg-pink-300/20 rounded-full blur-3xl z-0" />
       <div className="absolute top-1/2 left-1/3 w-40 h-40 bg-blue-200/20 rounded-full blur-2xl z-0" />
 
-      <div className="relative z-10 max-w-6xl mx-auto">
+      <main className="relative z-10 max-w-6xl mx-auto flex-grow">
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold text-black">My Subscriptions</h1>
           <p className="text-gray-600 mt-2">Manage your current and past trainer subscriptions easily.</p>
@@ -103,15 +104,11 @@ const ViewSubscriptions = () => {
             )}
             {activeSubscriptions.map((sub) => (
               <div key={sub._id} className="flex flex-col justify-between bg-gray-50 border border-gray-300 rounded-xl shadow-lg p-5">
-                {/* Trainer Info */}
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-3">
                     <img
                       className="h-12 w-12 rounded-full"
-                      src={
-                        sub.avatar ||
-                        "https://i.pinimg.com/474x/2c/47/d5/2c47d5dd5b532f83bb55c4cd6f5bd1ef.jpg"
-                      }
+                      src={sub.avatar || "https://i.pinimg.com/474x/2c/47/d5/2c47d5dd5b532f83bb55c4cd6f5bd1ef.jpg"}
                       alt="trainer_img"
                     />
                     <div>
@@ -124,33 +121,23 @@ const ViewSubscriptions = () => {
                   </span>
                 </div>
 
-                {/* Vertical Gap */}
                 <div className="my-3 border-t border-gray-200" />
 
-                {/* Subscription Info */}
                 <div className="space-y-2 text-sm text-gray-600">
                   <div className="flex justify-between">
-                    <div className="flex items-center gap-2">
-                      <FaCalendarAlt /> Start Date:
-                    </div>
+                    <div className="flex items-center gap-2"><FaCalendarAlt /> Start Date:</div>
                     <span className="font-medium">{formatDate(sub.startDate)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <div className="flex items-center gap-2">
-                      <FaCalendarAlt /> End Date:
-                    </div>
+                    <div className="flex items-center gap-2"><FaCalendarAlt /> End Date:</div>
                     <span className="font-medium">{formatDate(sub.endDate)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <div className="flex items-center gap-2">
-                      <FaMoneyBill /> Amount Paid:
-                    </div>
+                    <div className="flex items-center gap-2"><FaMoneyBill /> Amount Paid:</div>
                     <span className="font-medium">₹{sub.amount}</span>
                   </div>
                   <div className="flex justify-between">
-                    <div className="flex items-center gap-2">
-                      <FaReceipt /> Payment ID:
-                    </div>
+                    <div className="flex items-center gap-2"><FaReceipt /> Payment ID:</div>
                     <span className="font-medium">{sub.paymentId}</span>
                   </div>
                 </div>
@@ -175,15 +162,11 @@ const ViewSubscriptions = () => {
             )}
             {expiredSubscriptions.map((sub) => (
               <div key={sub._id} className="flex flex-col justify-between bg-gray-50 border border-gray-300 rounded-xl shadow-lg p-5">
-                {/* Trainer Info */}
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-3">
                     <img
                       className="h-12 w-12 rounded-full"
-                      src={
-                        sub.avatar ||
-                        "https://i.pinimg.com/474x/2c/47/d5/2c47d5dd5b532f83bb55c4cd6f5bd1ef.jpg"
-                      }
+                      src={sub.avatar || "https://i.pinimg.com/474x/2c/47/d5/2c47d5dd5b532f83bb55c4cd6f5bd1ef.jpg"}
                       alt="trainer_img"
                     />
                     <div>
@@ -196,33 +179,23 @@ const ViewSubscriptions = () => {
                   </span>
                 </div>
 
-                {/* Vertical Gap */}
                 <div className="my-3 border-t border-gray-200" />
 
-                {/* Subscription Info */}
                 <div className="space-y-2 text-sm text-gray-600">
                   <div className="flex justify-between">
-                    <div className="flex items-center gap-2">
-                      <FaCalendarAlt /> Start Date:
-                    </div>
+                    <div className="flex items-center gap-2"><FaCalendarAlt /> Start Date:</div>
                     <span className="font-medium">{formatDate(sub.startDate)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <div className="flex items-center gap-2">
-                      <FaCalendarAlt /> End Date:
-                    </div>
+                    <div className="flex items-center gap-2"><FaCalendarAlt /> End Date:</div>
                     <span className="font-medium">{formatDate(sub.endDate)}</span>
                   </div>
                   <div className="flex justify-between">
-                    <div className="flex items-center gap-2">
-                      <FaMoneyBill /> Amount Paid:
-                    </div>
+                    <div className="flex items-center gap-2"><FaMoneyBill /> Amount Paid:</div>
                     <span className="font-medium">₹{sub.amount}</span>
                   </div>
                   <div className="flex justify-between">
-                    <div className="flex items-center gap-2">
-                      <FaReceipt /> Payment ID:
-                    </div>
+                    <div className="flex items-center gap-2"><FaReceipt /> Payment ID:</div>
                     <span className="font-medium">{sub.paymentId}</span>
                   </div>
                 </div>
@@ -230,8 +203,9 @@ const ViewSubscriptions = () => {
             ))}
           </div>
         </div>
-      </div>
-      <Footer/>
+      </main>
+
+      <Footer />
     </div>
   );
 };

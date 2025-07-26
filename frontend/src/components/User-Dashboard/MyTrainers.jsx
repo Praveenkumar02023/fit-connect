@@ -2,11 +2,13 @@ import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { StoreContext } from '../../Context/StoreContext';
 import { useNavigate } from 'react-router-dom';
+import LogoLoader from '../LogoLoader';
 
 const MyTrainers = () => {
   const { token, url } = useContext(StoreContext);
   const [trainers, setTrainers] = useState([]);
   const navigate = useNavigate();
+    const [loading , setLoading] = useState(true)
 
   useEffect(() => {
     fetchSubscribedTrainers();
@@ -22,11 +24,15 @@ const MyTrainers = () => {
 
       if (res.status === 200) {
         setTrainers(res.data.trainers);
+        setLoading(false);
       }
     } catch (err) {
       console.error("Failed to fetch subscribed trainers:", err);
     }
   };
+
+  if(loading) return <LogoLoader/>
+
 
   return (
     <div className="relative bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 min-h-screen overflow-hidden">

@@ -2,11 +2,13 @@ import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { StoreContext } from "../../Context/StoreContext";
 import { useNavigate } from "react-router-dom";
+import LogoLoader from "../../components/LogoLoader";
 
 const Subscribers = () => {
   const { token, url } = useContext(StoreContext);
   const [subscribers, setSubscribers] = useState([]);
   const navigate = useNavigate();
+  const [loading,setLoading ] = useState(true);
 
   const fetchTrainerSubscriptions = async () => {
     try {
@@ -30,6 +32,8 @@ const Subscribers = () => {
           } catch (err) {
             console.error("User fetch failed", err);
             return sub;
+          }finally{
+            setLoading(false);
           }
         })
       );
@@ -44,6 +48,8 @@ const Subscribers = () => {
   useEffect(() => {
     fetchTrainerSubscriptions();
   }, []);
+
+  if(loading) return <LogoLoader/>
 
   return (
     <div className="relative min-h-screen w-full px-6 py-10 bg-gradient-to-br from-yellow-50 via-purple-50 to-blue-50 overflow-hidden">
@@ -90,7 +96,7 @@ const Subscribers = () => {
                 </button>
                 <button
                   onClick={() =>
-                    navigate(`/user/chat/${sub.userId}`, {
+                    navigate(`/trainer/chat/${sub.userId}`, {
                       state: {
                         who: "User",
                         username: sub.UserName,
