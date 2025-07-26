@@ -8,11 +8,16 @@ import UserSidebar from "../User-Dashboard/UseSidebar.jsx";
 
 const Navbar = ({ place }) => {
   const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
-  const { token, url } = useContext(StoreContext);
+  const {
+    token,
+    url,
+    isSidebarOpen: sidebarOpen,
+    setIsSidebarOpen: setSidebarOpen,
+    isMobileMenuOpen: mobileMenuOpen,
+    setIsMobileMenuOpen: setMobileMenuOpen,
+  } = useContext(StoreContext);
 
+  const [user, setUser] = useState(null);
   const isAuthPage = place === "auth";
 
   useEffect(() => {
@@ -30,17 +35,6 @@ const Navbar = ({ place }) => {
       getUser();
     }
   }, [token, url, isAuthPage]);
-
-  useEffect(() => {
-    if (sidebarOpen || mobileMenuOpen) {
-      document.body.classList.add("overflow-hidden");
-    } else {
-      document.body.classList.remove("overflow-hidden");
-    }
-    return () => {
-      document.body.classList.remove("overflow-hidden");
-    };
-  }, [sidebarOpen, mobileMenuOpen]);
 
   return (
     <div className="sticky top-0 z-50 bg-card/95 backdrop-blur-xl border-b border-border w-full">
