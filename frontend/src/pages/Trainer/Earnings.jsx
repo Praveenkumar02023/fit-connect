@@ -3,7 +3,6 @@ import axios from "axios";
 import { CreditCard, User, Calendar, Search } from "lucide-react";
 import { StoreContext } from "../../Context/StoreContext";
 import TrainerPaymentCard from "../../components/Trainer-Dashboard/TrainerPaymentCard";
-
 import Footer from "../../components/LandingPage/Footer";
 import LogoLoader from "../../components/LogoLoader";
 
@@ -14,14 +13,14 @@ const Earnings = () => {
   const [subscriptionPayments, setSubscriptionPayments] = useState([]);
   const [totalEarned, setTotalEarned] = useState(0);
   const [searchText, setSearchText] = useState("");
-  const [loading,setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const fetchPayments = async () => {
       try {
         let sessionList = [];
         let eventList = [];
         let subsList = [];
-
         let total = 0;
 
         // Sessions
@@ -29,36 +28,47 @@ const Earnings = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const validSessions = sessionRes.data.allSessions.filter(
+        const validSessions = sessionRes.data?.allSessions?.filter(
           (s) => s.status === "confirmed" || s.status === "completed"
-        );
+        ) || [];
 
         for (const session of validSessions) {
-          const paymentRes = await axios.get(
-            `${url}/api/v1/payment/user/${session.clientId}`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
-
-          const payments = paymentRes.data.payments.filter(
-            (p) =>
-              p.purpose === "Session" &&
-              p.referenceId === session._id &&
-              p.status === "success"
-          );
-
-          for (const p of payments) {
-            const userRes = await axios.get(
-              `${url}/api/v1/user/${session.clientId}`,
+          try {
+            const paymentRes = await axios.get(
+              `${url}/api/v1/payment/user/${session.clientId}`,
               { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            sessionList.push({
-              ...p,
-              clientName: userRes.data.user.name,
-              title: "Session Payment",
-            });
+            const payments = paymentRes.data?.payments?.filter(
+              (p) =>
+                p.purpose === "Session" &&
+                p.referenceId === session._id &&
+                p.status === "success"
+            ) || [];
 
-            total += p.amount;
+            for (const p of payments) {
+              try {
+                const userRes = await axios.get(
+                  `${url}/api/v1/user/${session.clientId}`,
+                  { headers: { Authorization: `Bearer ${token}` } }
+                );
+
+                const user = userRes.data?.user;
+                if (!user) continue;
+
+                sessionList.push({
+                  ...p,
+                  clientName: user.name || "Unknown Client",
+                  title: "Session Payment",
+                });
+
+                total += p.amount;
+              } catch (err) {
+                console.warn("Failed to fetch user for session:", err.message);
+              }
+            }
+          } catch (err) {
+            console.warn("Failed to fetch payment for session:", err.message);
           }
         }
 
@@ -67,32 +77,43 @@ const Earnings = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        for (const sub of subRes.data.Allsubscription) {
-          const paymentRes = await axios.get(
-            `${url}/api/v1/payment/user/${sub.userId}`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
-
-          const payments = paymentRes.data.payments.filter(
-            (p) =>
-              p.purpose === "Subscription" &&
-              p.referenceId === sub._id &&
-              p.status === "success"
-          );
-
-          for (const p of payments) {
-            const userRes = await axios.get(
-              `${url}/api/v1/user/${sub.userId}`,
+        for (const sub of subRes.data?.Allsubscription || []) {
+          try {
+            const paymentRes = await axios.get(
+              `${url}/api/v1/payment/user/${sub.userId}`,
               { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            subsList.push({
-              ...p,
-              clientName: userRes.data.user.name,
-              title: "Trainer Subscription",
-            });
+            const payments = paymentRes.data?.payments?.filter(
+              (p) =>
+                p.purpose === "Subscription" &&
+                p.referenceId === sub._id &&
+                p.status === "success"
+            ) || [];
 
-            total += p.amount;
+            for (const p of payments) {
+              try {
+                const userRes = await axios.get(
+                  `${url}/api/v1/user/${sub.userId}`,
+                  { headers: { Authorization: `Bearer ${token}` } }
+                );
+
+                const user = userRes.data?.user;
+                if (!user) continue;
+
+                subsList.push({
+                  ...p,
+                  clientName: user.name || "Unknown Client",
+                  title: "Trainer Subscription",
+                });
+
+                total += p.amount;
+              } catch (err) {
+                console.warn("Failed to fetch user for subscription:", err.message);
+              }
+            }
+          } catch (err) {
+            console.warn("Failed to fetch payments for subscription:", err.message);
           }
         }
 
@@ -101,53 +122,51 @@ const Earnings = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        for (const event of eventRes.data.events) {
-          const participantRes = await axios.get(
-            `${url}/api/v1/event/${event._id}/participants`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
-
-          for (const participant of participantRes.data.participants) {
-            const paymentRes = await axios.get(
-              `${url}/api/v1/payment/user/${participant.userId}`,
+        for (const event of eventRes.data?.events || []) {
+          try {
+            const participantRes = await axios.get(
+              `${url}/api/v1/event/${event._id}/participants`,
               { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            const payments = paymentRes.data.payments.filter(
-              (p) =>
-                p.purpose === "Event" &&
-                p.referenceId === event._id &&
-                p.status === "success"
-            );
+            for (const participant of participantRes.data?.participants || []) {
+              try {
+                const paymentRes = await axios.get(
+                  `${url}/api/v1/payment/user/${participant.userId}`,
+                  { headers: { Authorization: `Bearer ${token}` } }
+                );
 
-            for (const p of payments) {
-              eventList.push({
-                ...p,
-                clientName: participant.name,
-                title: event.title,
-              });
-              total += p.amount;
+                const payments = paymentRes.data?.payments?.filter(
+                  (p) =>
+                    p.purpose === "Event" &&
+                    p.referenceId === event._id &&
+                    p.status === "success"
+                ) || [];
+
+                for (const p of payments) {
+                  eventList.push({
+                    ...p,
+                    clientName: participant.name || "Event Participant",
+                    title: event.title,
+                  });
+                  total += p.amount;
+                }
+              } catch (err) {
+                console.warn("Failed to fetch payments for participant:", err.message);
+              }
             }
+          } catch (err) {
+            console.warn("Failed to fetch participants for event:", err.message);
           }
         }
 
-        setSessionPayments(
-          sessionList.sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-          )
-        );
-        setSubscriptionPayments(
-          subsList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-        );
-        setEventPayments(
-          eventList.sort(
-            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-          )
-        );
+        setSessionPayments(sessionList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+        setSubscriptionPayments(subsList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+        setEventPayments(eventList.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
         setTotalEarned(total);
       } catch (err) {
         console.error("Error fetching trainer earnings:", err);
-      }finally{
+      } finally {
         setLoading(false);
       }
     };
@@ -156,47 +175,31 @@ const Earnings = () => {
   }, [token, url]);
 
   const filterText = searchText.toLowerCase();
+  const filteredSessions = sessionPayments.filter((p) => p.clientName.toLowerCase().includes(filterText));
+  const filteredEvents = eventPayments.filter((p) => p.clientName.toLowerCase().includes(filterText));
+  const filteredSubscriptions = subscriptionPayments.filter((p) => p.clientName.toLowerCase().includes(filterText));
 
-  const filteredSessions = sessionPayments.filter((p) =>
-    p.clientName.toLowerCase().includes(filterText)
-  );
-  const filteredEvents = eventPayments.filter((p) =>
-    p.clientName.toLowerCase().includes(filterText)
-  );
-  const filteredSubscriptions = subscriptionPayments.filter((p) =>
-    p.clientName.toLowerCase().includes(filterText)
-  );
-
-  if(loading) return <LogoLoader/>
+  if (loading) return <LogoLoader />;
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-neutral-100 via-violet-50 to-blue-100 pt-6  overflow-hidden">
-      {/* Decorative Bubbles */}
+    <div className="relative min-h-screen bg-gradient-to-br from-neutral-100 via-violet-50 to-blue-100 pt-6 overflow-hidden">
       <div className="absolute top-10 left-10 w-48 h-48 bg-purple-300/50 rounded-full blur-3xl z-10" />
       <div className="absolute bottom-80 right-10 w-60 h-60 bg-pink-300/50 rounded-full blur-3xl sm:z-10" />
       <div className="absolute top-1/2 left-1/3 w-40 h-40 bg-blue-200/40 rounded-full blur-2xl z-10" />
       <div className="absolute top-1/2 left-30 w-40 h-40 bg-cyan-300/40 rounded-full blur-2xl z-10" />
 
       <div className="px-4 relative z-10 max-w-6xl mx-auto">
-        {/* Header */}
         <div className="mb-10 text-center">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
-             Earnings Overview
-          </h1>
-          <p className="text-gray-600">
-            Track all your session, event, and subscription earnings
-          </p>
+          <h1 className="text-4xl font-bold text-gray-800 mb-2">Earnings Overview</h1>
+          <p className="text-gray-600">Track all your session, event, and subscription earnings</p>
         </div>
 
-        {/* Summary Cards */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
           <div className="bg-[#e6f4ea] p-6 rounded-xl shadow-md flex items-center gap-4">
             <CreditCard className="text-green-700" />
             <div>
               <p className="text-sm text-gray-600">Total Earned</p>
-              <h2 className="text-2xl font-bold text-green-800">
-                ₹{totalEarned}
-              </h2>
+              <h2 className="text-2xl font-bold text-green-800">₹{totalEarned}</h2>
             </div>
           </div>
           <div className="bg-[#e7f0ff] p-6 rounded-xl shadow-md flex items-center gap-4">
@@ -204,8 +207,7 @@ const Earnings = () => {
             <div>
               <p className="text-sm text-gray-600">Sessions</p>
               <h2 className="text-xl font-semibold text-blue-800">
-                {sessionPayments.length} | ₹
-                {sessionPayments.reduce((a, b) => a + b.amount, 0)}
+                {sessionPayments.length} | ₹{sessionPayments.reduce((a, b) => a + b.amount, 0)}
               </h2>
             </div>
           </div>
@@ -214,8 +216,7 @@ const Earnings = () => {
             <div>
               <p className="text-sm text-gray-600">Events</p>
               <h2 className="text-xl font-semibold text-orange-800">
-                {eventPayments.length} | ₹
-                {eventPayments.reduce((a, b) => a + b.amount, 0)}
+                {eventPayments.length} | ₹{eventPayments.reduce((a, b) => a + b.amount, 0)}
               </h2>
             </div>
           </div>
@@ -224,14 +225,12 @@ const Earnings = () => {
             <div>
               <p className="text-sm text-gray-600">Subscriptions</p>
               <h2 className="text-xl font-semibold text-purple-800">
-                {subscriptionPayments.length} | ₹
-                {subscriptionPayments.reduce((a, b) => a + b.amount, 0)}
+                {subscriptionPayments.length} | ₹{subscriptionPayments.reduce((a, b) => a + b.amount, 0)}
               </h2>
             </div>
           </div>
         </div>
 
-        {/* Search Box */}
         <div className="relative mb-10">
           <Search className="absolute top-3.5 left-3 text-gray-400" size={18} />
           <input
@@ -243,13 +242,9 @@ const Earnings = () => {
           />
         </div>
 
-        {/* Sectioned Payment Cards */}
         <section className="space-y-12">
-          {/* Sessions */}
           <div className="bg-gray-50 border border-gray-300 rounded-xl p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              🧑‍💼 Session Earnings
-            </h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">🧑‍💼 Session Earnings</h2>
             <div className="grid gap-6">
               {filteredSessions.map((p) => (
                 <TrainerPaymentCard
@@ -264,11 +259,8 @@ const Earnings = () => {
             </div>
           </div>
 
-          {/* Events */}
           <div className="bg-gray-50 border border-gray-300 rounded-xl p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              🎉 Event Earnings
-            </h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">🎉 Event Earnings</h2>
             <div className="grid gap-6">
               {filteredEvents.map((p) => (
                 <TrainerPaymentCard
@@ -283,11 +275,8 @@ const Earnings = () => {
             </div>
           </div>
 
-          {/* Subscriptions */}
           <div className="bg-gray-50 border border-gray-300 rounded-xl p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">
-              📦 Subscription Earnings
-            </h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">📦 Subscription Earnings</h2>
             <div className="grid gap-6">
               {filteredSubscriptions.map((p) => (
                 <TrainerPaymentCard
@@ -303,6 +292,7 @@ const Earnings = () => {
           </div>
         </section>
       </div>
+
       <Footer />
     </div>
   );
