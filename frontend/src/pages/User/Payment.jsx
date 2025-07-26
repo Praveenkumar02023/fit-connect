@@ -14,7 +14,7 @@ const Payment = () => {
   const [sessionPayments, setSessionPayments] = useState([]);
   const [eventPayments, setEventPayments] = useState([]);
   const [subscriptionPayments, setSubscriptionPayments] = useState([]);
-  const [loading, setLoading] = useState(true); // NEW
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserPayments = async () => {
@@ -100,7 +100,7 @@ const Payment = () => {
         setSessionPayments(sorted.filter((p) => p.purpose === "Session"));
         setEventPayments(sorted.filter((p) => p.purpose === "Event"));
         setSubscriptionPayments(sorted.filter((p) => p.purpose === "Subscription"));
-        setLoading(false); // ✅ Set loading to false after data fetch
+        setLoading(false);
       } catch (error) {
         console.error("Failed to fetch payments:", error);
         setLoading(false);
@@ -124,7 +124,7 @@ const Payment = () => {
     p.subscriptionTrainerName?.toLowerCase().includes(filterText)
   );
 
-  if (loading) return <LogoLoader />; // ✅ Loader displayed here
+  if (loading) return <LogoLoader />;
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-indigo-100 via-white to-blue-100 pt-6 overflow-hidden flex flex-col justify-between">
@@ -133,49 +133,49 @@ const Payment = () => {
       <div className="absolute bottom-20 right-10 w-60 h-60 bg-pink-300/40 rounded-full blur-3xl z-0" />
       <div className="absolute top-1/2 left-1/3 w-40 h-40 bg-blue-200/40 rounded-full blur-2xl z-0" />
 
-      <div className="px-4 relative z-10 max-w-6xl mx-auto flex-grow">
+      <div className="px-4 relative z-10 max-w-6xl mx-auto flex-grow w-full">
         {/* Header */}
-        <div className="mb-10 text-center">
-          <h1 className="text-3xl font-bold text-black mb-2">Payment History</h1>
-          <p className="text-gray-600">
+        <div className="mb-10 text-center px-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-black mb-2">Payment History</h1>
+          <p className="text-gray-600 text-sm sm:text-base">
             Track all your session, event, and subscription payments
           </p>
         </div>
 
         {/* Summary Cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          <div className="bg-[#e6f4ea] p-6 rounded-xl shadow-md flex items-center gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-10">
+          <div className="bg-[#e6f4ea] p-4 sm:p-6 rounded-xl shadow-md flex items-center gap-4">
             <CreditCard className="text-green-700" />
             <div>
               <p className="text-sm text-gray-600">Total Spent</p>
-              <h2 className="text-2xl font-bold text-green-800">₹{totalSpent}</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-green-800">₹{totalSpent}</h2>
             </div>
           </div>
-          <div className="bg-[#e7f0ff] p-6 rounded-xl shadow-md flex items-center gap-4">
+          <div className="bg-[#e7f0ff] p-4 sm:p-6 rounded-xl shadow-md flex items-center gap-4">
             <User className="text-blue-700" />
             <div>
               <p className="text-sm text-gray-600">Sessions</p>
-              <h2 className="text-xl font-semibold text-blue-800">
+              <h2 className="text-lg sm:text-xl font-semibold text-blue-800">
                 {sessionPayments.length} | ₹
                 {sessionPayments.reduce((a, b) => a + b.amount, 0)}
               </h2>
             </div>
           </div>
-          <div className="bg-[#fff2e7] p-6 rounded-xl shadow-md flex items-center gap-4">
+          <div className="bg-[#fff2e7] p-4 sm:p-6 rounded-xl shadow-md flex items-center gap-4">
             <Calendar className="text-orange-700" />
             <div>
               <p className="text-sm text-gray-600">Events</p>
-              <h2 className="text-xl font-semibold text-orange-800">
+              <h2 className="text-lg sm:text-xl font-semibold text-orange-800">
                 {eventPayments.length} | ₹
                 {eventPayments.reduce((a, b) => a + b.amount, 0)}
               </h2>
             </div>
           </div>
-          <div className="bg-[#ede7f6] p-6 rounded-xl shadow-md flex items-center gap-4">
+          <div className="bg-[#ede7f6] p-4 sm:p-6 rounded-xl shadow-md flex items-center gap-4">
             <User className="text-purple-700" />
             <div>
               <p className="text-sm text-gray-600">Subscriptions</p>
-              <h2 className="text-xl font-semibold text-purple-800">
+              <h2 className="text-lg sm:text-xl font-semibold text-purple-800">
                 {subscriptionPayments.length} | ₹
                 {subscriptionPayments.reduce((a, b) => a + b.amount, 0)}
               </h2>
@@ -196,10 +196,10 @@ const Payment = () => {
         </div>
 
         {/* Sectioned Payment Lists */}
-        <section className="space-y-12">
+        <section className="space-y-10">
           {/* Sessions */}
-          <div className="bg-gray-50 border border-gray-300 rounded-xl p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">🧑‍🏫 Session Payments</h2>
+          <div className="bg-gray-50 border border-gray-300 rounded-xl p-4 sm:p-6 shadow-sm">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">Session Payments</h2>
             <div className="grid gap-6">
               {filteredSessions.map((p) => (
                 <PaymentCard
@@ -215,8 +215,8 @@ const Payment = () => {
           </div>
 
           {/* Events */}
-          <div className="bg-gray-50 border border-gray-300 rounded-xl p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">🎪 Event Payments</h2>
+          <div className="bg-gray-50 border border-gray-300 rounded-xl p-4 sm:p-6 shadow-sm">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">Event Payments</h2>
             <div className="grid gap-6">
               {filteredEvents.map((p) => (
                 <PaymentCard
@@ -232,8 +232,8 @@ const Payment = () => {
           </div>
 
           {/* Subscriptions */}
-          <div className="bg-gray-50 border border-gray-300 rounded-xl p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">📦 Subscription Payments</h2>
+          <div className="bg-gray-50 border border-gray-300 rounded-xl p-4 sm:p-6 shadow-sm">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">Subscription Payments</h2>
             <div className="grid gap-6">
               {filteredSubscriptions.map((p) => (
                 <PaymentCard
@@ -249,7 +249,7 @@ const Payment = () => {
           </div>
         </section>
       </div>
-              
+
       <Footer />
     </div>
   );

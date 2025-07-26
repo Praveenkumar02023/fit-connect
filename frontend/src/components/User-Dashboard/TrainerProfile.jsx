@@ -141,7 +141,7 @@ const TrainerProfile = () => {
   if (!trainer) return <LogoLoader/>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cyan-50 to-violet-50 pt-2 md:pt-4">
+    <div className="min-h-screen overflow-x-hidden bg-gradient-to-br from-cyan-50 to-violet-50 pt-2 md:pt-4">
       <div className="max-w-6xl mx-auto bg-white border border-gray-300 rounded-xl shadow-lg p-6 space-y-6">
         {/* Trainer Info Section */}
         <div className="flex flex-col items-center text-center space-y-3">
