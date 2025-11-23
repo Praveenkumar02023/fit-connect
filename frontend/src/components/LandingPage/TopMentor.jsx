@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import MentorCard from "./MentorCard";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
@@ -55,9 +55,13 @@ const mentors = [
 
 const TopMentor = () => {
   const scrollRef = useRef(null);
-  const CARD_WIDTH = 280;
 
-  const scroll = (direction) => {
+  // Duplicate mentors list many times for smooth infinite scroll
+  const bigList = new Array(40).fill(mentors).flat();
+
+  const CARD_WIDTH = 280; // same as before
+
+  const scrollByArrow = (direction) => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({
         left: direction === "left" ? -CARD_WIDTH : CARD_WIDTH,
@@ -66,8 +70,34 @@ const TopMentor = () => {
     }
   };
 
+  useEffect(() => {
+    const box = scrollRef.current;
+
+    const handleScroll = () => {
+      const max = box.scrollWidth - box.clientWidth;
+
+      // If user scrolls too far right → shift slightly left
+      if (box.scrollLeft > max * 0.8) {
+        box.style.scrollBehavior = "auto";
+        box.scrollLeft = max * 0.2;
+        box.style.scrollBehavior = "smooth";
+      }
+
+      // If user scrolls too far left → shift slightly right
+      if (box.scrollLeft < max * 0.2) {
+        box.style.scrollBehavior = "auto";
+        box.scrollLeft = max * 0.8;
+        box.style.scrollBehavior = "smooth";
+      }
+    };
+
+    box.addEventListener("scroll", handleScroll);
+    return () => box.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div className="pt-24 px-4 md:px-14 py-10 w-full">
+
       {/* Header */}
       <div className="flex flex-col items-center text-center w-full mb-6">
         <h2 className="text-3xl md:text-4xl font-bold">
@@ -78,17 +108,18 @@ const TopMentor = () => {
         </p>
       </div>
 
-      {/* Scroll Section */}
+      {/* Scroll Row */}
       <div className="flex justify-center items-center gap-2 md:gap-6">
         <ArrowLeft
-          onClick={() => scroll("left")}
+          onClick={() => scrollByArrow("left")}
           className="hidden sm:block border rounded-full cursor-pointer hover:border-gray-200 hover:bg-gray-100"
         />
+
         <div
           ref={scrollRef}
           className="flex overflow-x-auto scroll-smooth gap-4 no-scrollbar px-2"
         >
-          {mentors.map((mentor, i) => (
+          {bigList.map((mentor, i) => (
             <MentorCard
               key={i}
               name={mentor.name}
@@ -98,8 +129,9 @@ const TopMentor = () => {
             />
           ))}
         </div>
+
         <ArrowRight
-          onClick={() => scroll("right")}
+          onClick={() => scrollByArrow("right")}
           className="hidden sm:block border rounded-full cursor-pointer hover:border-gray-200 hover:bg-gray-100"
         />
       </div>
