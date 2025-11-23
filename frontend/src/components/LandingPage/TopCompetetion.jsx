@@ -1,81 +1,93 @@
-import React, { useRef } from "react";
-import CompetitionCard from "./CompetitionCard";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 const competitions = [
-  {
-    title: "Urban Marathon Sprint",
+  { 
+    title: "Urban Sprint Run",
     organizer: "Nike",
     views: 953,
-    image: "/nike.png",
+    image: "/nike.png"
   },
-  {
-    title: "Endurance Cycling Race",
+  { 
+    title: "Endurance Cycle Tour",
     organizer: "Puma",
     views: 17592,
-    image: "/puma.png",
+    image: "/puma.png"
   },
-  {
-    title: "FitZone Swimming Challenge",
+  { 
+    title: "Elite Swim Meet",
     organizer: "Adidas",
     views: 22852,
-    image: "/adidas.png",
+    image: "/adidas.png"
   },
-  {
-    title: "Functional Fitness Throwdown",
+  { 
+    title: "Strength Fitness Cup",
     organizer: "Cult Fit",
     views: 3198,
-    image: "/cult.png",
+    image: "/cult.png"
   },
-  {
-    title: "IronFit Weightlifting Cup",
+  { 
+    title: "IronFit Lift Contest",
     organizer: "Optimum Nutrition",
     views: 12320,
-    image: "/optimum_.png",
+    image: "/optimum_.png"
   },
-  {
-    title: "National Yoga Retreat",
+  { 
+    title: "National Yoga Camp",
     organizer: "Adidas",
     views: 7601,
-    image: "/adidas.png",
+    image: "/adidas.png"
   },
-  {
-    title: "CrossFit Power Games",
+  { 
+    title: "CrossFit Power Cup",
     organizer: "MyFitness",
     views: 8945,
-    image: "/myFitness.png",
+    image: "/myFitness.png"
   },
-  {
-    title: "Trail Run Challenge",
+  { 
+    title: "Trail Run Series",
     organizer: "Decathlon",
     views: 18243,
-    image: "/dec.png",
-  },
+    image: "/dec.png"
+  }
 ];
 
-const TopCompetition = () => {
-  const scrollRef = useRef(null);
-  const CARD_WIDTH = 290;
 
-  const scroll = (direction) => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({
-        left: direction === "left" ? -CARD_WIDTH : CARD_WIDTH,
-        behavior: "smooth",
-      });
-    }
-  };
+export default function TopCompetition() {
+  const containerRef = useRef(null);
+
+  // Duplicate data 50 times for smooth infinite scroll
+  const bigList = new Array(50).fill(competitions).flat();
+
+  useEffect(() => {
+    const box = containerRef.current;
+
+    const handleScroll = () => {
+      const max = box.scrollWidth - box.clientWidth;
+
+      // When user scrolls too far right → reset to middle without jump
+      if (box.scrollLeft > max * 0.8) {
+        box.style.scrollBehavior = "auto";
+        box.scrollLeft = max * 0.2;
+        box.style.scrollBehavior = "smooth";
+      }
+
+      // When user scrolls too far left → reset to middle
+      if (box.scrollLeft < max * 0.2) {
+        box.style.scrollBehavior = "auto";
+        box.scrollLeft = max * 0.8;
+        box.style.scrollBehavior = "smooth";
+      }
+    };
+
+    box.addEventListener("scroll", handleScroll);
+    return () => box.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <div className="relative pt-24 px-4 md:px-14 py-10 w-full">
-      {/* Background Bubbles */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-10 blur-3xl left-10 h-60 w-60 md:h-96 md:w-96 bg-green-100 rounded-full animate-pulse"></div>
-        <div className="absolute bottom-5 blur-3xl right-10 h-60 w-60 md:h-96 md:w-96 bg-violet-200 rounded-full animate-pulse"></div>
-      </div>
+    <div className="w-full py-12 px-8 md:px-14">
 
       {/* Header */}
-      <div className="flex flex-col items-center text-center w-full mb-6">
+      <div className="flex flex-col items-center text-center w-full mb-8">
         <h2 className="text-3xl md:text-4xl font-bold">
           <span className="text-blue-700">Top</span> Competitions
         </h2>
@@ -84,33 +96,32 @@ const TopCompetition = () => {
         </p>
       </div>
 
-      {/* Scrollable Competition Cards */}
-      <div className="flex justify-center items-center gap-2 md:gap-6">
-        <ArrowLeft
-          onClick={() => scroll("left")}
-          className="hidden sm:block border rounded-full cursor-pointer hover:border-gray-200 hover:bg-gray-100"
-        />
-        <div
-          ref={scrollRef}
-          className="flex overflow-x-auto scroll-smooth gap-4 no-scrollbar px-2"
-        >
-          {competitions.map((comp, i) => (
-            <CompetitionCard
-              key={i}
-              title={comp.title}
-              organizer={comp.organizer}
-              views={comp.views}
-              image={comp.image}
+      {/* Infinite Scroller */}
+      <div
+        ref={containerRef}
+        className="w-full overflow-x-scroll whitespace-nowrap scroll-smooth no-scrollbar"
+      >
+        {bigList.map((c, i) => (
+          <div
+            key={i}
+            className="inline-block w-[260px] h-[180px] bg-white shadow-md rounded-xl m-3 
+                       flex flex-col justify-between p-4"
+          >
+            <img
+              src={c.image}
+              className="h-12 mx-auto object-contain"
+              alt={c.title}
             />
-          ))}
-        </div>
-        <ArrowRight
-          onClick={() => scroll("right")}
-          className="hidden sm:block border rounded-full cursor-pointer hover:border-gray-200 hover:bg-gray-100"
-        />
+
+            <div className="text-center">
+              <p className="text-lg font-bold">{c.title}</p>
+              <p className="text-gray-500 text-sm">{c.organizer}</p>
+            </div>
+
+            <p className="text-sm font-semibold text-center">{c.views} views</p>
+          </div>
+        ))}
       </div>
     </div>
   );
-};
-
-export default TopCompetition;
+}
