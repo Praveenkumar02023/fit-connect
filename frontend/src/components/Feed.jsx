@@ -28,7 +28,7 @@ const Feed = () => {
         console.log(error);
       }
     }
-
+// Trainers section
     async function getTrainers() {
       try {
         const res = await axios.get(`${url}/api/v1/trainer/`);
