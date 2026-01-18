@@ -14,6 +14,7 @@ import cors from "cors"
 import { Server } from "socket.io";
 import { messageRouter } from "./routes/message.routes";
 import { messageModel } from "./models/chat.model";
+import { startKeepAlive } from "./utils/keepAlive";
 
 
 dotenv.config()
@@ -79,6 +80,14 @@ io.on("connection",(socket)=>{
         console.log("user disconnected");
     })
 })
+
+// Health check route
+app.get('/api/v1/health', (req, res) => {
+    console.log("health check");
+    res.status(200).send('OK');
+});
+
+startKeepAlive();
 
 httpServer.listen(PORT,()=>{
     log("server is running on ", PORT);
